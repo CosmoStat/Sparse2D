@@ -61,28 +61,10 @@ project(sparse2d)
   option(COMPILE_NFFT "Get and compile NFFT" OFF)
   include(BuildNFFT)
 
-  # Set compilation flags Mac OSX or any other system
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-
-    set(CMAKE_CXX_FLAGS_RELEASE "-DNO_DISP_IO -g0 -O2 -fPIC \
--fomit-frame-pointer ${OpenMP_CXX_FLAGS} -Wno-write-strings -DNDEBUG \
-${FFTW_FLAGS}")
-    set(CMAKE_CXX_FLAGS_DEBUG "-DNO_DISP_IO -g -fPIC ${OpenMP_CXX_FLAGS} \
--Wno-write-strings ${FFTW_CXX_FLAGS}")
-
-  else()
-
-    set(CMAKE_CXX_FLAGS_RELEASE "-DNO_DISP_IO -g0 -O2 -fPIC \
--fomit-frame-pointer ${OpenMP_CXX_FLAGS} -Wno-write-strings -DNDEBUG \
-${FFTW_FLAGS}"
-    )
-    set(CMAKE_CXX_FLAGS_DEBUG "-DNO_DISP_IO -g -fPIC ${OpenMP_CXX_FLAGS} \
--Wno-write-strings ${FFTW_CXX_FLAGS}"
-    )
-
-    message(STATUS "Using CXX Flags for ${CMAKE_SYSTEM}")
-
-  endif()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNO_DISP_IO -fPIC ${OpenMP_CXX_FLAGS} -Wno-write-strings ${FFTW_CXX_FLAGS}")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g0 -O2 -fomit-frame-pointer -DNDEBUG")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+  message(STATUS "Using CXX Flags for ${CMAKE_SYSTEM}")
 
   # Build tools library
   FILE(GLOB src_lib1  "${PROJECT_SOURCE_DIR}/src/libtools/*.cc")
