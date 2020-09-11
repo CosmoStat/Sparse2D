@@ -6,9 +6,6 @@
 set(FFTWVersion 3.3.8)
 set(FFTWHash 8aac833c943d8e90d51b697b27d4384d)
 
-# Set FFTW libraries to use
-set(FFTW_LD_FLAGS "-lfftw3f_omp -lfftw3_omp -lfftw3f -lfftw3 -lm")
-
 # Find FFTW
 if(USE_FFTW AND NOT BUILD_FFTW)
   find_package(FFTW3 REQUIRED)
@@ -22,6 +19,7 @@ endif()
 # Set FFTW flags
 if(USE_FFTW)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_FFTW")
+  set(FFTW_LD_FLAGS "-lfftw3f_omp -lfftw3_omp -lfftw3f -lfftw3 -lm")
 endif()
 
 # Build FFTW
