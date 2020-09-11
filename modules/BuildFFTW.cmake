@@ -7,16 +7,16 @@ set(FFTWVersion 3.3.8)
 set(FFTWHash 8aac833c943d8e90d51b697b27d4384d)
 
 # Set FFTW libraries to use
-set(fftw_lib_list "-lfftw3f_omp -lfftw3_omp -lfftw3f -lfftw3 -lm")
+set(FFTW_LD_FLAGS "-lfftw3f_omp -lfftw3_omp -lfftw3f -lfftw3 -lm")
 
 # Find FFTW
 if(USE_FFTW AND NOT BUILD_FFTW)
   find_package(FFTW3 REQUIRED)
   message(STATUS "Checking for module 'fftw3'")
   message(STATUS "  Found fftw3, version ${FFTW3_VERSION}")
-  set(FFTW_LD_FLAGS "-L ${FFTW3_LIBRARY_DIRS} ${fftw_lib_list}")
 elseif(USE_FFTW AND BUILD_FFTW)
-  set(FFTW_LD_FLAGS "-L ${MODULE_BUILD_DIR}/lib ${fftw_lib_list}")
+  set(FFTW3_INCLUDE_DIRS "${MODULE_BUILD_DIR}include")
+  set(FFTW3_LIBRARY_DIRS "${MODULE_BUILD_DIR}lib")
 endif()
 
 # Set FFTW flags
@@ -56,6 +56,10 @@ if(BUILD_FFTW)
   )
 
 endif()
+
+# Source FFTW headers and libraries
+include_directories(${FFTW3_INCLUDE_DIRS})
+link_directories(${FFTW3_LIBRARY_DIRS})
 
 message(STATUS "Use FFTW: ${USE_FFTW}")
 message(STATUS "FFTW Build: ${BUILD_FFTW}")
