@@ -47,7 +47,7 @@ class MR2D1D {
   int NbrCoef2D;      // Number of coefficients in the 2D multiscale transform
   int NbrCoef1D;      // Number of coefficients in the 1D multiscale transform
   
-  public: // ATTENTION JE L'AI MIS ICI ET NON PLUS LOIN !!
+  public:
   
   MultiResol WT2D;    // 2D Multiresolution object
   MR_1D WT1D;         // 1D Multiresolution object
@@ -65,13 +65,14 @@ class MR2D1D {
   type_border Bord;         // Parameter for border management
   type_undec_filter U_Filter; // Type of filter in case of undecimated WT
   FilterAnaSynt FAS;          // Filter bank object
-  
+  FilterAnaSynt FAS1D;          // Filter bank object
+
   int mr_io_fill_header(fitsfile *fptr);
   //public:
        Bool Verbose;
        MR2D1D (){ NbrBand2D=NbrBand1D=0;Verbose=False;}
        
-       void alloc(int iNx, int iNy, int iNz, type_transform Trans2D, int Ns2D, int Ns1D=0, Bool NoAlloc=False);
+       void alloc(int iNx, int iNy, int iNz, type_transform Trans2D, int Ns2D, int Ns1D=0, Bool NoAlloc=False, type_sb_filter Filter1D=F_MALLAT_7_9);
        // Allocate the class for a cube of size (iNx, iNy, iNz) using Ns2D scale in 2D and Ns1D scale in 1D
        // If Ns1D < 2 then no wavelet transform is performed along z axis
        // If NoAlloc=True, then TabBand is not allocated and ONLY routine transform_to_vectarray can be used
@@ -131,6 +132,8 @@ class MR2D1D {
        
        float & operator() (int s2, int i, int j, int k) const;
        // Return one coefficient, for the case where no 1D WT is applied
+
+        void info();
 
        ~MR2D1D() { if (TabBand != NULL) delete [] TabBand; NbrBand1D=NbrBand2D=NbrScale1D=NbrScale2D=0;}
 };

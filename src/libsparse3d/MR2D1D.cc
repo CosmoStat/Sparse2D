@@ -353,7 +353,7 @@ void  MR2D1D::put_band(fltarray Band, int s2, int s1)
 
 /****************************************************************************/
 
-void MR2D1D::alloc (int iNx, int iNy, int iNz, type_transform Trans2D, int Ns2D, int Ns1D, Bool NoAlloc)
+void MR2D1D::alloc (int iNx, int iNy, int iNz, type_transform Trans2D, int Ns2D, int Ns1D, Bool NoAlloc, type_sb_filter Filter1D)
 {
    Nx = iNx;
    Ny = iNy;
@@ -366,7 +366,7 @@ void MR2D1D::alloc (int iNx, int iNy, int iNz, type_transform Trans2D, int Ns2D,
       Apply1DTrans = False;
    }
    else Apply1DTrans = True;
-   ;
+   
    Norm = NORM_L2;
    SB_Filter = F_MALLAT_7_9;
    Bord = I_CONT;
@@ -386,13 +386,16 @@ void MR2D1D::alloc (int iNx, int iNy, int iNz, type_transform Trans2D, int Ns2D,
     WT2D.alloc (Ny, Nx, Ns2D, Trans2D, PtrFAS, Norm, NbrUndec, U_Filter);
     NbrBand2D = WT2D.nbr_band();
 
-     	       
     Bool Rebin=False;
     WT1D.U_Filter = U_Filter;
+    FilterAnaSynt *PtrFAS1D = NULL;
+    FAS1D.Verbose = Verbose;
+    FAS1D.alloc(Filter1D);
+    PtrFAS1D = &FAS1D;
     type_trans_1d Trans1D = TO1_MALLAT;
     if (Apply1DTrans == True)
     {
-        WT1D.alloc (Nz, Trans1D, Ns1D, PtrFAS, Norm, Rebin);   
+        WT1D.alloc (Nz, Trans1D, Ns1D, PtrFAS1D, Norm, Rebin);
         NbrBand1D = WT1D.nbr_band();
     } 
     else NbrBand1D = 1;
@@ -518,8 +521,6 @@ void MR2D1D::transform (fltarray &Data)
 
 /****************************************************************************/
 
-
-
 void MR2D1D::recons (fltarray &Data)
 {
    if ((Data.nx() != Nx) || (Data.ny() != Ny) || (Data.nz() != Nz)) Data.resize(Nx, Ny, Nz); 
@@ -563,4 +564,21 @@ void MR2D1D::recons (fltarray &Data)
 
  /****************************************************************************/
 
- 
+void MR2D1D::info()
+{
+    cout << "Transform = " << StringTransform((type_transform) WT2D.Type_Transform) << endl;
+    cout << "nb_scale_2d = " << NbrBand2D << endl;
+    cout << "NbrScale1d = " << NbrBand1D << endl;
+    cout << "Nx = " << Nx << " Ny = " << Ny << " Nz = " << Nz << endl;
+    cout << endl;
+    for (int s2 = 0; s2 < NbrBand2D; s2++)
+    for (int s1 = 0; s1 < NbrBand1D; s1++)
+    {
+        cout << "  Band " << s2 << ", " << s1 << ": " << " Nx = " << size_band_nx(s2,s1) << ", Ny = " << size_band_ny(s2,s1) <<  ", Nz = " << size_band_nz(s2,s1) << endl;
+        fltarray Band;
+        Band = get_band(s2, s1);
+        cout << "  Sigma = " << Band.sigma() << " Min = " << Band.min() << " Max = " << Band.max() << endl;
+    }
+}
+
+/****************************************************************************/
