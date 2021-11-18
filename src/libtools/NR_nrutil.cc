@@ -17,7 +17,7 @@ void nrerror(const char error_text[])
 
 
 
-float *vector(int nl,int nh)
+float *fvector(int nl,int nh)
 {
 	float *v;
 
