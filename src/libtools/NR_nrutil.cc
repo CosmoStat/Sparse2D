@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "NR.h"
- 
+
 #define NR_END 1
 
 void nrerror(const char error_text[])
@@ -17,7 +17,7 @@ void nrerror(const char error_text[])
 
 
 
-float *vector(int nl,int nh)
+float *fvector(int nl,int nh)
 {
 	float *v;
 
@@ -231,4 +231,3 @@ unsigned long *lvector(long nl,long  nh)
 	if (!v) nrerror("allocation failure in lvector()");
 	return v-nl+NR_END;
 }
-

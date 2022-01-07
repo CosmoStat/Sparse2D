@@ -9,14 +9,14 @@
 **    Author: C. Delattre & R. Gastaud
 **
 **    Date:  98/05/12
-**    
+**
 **    File:  NR_util.h
 **
 *******************************************************************************
 **
 **    DESCRIPTION  Definition of the numerical recipies memory  allocation
 **    -----------  and deallocation routine.
-**              
+**
 ******************************************************************************/
 
 
@@ -24,7 +24,7 @@
 #define _UTIL_H
 
 void nrerror(const char error_text[]);
-float *vector(int nl,int nh);
+float *fvector(int nl,int nh);
 int *ivector(int nl,int nh);
 double *dvector(int nl,int nh);
 float **matrix(int nrl,int nrh,int ncl,int nch);
