@@ -1,18 +1,17 @@
-# Locate CFITSIO using pkg-config or use command line arguments to configure
-# CFITSIO
-function(find_cfitsio)
-  if(CFITSIO_LIBRARIES STREQUAL "" OR NOT DEFINED CFITSIO_LIBRARIES OR
-     CFITSIO_LIBRARY_DIRS STREQUAL "" OR NOT DEFINED CFITSIO_LIBRARY_DIRS OR
-     CFITSIO_INCLUDE_DIRS STREQUAL "" OR NOT DEFINED CFITSIO_INCLUDE_DIRS)
-    pkg_check_modules(CFITSIO REQUIRED cfitsio)
-  else()
-    message(STATUS "Use manually configured cfitsio")
-    message(STATUS "  includes: ${CFITSIO_INCLUDE_DIRS}")
-    message(STATUS "  libs: ${CFITSIO_LIBRARY_DIRS}")
-    message(STATUS "  flags: ${CFITSIO_LIBRARIES}")
+# Locate pkgconfig package
+function(find_pkg package module)
+  if(${package}_LIBRARIES STREQUAL "" OR NOT DEFINED ${package}_LIBRARIES OR
+     ${package}_LIBRARY_DIRS STREQUAL "" OR NOT DEFINED ${package}_LIBRARY_DIRS OR
+     ${package}_INCLUDE_DIRS STREQUAL "" OR NOT DEFINED ${package}_INCLUDE_DIRS)
+    pkg_check_modules(${package} REQUIRED ${module})
   endif()
-  include_directories(${CFITSIO_INCLUDE_DIRS})
-  link_directories(${CFITSIO_LIBRARY_DIRS})
+  include_directories(${${package}_INCLUDE_DIRS})
+  link_directories(${${package}_LIBRARY_DIRS})
+  if(${package}_FOUND)
+    message(STATUS "  include dirs: ${${package}_INCLUDE_DIRS}")
+    message(STATUS "  lib dirs: ${${package}_LIBRARY_DIRS}")
+    message(STATUS "  libs: ${${package}_LIBRARIES}")
+  endif()
 endfunction()
 
 # Extract target names from source files
@@ -29,7 +28,7 @@ function(build_lib library)
   file(GLOB inc_${library} "${PROJECT_SOURCE_DIR}/src/lib${library}/*.h")
   include_directories("${PROJECT_SOURCE_DIR}/src/lib${library}")
   add_library(${library} STATIC ${src_${library}})
-  target_link_libraries(${library} ${CFITSIO_LIBRARIES} ${FFTW_LD_FLAGS})
+  target_link_libraries(${library} ${CFITSIO_LIBRARIES} ${fftw_lib_list})
   if(BUILD_FFTW)
     add_dependencies(${library} fftw)
   endif()
@@ -39,5 +38,5 @@ endfunction()
 # Build binary
 function(build_bin program libs target_path ext)
   add_executable(${program} "${PROJECT_SOURCE_DIR}/${target_path}/${program}.${ext}")
-  target_link_libraries(${program} ${CFITSIO_LIBRARIES} ${FFTW_LD_FLAGS} ${libs})
+  target_link_libraries(${program} ${CFITSIO_LIBRARIES} ${fftw_lib_list} ${libs})
 endfunction()

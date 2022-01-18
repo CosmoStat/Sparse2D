@@ -33,7 +33,7 @@ else()
 endif()
 
 # Locate CFITSIO
-find_cfitsio()
+find_pkg(CFITSIO cfitsio)
 
 # Set build location for external modules
 set(MODULE_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/module_build/")
