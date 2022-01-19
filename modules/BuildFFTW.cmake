@@ -48,10 +48,8 @@ if(USE_FFTW)
 
   else()
 
-    message(STATUS "Using CMake Prefix Path: ${CMAKE_PREFIX_PATH}")
-
     # Find FFTW
-    find_pkg(FFTW fftw3)
+    find_pkg(FFTW3 fftw3)
 
   endif()
 

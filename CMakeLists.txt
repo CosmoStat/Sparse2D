@@ -2,7 +2,7 @@
 # Sparse2D 2017 #
 #################
 
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.12.0)
 project(sparse2d)
 
 # Include modules in CMake module path
