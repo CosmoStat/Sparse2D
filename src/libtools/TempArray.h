@@ -38,12 +38,12 @@ public:
    bool operator() () {return false;}
 };
 
-typedef unsigned char byte;
+typedef unsigned char cbyte;
 
 #define fltarray to_array<float,true>
 #define dblarray to_array<double,true>
 #define intarray to_array<int,true>
-#define bytearray to_array<byte,true>
+#define bytearray to_array<cbyte,true>
 #define cfarray to_array<complex_f,true>
 #define cdarray to_array<complex_d,true>
 
@@ -637,7 +637,7 @@ inline int& to_array<int,true>::operator()(int x, int y) const
    return po_Buffer[y*pto_TabNaxis[0]+x];
 }
 template <>
-inline byte& to_array<byte,true>::operator()(int x, int y) const
+inline cbyte& to_array<cbyte,true>::operator()(int x, int y) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -735,7 +735,7 @@ inline int to_array<int,true>::operator()(int x, int y, type_border bord) const
    return po_Buffer[indy*pto_TabNaxis[0]+indx];
 }
 template <>
-inline byte to_array<byte,true>::operator()(int x, int y, type_border bord) const
+inline cbyte to_array<cbyte,true>::operator()(int x, int y, type_border bord) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)

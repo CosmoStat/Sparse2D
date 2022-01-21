@@ -41,14 +41,14 @@ set(MODULE_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/module_build/")
 # Set compilation flags
 if("${CMAKE_CXX_FLAGS}" STREQUAL "")
   set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} -std=c++17 -DNO_DISP_IO -fPIC -Wno-write-strings\
+    "${CMAKE_CXX_FLAGS} -w -std=c++17 -DNO_DISP_IO -fPIC -Wno-write-strings\
     ${OpenMP_CXX_FLAGS} ${BigMac_NOWARN}"
   )
 endif()
 set(CMAKE_CXX_FLAGS_RELEASE
-  "${CMAKE_CXX_FLAGS_RELEASE} -g0 -fomit-frame-pointer"
+  "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -g0 -fomit-frame-pointer"
 )
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS} -O0")
 
 # ---- #
 # FFTW #
