@@ -40,7 +40,7 @@ set(MODULE_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/module_build/")
 
 # Set compilation flags
 set(CMAKE_CXX_FLAGS
-  "${CMAKE_CXX_FLAGS} -DNO_DISP_IO -fPIC -Wno-write-strings\
+  "${CMAKE_CXX_FLAGS} -std=c++14 -DNO_DISP_IO -fPIC -Wno-write-strings\
   ${OpenMP_CXX_FLAGS} ${BigMac_NOWARN}"
 )
 set(CMAKE_CXX_FLAGS_RELEASE
