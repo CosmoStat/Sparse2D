@@ -49,7 +49,7 @@ jobs:
       - name: Archive Unit Test Log
         uses: actions/upload-artifact@v2
         with:
-          name: test-log
+          name: test-log-${{ matrix.os }}
           retention-days: 14
           path: |
             build/Testing/Temporary/LastTest.log
