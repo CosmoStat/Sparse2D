@@ -27,8 +27,16 @@ jobs:
           brew tap sfarrens/sf
           brew install bigmac cfitsio fftw libomp
 
+      - name: Install Linux Dependencies
+        if: runner.os == 'Linux'
+        run: |
+          apt-get update
+          apt-get install -y libcfitsio-dev
+
       - name: Compile Sparse2D Binaries
-        run: cmake . -DUSE_FFTW=ON -DBUILD_MSVST=ON
+        run: |
+          cmake . -DUSE_FFTW=ON -DBUILD_MSVST=ON
+          make
 
       - name: Run Unit Tests
         run: make test
