@@ -1,8 +1,8 @@
 # Sparse2D
-[![Build Status](https://travis-ci.org/CosmoStat/Sparse2D.svg?branch=master)](https://travis-ci.org/CosmoStat/Sparse2D)
+[![build](https://github.com/CosmoStat/Sparse2D/workflows/CI/badge.svg)](https://github.com/CosmoStat/Sparse2D/actions?query=workflow%3ACI)
 [![cpp](https://img.shields.io/badge/language-C%2B%2B-red)](https://isocpp.org/std/the-standard)
 
-Sparse2D provides an array of sparsity based tools and a convenient C++ library for performing various wavelet tranforms.
+Sparse2D provides an array of sparsity based tools and a convenient C++ library for performing various wavelet transforms.
 
 This package is part of the iSAP suite, available on the [CosmoStat website](http://www.cosmostat.org/software/isap).
 
@@ -116,4 +116,4 @@ $ CC=gcc CXX=g++ cmake ..
 
 ## Usage
 
-The two main executables of the package are `mr_transform` and `mr_filter`, see the instructions in the [README](./README) folder for usage examples
+The two main executables of the package are `mr_transform` and `mr_filter`, see the instructions in the [README](./README) folder for usage examples.

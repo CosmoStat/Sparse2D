@@ -9,7 +9,7 @@ on:
 
 jobs:
   test-full:
-    name: Full Test Suite
+    name: Basic Test Suite
     runs-on: ${{ matrix.os }}
 
     strategy:
