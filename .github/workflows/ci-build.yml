@@ -28,7 +28,7 @@ jobs:
           brew install bigmac cfitsio fftw libomp
 
       - name: Compile Sparse2D Binaries
-        run: cmake .. -DUSE_FFTW=ON -DBUILD_MSVST=ON
+        run: cmake . -DUSE_FFTW=ON -DBUILD_MSVST=ON
 
       - name: Run Unit Tests
         run: make test
