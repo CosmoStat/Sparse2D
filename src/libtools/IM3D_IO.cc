@@ -331,9 +331,9 @@ void IO3DInfoData::init_reading(char *Name, Bool ReadInPseudo)
 
 void IO3DInfoData::read_pseudo_block(fltarray &Data, int Indi, int Indj)
 {
-   byte R,G,B;
+   cbyte R,G,B;
    int i,j, Pix;
-   byte *ptr = Pinfo.pic;
+   cbyte *ptr = Pinfo.pic;
    int First = Indi*Nc+Indj;
    for (i=0; i < Data.ny(); i++)
    for (j=0; j < Data.nx(); j++)
@@ -352,7 +352,7 @@ void IO3DInfoData::read_pseudo_block(fltarray &Data, int Indi, int Indj)
 void IO3DInfoData::read_col_block(intarray &Data, int Indi, int Indj)
 {
    int i,j,Pix,First = Indi*Nc+Indj;
-   byte *Ptr = Pinfo.pic;
+   cbyte *Ptr = Pinfo.pic;
    for (i=0; i < Data.ny(); i++)
    for (j=0; j < Data.nx(); j++)
    {
@@ -369,7 +369,7 @@ void IO3DInfoData::read_col_block(fltarray &Data, int Indi, int Indj)
 {
    int i,j, Pix;
    int First = Indi*Nc+Indj;
-   byte *Ptr = Pinfo.pic;
+   cbyte *Ptr = Pinfo.pic;
    for (i=0; i < Data.ny(); i++)
    for (j=0; j < Data.nx(); j++)
    {
@@ -384,9 +384,9 @@ void IO3DInfoData::read_col_block(fltarray &Data, int Indi, int Indj)
 
 void IO3DInfoData::read_pseudo_block(intarray &Data, int Indi, int Indj)
 {
-   byte R,G,B;
+   cbyte R,G,B;
    int i,j, Pix;
-   byte *ptr = Pinfo.pic;
+   cbyte *ptr = Pinfo.pic;
    int First = Indi*Nc+Indj;
    for (i=0; i < Data.ny(); i++)
    for (j=0; j < Data.nx(); j++)
@@ -404,13 +404,13 @@ void IO3DInfoData::read_pseudo_block(intarray &Data, int Indi, int Indj)
 void IO3DInfoData::write_pseudo_block(intarray &Data, int Indi, int Indj)
 {
   int i,j,First = Indi * Nc + Indj;
-  byte *Ptr = Pinfo.pic;
+  cbyte *Ptr = Pinfo.pic;
   for (i=0; i < Data.ny(); i++)
   for (j=0; j < Data.nx(); j++)
   {
-     byte ValR =  float_to_byte(Data(j,i,0));
-     byte ValG =  float_to_byte(Data(j,i,1));
-     byte ValB =  float_to_byte(Data(j,i,2));
+     cbyte ValR =  float_to_byte(Data(j,i,0));
+     cbyte ValG =  float_to_byte(Data(j,i,1));
+     cbyte ValB =  float_to_byte(Data(j,i,2));
      Ptr [First+i*Nc+j] =  IO_RGB.color_to_pseudo(ValR, ValG, ValB);
   }
 }
@@ -420,13 +420,13 @@ void IO3DInfoData::write_pseudo_block(intarray &Data, int Indi, int Indj)
 void IO3DInfoData::write_pseudo_block(fltarray &Data, int Indi, int Indj)
 {
   int i,j,First = Indi * Nc + Indj;
-  byte *Ptr = Pinfo.pic;
+  cbyte *Ptr = Pinfo.pic;
   for (i=0; i < Data.ny(); i++)
   for (j=0; j < Data.nx(); j++)
   {
-     byte ValR =  float_to_byte(Data(j,i,0));
-     byte ValG =  float_to_byte(Data(j,i,1));
-     byte ValB =  float_to_byte(Data(j,i,2));
+     cbyte ValR =  float_to_byte(Data(j,i,0));
+     cbyte ValG =  float_to_byte(Data(j,i,1));
+     cbyte ValB =  float_to_byte(Data(j,i,2));
      Ptr [First+i*Nc+j] =  IO_RGB.color_to_pseudo(ValR, ValG, ValB);
   }
 }
@@ -437,7 +437,7 @@ void IO3DInfoData::write_col_block(intarray &Data, int Indi, int Indj)
 {
    int i,j, Pix;
    int First = Indi*Nc+Indj;
-   byte *Ptr = Pinfo.pic;
+   cbyte *Ptr = Pinfo.pic;
    for (i=0; i < Data.ny(); i++)
    for (j=0; j < Data.nx(); j++)
    {
@@ -454,7 +454,7 @@ void IO3DInfoData::write_col_block(fltarray &Data, int Indi, int Indj)
 {
    int i,j, Pix;
    int First = Indi*Nc+Indj;
-   byte *Ptr = Pinfo.pic;
+   cbyte *Ptr = Pinfo.pic;
    for (i=0; i < Data.ny(); i++)
    for (j=0; j < Data.nx(); j++)
    {
@@ -498,7 +498,7 @@ void IO3DInfoData::init_writing(char *fname, int Nlima, int Ncima, int NbrIma)
          case F3D_GIF:
 #if IO_GIF_OK
                PseudoCol = True;
-               Pinfo.pic = new byte[Nl*Nc];
+               Pinfo.pic = new cbyt[Nl*Nc];
                Nima = 1;
 #else
             fprintf (stderr, "Error:GIF is not active\n");
@@ -508,7 +508,7 @@ void IO3DInfoData::init_writing(char *fname, int Nlima, int Ncima, int NbrIma)
  	 case F3D_TIFF:
 #if  IO_TIFF_OK
                FullCol = True;
-               Pinfo.pic = new byte[Nl*Nc*3];
+               Pinfo.pic = new cbyt[Nl*Nc*3];
                Nima = 3;
 #else
             fprintf (stderr, "Error:TIFF is not active\n");
@@ -688,7 +688,7 @@ void io_3d_read_block_ima(char *File_Name, fltarray &Image,
                  if (InfoDat.AllocBufferSize < BuffSize)
                  {
                      if (InfoDat.AllocBufferSize > 0) delete [] InfoDat.Pinfo.pic;
-                     InfoDat.Pinfo.pic = new byte [BuffSize];
+                     InfoDat.Pinfo.pic = new cbyte [BuffSize];
                      InfoDat.AllocBufferSize = BuffSize;
                  }
 
@@ -781,7 +781,7 @@ void io_3d_write_block_ima(char *File_Name, fltarray &Image,
                     if (InfoDat.AllocBufferSize < BuffSize)
                     {
                        if (InfoDat.AllocBufferSize > 0) delete [] InfoDat.Pinfo.pic;
-                       InfoDat.Pinfo.pic = new byte [BuffSize];
+                       InfoDat.Pinfo.pic = new cbyte [BuffSize];
                        InfoDat.AllocBufferSize = BuffSize;
                     }
                  }

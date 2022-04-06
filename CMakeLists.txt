@@ -2,7 +2,7 @@
 # Sparse2D 2017 #
 #################
 
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.12.0)
 project(sparse2d)
 
 # Include modules in CMake module path
@@ -33,20 +33,22 @@ else()
 endif()
 
 # Locate CFITSIO
-find_cfitsio()
+find_pkg(CFITSIO cfitsio)
 
 # Set build location for external modules
 set(MODULE_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/module_build/")
 
 # Set compilation flags
-set(CMAKE_CXX_FLAGS
-  "${CMAKE_CXX_FLAGS} -DNO_DISP_IO -fPIC -Wno-write-strings\
-  ${OpenMP_CXX_FLAGS} ${BigMac_NOWARN}"
-)
+if("${CMAKE_CXX_FLAGS}" STREQUAL "")
+  set(CMAKE_CXX_FLAGS
+    "${CMAKE_CXX_FLAGS} -w -std=c++17 -DNO_DISP_IO -fPIC -Wno-write-strings\
+    ${OpenMP_CXX_FLAGS} ${BigMac_NOWARN}"
+  )
+endif()
 set(CMAKE_CXX_FLAGS_RELEASE
-  "${CMAKE_CXX_FLAGS_RELEASE} -g0 -fomit-frame-pointer"
+  "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -g0 -fomit-frame-pointer"
 )
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS} -O0")
 
 # ---- #
 # FFTW #

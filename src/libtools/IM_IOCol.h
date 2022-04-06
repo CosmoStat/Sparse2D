@@ -6,21 +6,21 @@
 **
 **    Author: Jean-Luc Starck
 **
-**    Date:  11/04/00 
-**    
+**    Date:  11/04/00
+**
 **    File:  IM_IOCol.h
 **
 *******************************************************************************
 **
 **    DESCRIPTION  Tiff, Gif, and JPEG image definition
-**    ----------- 
-**                 
+**    -----------
+**
 ******************************************************************************/
 
 #ifndef _IM_IOCOL_H_
 #define _IM_IOCOL_H_
 
-typedef unsigned char byte;
+typedef unsigned char cbyte;
 typedef unsigned short u_short;
 typedef unsigned char u_char;
 typedef unsigned int u_int;
@@ -42,11 +42,11 @@ typedef unsigned int u_int;
 
 
 /* info structure filled in by the LoadXXX() image reading routines */
-typedef struct { byte *pic;                  /* image data */
+typedef struct { cbyte *pic;                  /* image data */
 	         int   w, h;                 /* pic size */
 		 int   type;                 /* PIC8 or PIC24 */
 
-		 byte  r[256],g[256],b[256];
+		 cbyte  r[256],g[256],b[256];
 		                             /* colormap, if PIC8 */
 
 		 int   normw, normh;         /* 'normal size' of image file
@@ -68,22 +68,22 @@ typedef struct { byte *pic;                  /* image data */
 #define xvbzero(s,size) memset(s,0,size)
 
 // Gif format
-inline byte float_to_byte(float V)
+inline cbyte float_to_byte(float V)
 {
-   byte Vb;
+   cbyte Vb;
    if (V > 255) Vb = 255;
    else if (V < 0) Vb = 0;
-   else Vb = (byte) V; 
+   else Vb = (cbyte) V;
    return Vb;
 }
-inline byte int_to_byte(int V)
+inline cbyte int_to_byte(int V)
 {
-   byte Vb;
+   cbyte Vb;
    if (V > 255) Vb = 255;
    else if (V < 0) Vb = 0;
-   else Vb = (byte) V; 
+   else Vb = (cbyte) V;
    return Vb;
-} 
+}
 
  void gifWarning(char *st);
 char *gifname(char * NameStep);

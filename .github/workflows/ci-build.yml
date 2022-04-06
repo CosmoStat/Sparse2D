@@ -9,7 +9,7 @@ on:
 
 jobs:
   test-full:
-    name: Full Test Suite
+    name: Basic Test Suite
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -27,8 +27,29 @@ jobs:
           brew tap sfarrens/sf
           brew install bigmac cfitsio fftw libomp
 
+      - name: Install Linux Dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcfitsio-dev
+          sudo apt-get install -y libfftw3-dev
+
       - name: Compile Sparse2D Binaries
-        run: cmake .. -DUSE_FFTW=ON -DBUILD_MSVST=ON
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DUSE_FFTW=ON -DBUILD_MSVST=ON
+          make
 
       - name: Run Unit Tests
-        run: make test
+        run: |
+          cd build
+          make test
+
+      - name: Archive Unit Test Log
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-log-${{ matrix.os }}
+          retention-days: 14
+          path: |
+            build/Testing/Temporary/LastTest.log

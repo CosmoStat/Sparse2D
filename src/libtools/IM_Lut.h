@@ -9,15 +9,15 @@
 **    Author: Jean-Luc Starck
 **
 **    Date:  24/02/00
-**    
+**
 **    File:  IM_Lut.h
 **
 **
 *******************************************************************************
 **
 **    DESCRIPTION  LUT information
-**    ----------- 
-**                 
+**    -----------
+**
 ******************************************************************************/
 
 #ifndef _IM_LUT_H_
@@ -31,17 +31,17 @@
 
 class C_IO_RGB {
    int SizeLut;
-   byte  *r, *g, *b;
+   cbyte  *r, *g, *b;
   public:
     C_IO_RGB() {r = NULL; g = NULL; b = NULL; SizeLut = 0;}
     int lut_size() { return SizeLut; }
-    inline byte red(int i) {return r[i];}
-    inline byte green(int i) {return g[i];}
-    inline byte blue(int i) {return b[i];}
-    byte *red () {return r;}
-    byte *green() {return g;}
-    byte *blue() {return b;}
-    void alloc(int InSizeLut) 
+    inline cbyte red(int i) {return r[i];}
+    inline cbyte green(int i) {return g[i];}
+    inline cbyte blue(int i) {return b[i];}
+    cbyte *red () {return r;}
+    cbyte *green() {return g;}
+    cbyte *blue() {return b;}
+    void alloc(int InSizeLut)
     {
        int i;
        if (SizeLut != 0)
@@ -51,19 +51,19 @@ class C_IO_RGB {
 	  if (b != NULL) delete [] b;
        }
        SizeLut = InSizeLut;
-       r = new byte[MAX(SizeLut,256)];
-       g = new byte[MAX(SizeLut,256)];
-       b = new byte[MAX(SizeLut,256)];       
+       r = new cbyte[MAX(SizeLut,256)];
+       g = new cbyte[MAX(SizeLut,256)];
+       b = new cbyte[MAX(SizeLut,256)];
        for (i=0;i < SizeLut; i++)
        {
-          r[i] = g [i] = b[i] = (byte) i;
+          r[i] = g [i] = b[i] = (cbyte) i;
        }
        for (i= SizeLut;i < 256; i++)
        {
-          r[i] = g [i] = b[i] = (byte) 0;
+          r[i] = g [i] = b[i] = (cbyte) 0;
        }
     }
-    void alloc_color() 
+    void alloc_color()
     {
        alloc(256);
        for (int i=0;i < SizeLut; i++)
@@ -73,7 +73,7 @@ class C_IO_RGB {
           b[i] = 32+((i & 3)<<6);
        }
     }
-    void alloc(int InSizeLut, byte *ri, byte *gi, byte *bi)
+    void alloc(int InSizeLut, cbyte *ri, cbyte *gi, cbyte *bi)
     {
        alloc(InSizeLut);
        for (int i=0;i < SizeLut; i++)
@@ -83,8 +83,8 @@ class C_IO_RGB {
 	  b[i] = bi[i];
        }
     }
-    ~C_IO_RGB() 
-    { 
+    ~C_IO_RGB()
+    {
        if (SizeLut != 0)
        {
           if (r != NULL) delete []r;
@@ -93,25 +93,18 @@ class C_IO_RGB {
        }
        SizeLut = 0;
     }
-    inline void pseudo_to_color(byte Val, byte &Red, byte &Green, byte &Blue)
+    inline void pseudo_to_color(cbyte Val, cbyte &Red, cbyte &Green, cbyte &Blue)
     {
        Red = red(Val);
        Green = green(Val);
        Blue = blue(Val);
     }
-    inline byte color_to_pseudo(byte Red, byte Green, byte Blue)
+    inline cbyte color_to_pseudo(cbyte Red, cbyte Green, cbyte Blue)
     {
-        byte ValRet = ((Red>>5)<<5 | (Green>>5)<<2 | (Blue>>6));
+        cbyte ValRet = ((Red>>5)<<5 | (Green>>5)<<2 | (Blue>>6));
         return ValRet;
     }
 };
 extern C_IO_RGB IO_RGB;
 
 #endif
-
-
-
-
-
-
-

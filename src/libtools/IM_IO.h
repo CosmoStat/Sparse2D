@@ -6,15 +6,15 @@
 **
 **    Author: Jean-Luc Starck
 **
-**    Date:  96/06/13 
-**    
+**    Date:  96/06/13
+**
 **    File:  IM_IO.h
 **
 *******************************************************************************
 **
 **    DESCRIPTION  FITS Include
-**    ----------- 
-**                 
+**    -----------
+**
 ******************************************************************************/
 
 #ifndef _IM_IO_H_
@@ -26,7 +26,7 @@
 #include"writefits3d.h"
 #include<unistd.h>
 
-typedef unsigned char byte;
+typedef unsigned char cbyte;
 typedef unsigned long u_long;
 
 #include"IM_Lut.h"
@@ -34,13 +34,13 @@ typedef unsigned long u_long;
 #define IO_FITS_OK 1
 #ifdef MIDAS
 #define IO_MIDAS_OK 1
-#else 
+#else
 #define IO_MIDAS_OK 0
 #endif
 
 #ifdef NO_DISP_IO
 #define IO_DISP_OK 0
-#else 
+#else
 #define IO_DISP_OK 1
 #endif
 
@@ -57,9 +57,9 @@ enum type_data {T_BYTE, T_SHORT, T_INT, T_FLOAT, T_DOUBLE,
 
 void io_strcpy_prefix(char *Prefix, char *Filename);
 // copy  Filename into Prefix without the suffix
-	     
+
 void io_set_format(type_format Format=F_DISP);
-// set the format image to FITS 
+// set the format image to FITS
 
 type_data which_data_type();
 // return the type of the last read data set
@@ -88,19 +88,19 @@ inline const char *StringFormat (type_format type)
 {
     switch (type)
     {
-        case F_DISP: 
+        case F_DISP:
               return ("DISP format");break;
-        case F_MIDAS: 
+        case F_MIDAS:
               return ("MIDAS format");break;
-        case F_FITS: 
+        case F_FITS:
               return ("FITS format");break;
-        case F_GIF: 
+        case F_GIF:
               return ("GIF format");break;
-        case F_PGM: 
+        case F_PGM:
               return ("PGM format");break;
 	case F_JPEG:
 	      return ("JPEG format");break;
-        default: 
+        default:
               return ("Unknown format");break;
     }
 }
@@ -123,7 +123,7 @@ inline const char *StringFormat (type_format type)
 class fitsstruct {
  void fitsinit()
  {
-    file=NULL;	
+    file=NULL;
     fitsheadsize= 0;
     bitpix = 0;
     bytepix = 0;
@@ -171,9 +171,9 @@ class fitsstruct {
     fitshead = NULL;
    }
  public:
-  
-  fitsstruct ()  
-  { 
+
+  fitsstruct ()
+  {
      fitsinit();
   }
   void hd_fltarray(fltarray &Mat, char *History=NULL)
@@ -189,7 +189,7 @@ class fitsstruct {
      for (int i=0; i < naxis; i++) TabAxis[i] = Mat.axis(i+1);
      if (History != NULL) origin = History;
      else origin=NULL;
-  }  
+  }
   void hd_init(int Nx, int Ny=0, int Nz=0, char *History=NULL)
   {
      fitsheadsize= 2880;
@@ -202,21 +202,21 @@ class fitsstruct {
      TabAxis[2] = Nz;
      npix = width;
      naxis = 1;
-     if (Ny > 0) 
+     if (Ny > 0)
      {
         naxis++;
         npix *= Ny;
      }
-     if (Nz > 0) 
+     if (Nz > 0)
      {
         naxis++;
         npix *= Nz;
      }
      if (History != NULL) origin = History;
      else origin = NULL;
-  }  
-  ~fitsstruct()  
-  { 
+  }
+  ~fitsstruct()
+  {
       if (filename != NULL) free (filename);
 //      if (origin != NULL) delete origin;
 //      if (fitshead != NULL) delete[] ((char *) fitshead);
@@ -225,7 +225,7 @@ class fitsstruct {
       if (comment != NULL)  free (comment);
      fitsinit();
   }
-  
+
   char		*filename;		/* pointer to the image filename */
   char          *origin;                /* pointer to the origin */
   char		ident[512];		/* field identifier (read from FITS)*/
@@ -252,8 +252,8 @@ class fitsstruct {
   double	crotax,crotay;		/* FITS CROTAn */
   char          ctypex[256];            /* FITS CTYPE1 */
   char          ctypey[256];            /* FITS CTYPE2 */
-  char          CoordType[256];         
-  
+  char          CoordType[256];
+
 /* ---- HISTORY & COMMENT parameters --- */
 	 char *history;
 	 int hist_size;
@@ -281,7 +281,7 @@ void adxy(fitsstruct *FitsHeader, double Ra, double Dec, double *X, double *Y);
 // convert Ra, Dec on decimal degrees to HH,MN,SEC and DEG,MN,SEC
 void radec(double Ra, double Dec, int &ihr, int &imin, double &xsec,
                                   int &ideg,int &imn, double &xsc);
-                                  
+
 // calculate celestial position from pixels coordinates
 // output X,Y are given in a referential starting at origin (0,0)
 void xyad(fitsstruct *FitsHeader, double X, double Y, double *Ra, double *Dec);
@@ -318,7 +318,7 @@ void fits_write_block(char *filename, Ifloat & Image, int Indi, int Indj,
 void fits_write_block(char *filename, Iint & Image, int Indi, int Indj,
                       Bool NoBscale=False);
 void fits_read_float(char *File_Name,Ifloat & Image,fitsstruct *Header);
-void fits_read_int(char *File_Name,Iint & Image, 
+void fits_read_int(char *File_Name,Iint & Image,
                      fitsstruct *Header, Bool NoBscale=False);
 
 void fits_write_float(char *File_Name,Ifloat & Image,fitsstruct *Header);
@@ -385,7 +385,7 @@ class io_image {
              };
 
 class io_disp: public virtual io_image {
-          void read_type(char *File_Name);   
+          void read_type(char *File_Name);
           void read_size (char *);
           void read_ima (char *);
           void write_ima (char *);
@@ -398,14 +398,14 @@ class io_disp: public virtual io_image {
           void write_ima_float (char *,  Ifloat &);
           void read_ima_complex_f  (char *, Icomplex_f &);
           void write_ima_complex_f (char *, Icomplex_f &);
-	  void read_info_ima(char *File_Name, int &Nl, int &Nc, 
+	  void read_info_ima(char *File_Name, int &Nl, int &Nc,
                             type_data & TypeDat);
 	 void read_block_ima(char *File_Name,Ifloat & Image,int Indi, int Indj);
 	 void read_block_ima(char *File_Name,Iint & Image,int Indi, int Indj);
 	 void write_block_ima(char *File_Name,Ifloat & Image,int Indi, int Indj);
 	 void write_block_ima(char *File_Name,Iint & Image,int Indi, int Indj);
-	 
-         void create_file (char *File_Step_Name); 
+
+         void create_file (char *File_Step_Name);
               };
 
 
@@ -424,7 +424,7 @@ typedef struct  {
         float *Rbuf;
            /* Buffer where the data are ranged */
         float Cuts[SIZE_PIC_TAB_CUTS];
-           /* Cuts [0] ... Cuts [1] for the visualisation 
+           /* Cuts [0] ... Cuts [1] for the visualisation
               Cuts [2] ... Cuts [3] = min ... max of the image
            */
         char Cunit[SIZE_PIC_CUNIT];
