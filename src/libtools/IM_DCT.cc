@@ -225,48 +225,47 @@ void im_dct(Ifloat &Ima, Ifloat &Trans, Bool Reverse)
 
 /******************************************************************************/
 
-// 
-// void im_dctold(Ifloat &Ima, Ifloat &Trans, Bool Reverse)
-// {
-//     int Nl = Ima.nl();
-//     int Nc = Ima.nc();
-//     int Dir = (Reverse == False) ? 1: -1;
-//     double **a, *t, *w, *dd;
-//     int i,j;
-//     // double Norm = 4. / (double)(Nl*Nc);
-//     double Norm = 1.;
-//     
-//     a = new double * [Nl];
-//     dd = new double [Nl*Nc];
-//     t = new double [2 * Nl];
-//     int n = MAX(Nl, Nc/2);
-//     int *ip = new int [2 + (int) sqrt(n + 0.5)];
-//     n = MAX(Nl * 5 / 4, Nc * 5 / 4) + Nc / 4;
-//     w = new double [n];
-//     ip[0] = 0;
-// 
-//     for (i=0; i < Nl; i++) a[i] =  &dd[i*Nc]; 
-//     for (i=0; i < Nl; i++)
-//     for (j=0; j < Nc; j++) a[i][j] = (double) Ima(i,j);
-// 
-//      ddct2d (Nl, Nc, Dir, a, t, ip, w);
-//  
-//     if (Reverse == True)
-//     {
-//         for (i=0; i < Nl; i++)
-//         for (j=0; j < Nc; j++) Trans(i,j) = (float) (a[i][j]*Norm);
-//     }
-//     else
-//     for (i=0; i < Nl; i++)
-//     for (j=0; j < Nc; j++) Trans(i,j) = (float) a[i][j];
-//  
-//     
-//     delete [] dd;
-//     delete [] a;
-//     delete [] w;
-//     delete [] t;
-//     delete [] ip;
-// }
+void im_dct_old(Ifloat &Ima, Ifloat &Trans, Bool Reverse)
+{
+     int Nl = Ima.nl();
+     int Nc = Ima.nc();
+     int Dir = (Reverse == False) ? 1: -1;
+     double **a, *t, *w, *dd;
+     int i,j;
+     // double Norm = 4. / (double)(Nl*Nc);
+     double Norm = 1.;
+     
+     a = new double * [Nl];
+     dd = new double [Nl*Nc];
+     t = new double [2 * Nl];
+     int n = MAX(Nl, Nc/2);
+     int *ip = new int [2 + (int) sqrt(n + 0.5)];
+     n = MAX(Nl * 5 / 4, Nc * 5 / 4) + Nc / 4;
+     w = new double [n];
+     ip[0] = 0;
+ 
+     for (i=0; i < Nl; i++) a[i] =  &dd[i*Nc];
+     for (i=0; i < Nl; i++)
+     for (j=0; j < Nc; j++) a[i][j] = (double) Ima(i,j);
+ 
+      ddct2d (Nl, Nc, Dir, a, t, ip, w);
+  
+     if (Reverse == True)
+     {
+         for (i=0; i < Nl; i++)
+         for (j=0; j < Nc; j++) Trans(i,j) = (float) (a[i][j]*Norm);
+     }
+     else
+     for (i=0; i < Nl; i++)
+     for (j=0; j < Nc; j++) Trans(i,j) = (float) a[i][j];
+  
+     
+     delete [] dd;
+     delete [] a;
+     delete [] w;
+     delete [] t;
+     delete [] ip;
+ }
 
 /******************************************************************************/
 

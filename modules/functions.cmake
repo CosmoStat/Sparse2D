@@ -35,8 +35,23 @@ function(build_lib library)
   INSTALL(FILES ${inc_${library}} DESTINATION include/sparse2d)
 endfunction()
 
+# Build library
+function(build_lib1 library lib_path src_ext head_ext)
+  file(GLOB src_${library} "${PROJECT_SOURCE_DIR}/${lib_path}/lib${library}/*.${src_ext}")
+  file(GLOB inc_${library} "${PROJECT_SOURCE_DIR}/${lib_path}/lib${library}/*.${head_ext}")
+  include_directories("${PROJECT_SOURCE_DIR}/${lib_path}/lib${library}")
+  add_library(${library} STATIC ${src_${library}})
+  target_link_libraries(${library} ${CFITSIO_LIBRARIES} ${fftw_lib_list})
+  if(BUILD_FFTW)
+    add_dependencies(${library} fftw)
+  endif()
+  INSTALL(FILES ${inc_${library}} DESTINATION include/sparse2d)
+endfunction()
+
+
 # Build binary
 function(build_bin program libs target_path ext)
   add_executable(${program} "${PROJECT_SOURCE_DIR}/${target_path}/${program}.${ext}")
   target_link_libraries(${program} ${CFITSIO_LIBRARIES} ${fftw_lib_list} ${libs})
 endfunction()
+
