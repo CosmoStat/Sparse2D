@@ -1,0 +1,51 @@
+bihaar_poisson_filter    pour   1D,2D,3D   data + poisson noise
+bihaar_poisson_filter_2d1d    pour   2D + 1D     data + poisson noise
+bihaar_gaussian_filter   pour   1D,2D,3D   data + gaussian noise
+bihaar_gaussian_filter_2d1d   pour   2D + 1D     data + gaussian noise
+			
+usage general:
+
+1D/2D/3D :
+       bihaar_poisson_filter -M 6 -s nbr_of_scale    Input_file  Output_file  Model_file
+
+FDR :  bihaar_poisson_filter -M 7 -s nbr_of_scale    Input_file  Output_file  Model_file
+
+-----------------------------
+
+2D+1D :
+
+bihaar_poisson_filter_2d1d -M 6 -s nbr_of_scale_XY -z nbr_of_scale_Z   Input_file Output_file  Model_file
+
+FDR : 
+bihaar_poisson_filter_2d1d -M 7 -s nbr_of_scale_XY  -z nbr_of_scale_Z  Input_file  Output_file  Model_file
+
+------------------------------
+
+option -p permet de regler la p-valeur, sinon c'est le seuil universel
+qui est utilise. FDR par defaut est 0.01
+
+http://great3challenger.info
+
+---------------------------------
+anscfisz -- applique anscombe ou Fisz
+
+estimdir -- a oublier, pas a utiliser
+
+msvst_uwt2d -- 2D bi-orthogonal undecimeted WT (7/9)
+
+msvst_iwt2d_coupled -- 2D coupled detection and estimation. On ne peut utiliser que les ondelettes
+             isotropes. On est capable d'estimer la vst car on somme les bandes.
+	     En mode iteratif, le support detecte est utilise ainsi que l'image estimee en
+	     premiere approximation, mais la MS-VST n'est plus utilise (mode separe).
+
+msvst_iwt2d -- meme chose, mais l'initialisation est n'est pas celle de la detection couplee.
+
+msvst_2d1d   -- 2D-1D non couple.
+
+msvst_iwt2d_coupled_nobias -- 2D, estimation-detection couplee, mais biais corrige (meme chose que vstestim1,
+              sauf que l'estimee est corrigee du biais)
+
+msvst_iwt2d_coupled_nobias_perline
+vstestimlinecc -- applique sur chaque ligne de l'image le denoising vstestimcc
+
+---------------------------------
