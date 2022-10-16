@@ -1,120 +1,166 @@
 # Sparse2D
 [![build](https://github.com/CosmoStat/Sparse2D/workflows/CI/badge.svg)](https://github.com/CosmoStat/Sparse2D/actions?query=workflow%3ACI)
-[![cpp](https://img.shields.io/badge/language-C%2B%2B-red)](https://isocpp.org/std/the-standard)[![bigmac](https://img.shields.io/github/v/release/sfarrens/bigmac?label=BigMac&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABGdBTUEAALGPC%2FxhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAeGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABKARsABQAAAAEAAABSASgAAwAAAAEAAgAAh2kABAAAAAEAAABaAAAAAAAAAEgAAAABAAAASAAAAAEAAqACAAQAAAABAAAADqADAAQAAAABAAAADgAAAAABAtxLAAAACXBIWXMAAAsTAAALEwEAmpwYAAACZmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgICAgICAgICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICAgICA8dGlmZjpSZXNvbHV0aW9uVW5pdD4yPC90aWZmOlJlc29sdXRpb25Vbml0PgogICAgICAgICA8ZXhpZjpDb2xvclNwYWNlPjE8L2V4aWY6Q29sb3JTcGFjZT4KICAgICAgICAgPGV4aWY6UGl4ZWxYRGltZW5zaW9uPjUwPC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjUwPC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24%2BCiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE%2BCrh6Oa8AAAI%2BSURBVCgVhVLPaxNBFH7zY7tpkmKp2UgrwSrShkSNxYpFRXJqNVVQJBWpF1E8Fjx5HfwTPFXoQemtlYKKetCSFAsiQpHSVBQ1LWKlJK3Nj26y2d0ZZ7bkUhQHHvvt%2B7733rezD8GuMzWVJmkjjqCQEwBpAGPZw2hk2t0l3XkVApBgDP%2BVlEkmOaVp8h5QCYRATgBYenrrDOdiiGhaBDgHV6AfRPDX8csTbxXf1KImENLikt7xWNPwKKVUClQ3aUC44EiTtu284D7zWmJocltROJtlRHVaJIF77UEyum3adrlSU%2BGUq3WnVKlbrmtLBa%2F43aKjtOpQgKwHWnTS3XBsIMgFDkiTo6RWcL%2Bvhdp2feHYlUfXlVB9K0KMU5jz6mD%2BTW7tUCwCWtCHdIJBI0g24BxhFzcweq9ULx9c0FNjzFKYFnKGdykHOtu6a7MfYD1sgRMMQbXhhxbNxbptQ22xdFqJU2OvLAaAZXBsxAvezZZa%2FT87zw9Ab%2FQonOvX4XbqCwyeNPFhw8f7Lx5JzI%2BPTMpaQxXJSYisJlfwShb49KnPN2qrjT5zK2CVKyG0WQnzfGEfLzptIles1rO%2Fv58whxtdhVlrZo4BpUZs5%2F%2Fd7I1O9NT2DuOqHb7z6xkMlqPgJw48QV%2FhftdZGgl2rCda3fFlKIOq8WwyJn0zaeHbwz35%2FMKlmY1PxwcC%2B0PSGrwz1zautvd8PGjEnqO%2Bu1tNreK8w8S%2F1%2B2%2FGrktKJNJ0mQGqFp2FQqrnOKaDdTzD77QAxggF14iAAAAAElFTkSuQmCC)](https://github.com/sfarrens/bigmac)
+[![cpp](https://img.shields.io/badge/language-C%2B%2B-red)](https://isocpp.org/std/the-standard)
 
+Sparse2D provides an array of sparsity-based signal processing tools and a convenient C++ library for performing various wavelet transforms.
 
-Sparse2D provides an array of sparsity based tools and a convenient C++ library for performing various wavelet transforms.
+You can find out more about the applications of Sparse2D on the [CosmoStat website](http://www.cosmostat.org).
 
-This package is part of the iSAP suite, available on the [CosmoStat website](http://www.cosmostat.org/software/isap).
+The core Sparse2D libraries are used as a backend for [PySAP](https://github.com/CEA-COSMIC/pysap).
 
-Python bindings to Sparse2D are provided in [PySAP](https://github.com/CEA-COSMIC/pysap). PySAP handles Sparse2D installation internally.
+## Docker installation
 
-## Installation instructions
+### Pull the Docker image
 
-### Prerequisites
-
-   - C/C++ compiler
-   - [CMake](http://www.cmake.org)
-   - [CFITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) ( >V3.31)
-   - [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/)
-   - [BigMac](https://github.com/sfarrens/bigmac) (For macOS AppleClang compiler)
-
-Please use a package management tool to properly install cfistio and the other dependencies on linux (*e.g.* `apt` on Ubuntu or `brew` on macOS).
-
-### Docker
-
-If you have [Docker](https://www.docker.com/) installed, you can pull the latest build of the Sparse2D image from [Docker Hub](TBD).
+If you have [Docker](https://www.docker.com/) installed, you can pull the latest build of the Sparse2D image as follows:
 
 ```bash
-$ docker pull cosmostat/sparse2d
+docker pull ghcr.io/cosmostat/sparse2d
 ```
 
 No further installation is required.
 
-To run this image on data in your current working directory, simply run:
+### Run a Docker container
+
+To run a container on data in your current working directory, simply run:
 
 ```bash
-$ docker run -v ${PWD}:/workdir -it cosmostat/sparse2d /bin/bash -c "cd workdir && <EXECUTABLE>"
+docker run -v ${PWD}:/workdir --rm cosmostat/sparse2d <EXECUTABLE> <ARGUMENTS>
 ```
 
-where `<EXECUTABLE>` is one of the Sparse2D binaries. The reference to `${PWD}` can be replaced by the path to any directory on your system and options can be passed to `<EXECUTABLE>` inside the double quotes.
+where `<EXECUTABLE>` is one of the Sparse2D binaries and `<ARGUMENTS>` are the corresponding command line arguments for this executable. The reference to `${PWD}` can be replaced by the path to any directory on your system.
 
-### Homebrew
-
-Sparse2D can be built on macOS using [Homebrew](https://brew.sh/).
+For example, to run a bspline wavelet transform on a FITS image called `myfile.fits` you would run:
 
 ```bash
-$ brew tap cosmostat/science
-$ brew install sparse2d
+docker run -v ${PWD}:/workdir --rm cosmostat/sparse2d mr_transform -t 2 myfile.fits myoutput.mr
 ```
 
-The Homebrew formula handles all of the required dependencies.
+> Tip: If you don't want to constantly write the full Docker run command you can create an alias *e.g.*:
+> ```bash
+> alias sparse2d="docker run -v ${PWD}:/workdir --rm cosmostat/sparse2d"
+> ```
+> then you can simply run *e.g.*:
+> ```bash
+> sparse2d mr_transform -h
+> ```
 
-### Building from Source
+### Launch a Jupyter notebook
 
-#### Basic Sparse2D
-
-Clone the repository:
-
-```
-$ git clone https://github.com/CosmoStat/Sparse2D.git
-$ cd Sparse2D
-```
-
-Create a build directory for Sparse2D:
+You can also run a Jupyter notebook with a Docker container as the backend in order to use the `pysparse` Python bindings to some Sparse2D tools.
 
 ```bash
-$ mkdir build
-$ cd build
+docker run -p 8888:8888 -v ${PWD}:/workdir --rm cosmostat/sparse2d notebook
+```
+
+## Homebrew installation
+
+### Standard installation
+
+Sparse2D can be installed on macOS using [Homebrew](https://brew.sh/).
+
+```bash
+brew tap cosmostat/science
+brew install sparse2d
+```
+
+The [Homebrew formula](https://github.com/CosmoStat/homebrew-science/blob/master/sparse2d.rb) handles all of the required dependencies.
+
+### Build options
+
+By default, the Homebrew formula builds the full Sparse2D package including the `pysparse` Python bindings. Some options are available to limit of the scope of the build. These options can be listed as follows (after tapping `cosmostat/science`):
+
+```bash
+brew info sparse2d
+```
+
+### Python bindings
+
+The `pysparse` bindings will be saved to `/usr/local/opt/sparse2d/python` by default. You will need to add this to your `PYTHONPATH` in order to access the bindings. For example, for Bash you would run the following:
+
+```bash
+PYTHONPATH="/usr/local/opt/sparse2d/python:$PYTHONPATH"
+```
+
+Note that `pysparse` will be built using the Python executable installed by Homebrew. These bindings will only work with the same version of Python.
+
+## Building from Source
+
+### Dependencies
+
+In order to build Sparse2D from source, you will need to ensure you have installed all of the following dependencies. If possible, please use a package management tool to properly install them (*e.g.* `apt` on Ubuntu or `brew` on macOS).
+
+#### Required
+
+   - C/C++ compiler (*e.g.* `gcc` or `clang`)
+   - [CMake](http://www.cmake.org) (>= v3.12)
+   - [CFITSIO](https://heasarc.gsfc.nasa.gov/fitsio/)
+   - [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/)
+
+#### Optional
+
+   - [Armadillo](https://arma.sourceforge.net/) (not required if `ONLY_SPARSE=ON`)
+   - [FFTW](https://www.fftw.org/) (not required if `USE_FFTW=OFF`)
+   - [GSL](https://www.gnu.org/software/gsl/) (not required if `ONLY_SPARSE=ON`)
+   - [HEALPix](https://healpix.sourceforge.io/) (not required if `ONLY_SPARSE=ON`)
+   - [libomp](https://openmp.llvm.org/) (only required if using macOS `clang`)
+   - [Pybind11](https://pybind11.readthedocs.io/) (not required if `BUILD_PYBIND=OFF`)
+   - [Python](https://www.python.org/) (not required if `BUILD_PYBIND=OFF`)
+
+### Full Sparse2D build
+
+Download the [latest release](https://github.com/CosmoStat/Sparse2D/releases).
+
+Create a build directory inside the root directory of the Sparse2D package:
+
+```bash
+cd Sparse2D
+mkdir build
+cd build
 ```
 
 Build Sparse2D:
 
 ```bash
-$ cmake ..
-$ make
-$ make install
+cmake ..
+make
+make install
 ```
 
-#### MSVST
+### Build options
 
-Additional MSVST binaries can be build with the following option:
+Sparse2D supports the following CMake build options:
+
+- `BUILD_MSVST` (default `ON`): Build the MSVST package
+- `BUILD_MISC` (default `ON`): Build the MISC package
+- `BUILD_MR` (default `ON`): Build the MR package
+- `BUILD_MC` (default `ON`): Build the MC package
+- `BUILD_MGA` (default `ON`): Build the MGA package
+- `BUILD_MWIR` (default `ON`): Build the MWIR package
+- `BUILD_DICLEARN` (default `ON`): Build the DICLEARN package
+- `BUILD_MRS` (default `ON`): Build the MRS package
+- `BUILD_ASTRO_WL` (default `ON`): Build the ASTRO_WL package
+- `BUILD_ASTRO_GAL` (default `ON`): Build the ASTRO_GAL package
+- `BUILD_PYBIND` (default `ON`): Build Python bindings
+- `ONLY_SPARSE` (default `OFF`): Only build the SPARSE package
+- `USE_FFTW` (default `ON`): Use FFTW libraries
+- `BUILD_CFITSIO` (default `OFF`): Build CFITSIO from source
+- `BUILD_FFTW3` (default `OFF`): BUILD FFTW3 from source
+- `BUILD_HEALPIX` (default `OFF`): BUILD HEALPix from source
+- `BUILD_GSL` (default `OFF`): BUILD GSL from source (not implemented)
+- `BUILD_DEPS` (default `OFF`): BUILD all dependencies from source
+
+To use these options prepend `-D` when running the `cmake` command, *e.g.*:
 
 ```bash
-$ cmake .. -DBUILD_MSVST=ON
+cmake .. -DONLY_SPARSE=ON
 ```
 
-#### FFTW
-
-Sparse2D can also be built using pre-installed [FFTW](http://www.fftw.org/) libraries with the following option:
-
-```bash
-$ cmake .. -DUSE_FFTW=ON
-```
-
-Alternatively, Sparse2D can build FFTW libraries from source as follows:
-
-```bash
-$ cmake .. -DUSE_FFTW=ON -DBUILD_FFTW=ON
-```
-
-#### nFFT
-
-Sparse2D can also build [nFFT](https://github.com/NFFT/nfft) libraries with the following options:
-
-```bash
-$ cmake .. -DBUILD_FFTW=ON -DBUILD_NFFT=ON
-```
-
-#### Non-default Compiler
+### Non-default compiler
 
 Finally, if you wish to build using a compiler other than the default on your
 system (*e.g.* `gcc` on macOS) you can do so as follows:
 
 ```bash
-$ CC=gcc CXX=g++ cmake ..
+CC=gcc CXX=g++ cmake ..
 ```
-
-## Usage
-
-The two main executables of the package are `mr_transform` and `mr_filter`, see the instructions in the [README](./README) folder for usage examples.

@@ -1,0 +1,412 @@
+/******************************************************************************
+**                   Copyright (C) 1997 by CEA
+*******************************************************************************
+**
+**    UNIT
+**
+**    Version: 3.4
+**
+**    Author: Jean-Luc Starck
+**
+**    Date:  96/07/02
+**    
+**    File:  mr_blind.cc
+**
+*******************************************************************************
+**
+**    DESCRIPTION  blind deconvolution of an image  
+**    ----------- 
+**
+**
+******************************************************************************/
+
+// static char sccsid[] = "@(#)mr_deconv.cc 3.4 96/07/02 CEA 1995 @(#)";
+ 
+#include "IM_Obj.h"
+#include "IM_IO.h"
+#include "MR_Obj.h"
+#include "IM_Errors.h"
+#include "IM_Deconv.h"
+#include "MR_Deconv.h"
+#include "MR_Sigma.h"
+
+char Name_Imag_In[256];  /* input file image */
+char Name_Psf_In[256];   /* PSF */
+char Name_Imag_Out[256]; /* output file name */
+char Name_Add_Map[256];  /* input Boolean image added to the support */
+int Nbr_Plan=DEFAULT_NBR_SCALE;  /* number of scales */
+float N_Sigma=DEFAULT_N_SIGMA;   /* number of sigma (for the noise) */
+float Noise_Ima=0.;              /* noise standard deviation */
+float Fwhm=DEFAULT_CLEAN_FWHM;   /* Full width at half maximum */
+type_noise Stat_Noise = DEFAULT_STAT_NOISE;   /* type of noise */
+type_transform Transform = DEFAULT_TRANSFORM; /* type of transform */
+type_deconv Deconv = DEFAULT_DECONV; /* type of deconvolution */
+float Epsilon=DEFAULT_EPSILON_DECONV;/* convergence parameter */
+int Max_Iter=DEFAULT_MAX_ITER_DECONV; /* Maximum number of iteration */
+Bool AddMap=False;              /* Add a map to the support */
+Bool Dil=False;                 /* dilate the support */
+Bool SupIsol=False;             /* suppress isolated pixel in the support */
+Bool WriteResi = False;         /* write the residual */
+Bool PsfMaxShift = True;        /* shift the max of the PSF to the center of the image */
+char Name_Resi[256];            /* residual file name */
+float GammaClean = DEFAULT_CLEAN_GAMMA; /* Gamma parameter for CLEAN */
+extern float PasCodeur;  /* CCD gain */
+extern float SigmaGauss; /* CCD read-out noise standard deviation */
+extern float MeanGauss;  /* CCD read-out noise mean */
+
+extern int  OptInd;
+extern char *OptArg;
+
+extern int  GetOpt(int argc, char *const*argv, char *opts);
+
+/*********************************************************************/
+
+static void usage(char *argv[])
+{
+    //int i;
+
+    fprintf(OUTMAN, "Usage: %s options image psf output\n\n", argv[0]);
+    fprintf(OUTMAN, "   where options =  \n");
+ 
+ 
+    gauss_usage();
+    manline();  
+    nbr_scale_usage(Nbr_Plan);
+    manline(); 
+    nsigma_usage(N_Sigma);
+    manline();      
+    max_iter_usage(Max_Iter);
+    manline();
+    converg_param_usage(Epsilon);
+    manline(); 
+    write_residual_usage();
+    manline();
+    fwhm_usage(Fwhm);
+    manline();
+    gain_clean_usage(GammaClean);
+    manline();
+    psf_not_center_usage();
+    manline();
+    manline();
+    manline(); 
+
+    fprintf(OUTMAN, "\n");
+    fprintf(OUTMAN, "\n");
+    exit(-1);
+}
+ 
+/*********************************************************************/
+
+/* GET COMMAND LINE ARGUMENTS */
+static void decinit(int argc, char *argv[])
+{
+    int c;
+   
+    /* get options */
+    while ((c = GetOpt(argc,argv,"pkld:t:g:c:n:s:i:e:a:r:G:f:S")) != -1) 
+    {
+	switch (c) 
+        {
+
+	   case 'd':
+		/* -d <type> type of deconvolution */
+		if (sscanf(OptArg,"%d",&c ) != 1) 
+                {
+		    fprintf(OUTMAN, "bad type of deconvolution: %s\n", OptArg);
+	            usage(argv);
+                    
+		}
+                if ((c > 0) && (c <= NBR_DECONV)) Deconv = (type_deconv) (c-1);
+                else  
+                {
+		    fprintf(OUTMAN, "bad type of deconvolution: %s\n", OptArg);
+	            usage(argv);
+ 		}
+		break;
+	   case 't':
+		/* -d <type> type of transform */
+		if (sscanf(OptArg,"%d",&c ) != 1) 
+                {
+		    fprintf(OUTMAN, "bad type of multiresolution transform: %s\n", OptArg);
+	            usage(argv);
+                    
+		}
+                if ((c > 0) && (c <= NBR_TRANSFORM)) 
+                                        Transform = (type_transform) (c-1);
+                else  
+                {
+		    fprintf(OUTMAN, "bad type of transform: %s\n", OptArg);
+	            usage(argv);
+ 		}
+		break;
+            case 'p':
+                /* Poisson noise */
+                Stat_Noise = NOISE_POISSON;
+                Noise_Ima = 1.;
+               break;
+            case 'G':
+                /* Gamma parameter */
+		if (sscanf(OptArg,"%f",&GammaClean) != 1) 
+		{
+		    fprintf(OUTMAN, "bad gamma parameter: %s\n", OptArg);
+		    usage(argv);
+		}
+               break;
+	    case 'g':
+		/* -g <sigma_noise> */
+		if (sscanf(OptArg,"%f",&Noise_Ima) != 1) 
+                {
+		    fprintf(OUTMAN, "bad sigma noise: %s\n", OptArg);
+		    usage(argv);
+		}
+                Stat_Noise = NOISE_GAUSSIAN;
+		break;
+             case 'c':
+		/* -c <gain sigma mean> */
+                printf("OptArg = %s\n", OptArg);
+		if (sscanf(OptArg,"%f,%f,%f", &PasCodeur,
+                                              &SigmaGauss, &MeanGauss) <= 0) 
+                {
+		    fprintf(OUTMAN, "bad noise parameter: %s\n", OptArg);
+		    usage(argv);
+		}
+                Stat_Noise = NOISE_POISSON;
+                Noise_Ima = 1.;
+		break;
+	   case 'n':
+		/* -n <Nbr_Plan> */
+		if (sscanf(OptArg,"%d",&Nbr_Plan) != 1) 
+                {
+		    fprintf(OUTMAN, "bad number of scales: %s\n", OptArg);
+		    usage(argv);
+		}
+                if ((Nbr_Plan <= 1) || (Nbr_Plan > MAX_SCALE)) 
+                {
+		    fprintf(OUTMAN, "bad number of scales: %s\n", OptArg);
+		    fprintf(OUTMAN, "1 < Nbr Scales <= %d\n", MAX_SCALE);
+		    usage(argv);
+		}
+		break;
+	   case 's':
+		/* -s <nsigma> */
+		if (sscanf(OptArg,"%f",&N_Sigma) != 1) 
+                {
+		    fprintf(OUTMAN, "bad N_Sigma: %s\n", OptArg);
+		    usage(argv);
+		}
+                if ((N_Sigma <= 0.) || (N_Sigma > 100.)) 
+                                        N_Sigma = DEFAULT_N_SIGMA;
+		break;
+	   case 'i':
+		/* -i < Number of iterations> */
+		if (sscanf(OptArg,"%d",&Max_Iter) != 1) 
+                {
+		   fprintf(OUTMAN, "bad Max_Iter: %s\n", OptArg);
+				usage(argv);
+		}
+                if ((Max_Iter <= 0) || (Max_Iter > 50000)) 
+                                       Max_Iter = DEFAULT_MAX_ITER_DECONV;
+		break;
+	   case 'e':
+		/* -e < Convergence parameter> */
+		if (sscanf(OptArg,"%f",&Epsilon) != 1) 
+                {
+		   fprintf(OUTMAN, "bad convergence parameter: %s\n", OptArg);
+		   usage(argv);
+		}
+                if ((Epsilon < 0) || (Epsilon > 1.)) 
+                           Epsilon = DEFAULT_EPSILON_DECONV;
+		break;
+            case 'k':
+               /* kill i */
+               SupIsol = True;
+               break;
+            case 'S':
+               PsfMaxShift = False;
+               break;
+            case 'l':
+               /* dilate the support */
+                Dil = True;
+               break;
+	   case 'a':
+		/* -a < Boolean image file name> */
+		if (sscanf(OptArg,"%s",Name_Add_Map) != 1) 
+                {
+		   fprintf(OUTMAN, "bad file name: %s\n", OptArg);
+		   usage(argv);
+		}
+                AddMap = True;
+ 		break;
+	   case 'r':
+		/* -r < residual file name> */
+		if (sscanf(OptArg,"%s",Name_Resi) != 1) 
+                {
+		   fprintf(OUTMAN, "bad file name: %s\n", OptArg);
+		   usage(argv);
+		}
+                WriteResi = True;
+ 		break;
+	   case 'f':
+		/* -f < Fwhm parameter> */
+		if (sscanf(OptArg,"%f",&Fwhm) != 1) 
+                {
+		   fprintf(OUTMAN, "bad Fwhm: %s\n", OptArg);
+		   usage(argv);
+		}
+ 		break;
+	   case '?':
+			usage(argv);
+		}
+	}
+
+       /* get optional input file names from trailing 
+          parameters and open files */
+	if (OptInd < argc) strcpy(Name_Imag_In, argv[OptInd++]);
+         else usage(argv);
+
+	if (OptInd < argc) strcpy(Name_Psf_In, argv[OptInd++]);
+         else usage(argv);
+
+	if (OptInd < argc) strcpy(Name_Imag_Out, argv[OptInd++]);
+         else usage(argv);
+
+	/* make sure there are not too many parameters */
+	if (OptInd < argc)
+        {
+		fprintf(OUTMAN, "Too many parameters: %s ...\n", argv[OptInd]);
+		usage(argv);
+	}
+
+	if ( (Deconv == DEC_CLEAN) && (Max_Iter == DEFAULT_MAX_ITER_DECONV))
+	   Max_Iter = DEFAULT_CLEAN_NITER;
+}
+
+/*********************************************************************/
+
+int main(int argc, char *argv[])
+{
+    Ifloat DataB;
+    Bool ModifSize=False;
+    int Nl1, Nc1;
+    Ifloat Result;
+    Ifloat Resi;
+    Ifloat *Ptr_Imag;
+    Ifloat Psf, Psf1,Beam;
+    Icomplex_f Psf_cf;
+    //Bool MultDec = False;
+    fitsstruct Header;
+
+     /* Get command line arguments, open input file(s) if necessary */
+    decinit(argc, argv);
+
+#if WRITE_PARAM
+    cout << endl << endl << "PARAMETERS: " << endl << endl;
+    cout << "File Name in = " << Name_Imag_In << endl;
+    cout << "File Name Out = " << Name_Imag_Out << endl;
+    cout << "Transform = " << StringTransform(Transform) << endl;
+    cout << "Number of scales = " << Nbr_Plan << endl;
+    if (Stat_Noise == NOISE_GAUSSIAN)
+                             cout << "Type of Noise = GAUSSIAN" << endl;
+    else
+    {
+           cout << "Type of Noise = POISSON" << endl;
+           cout << "  Gain = " << PasCodeur << endl;
+           cout << "  Read-out Noise Sigma  = " << SigmaGauss << endl;
+           cout << "  Read-out Mean = " << MeanGauss << endl;
+    }
+    cout << "Sigma Noise = " << Noise_Ima << endl;
+    cout << "N_Sigma = " << N_Sigma << endl;
+    cout << "Epsilon = " << Epsilon << endl;
+    cout << "Max_Iter = " << Max_Iter << endl;
+    cout << "Fwhm = " << Fwhm << endl;
+    cout << "Kill isolated pixel : " << SupIsol << endl;
+    cout << "Dilate the support : " << Dil << endl;
+    // cout << "Add a Boolean image to the support : " << AddMap << endl;
+    if (AddMap == True)
+      cout << "Image file name : " << Name_Add_Map << endl;
+    if (WriteResi == True)
+      cout << "Image file name : " << Name_Resi << endl;
+#endif
+
+    /* read input image */
+    io_read_ima_float(Name_Imag_In, DataB, &Header);
+    int Nl = DataB.nl();
+    int Nc = DataB.nc();
+
+   /* we need square images */
+    dec_line_column (Nl, Nl1);
+    dec_line_column (Nc, Nc1);
+    if (Nl1 < Nc1) Nl1 = Nc1;
+    else Nc1 = Nl1;
+    if ((Nl != Nl1) || (Nc != Nc1)) ModifSize = True;
+
+    Result.alloc (Nl1, Nc1, "Obj");
+    Resi.alloc (Nl1, Nc1, "Resi");
+    if (ModifSize)
+    {
+        Ptr_Imag = new Ifloat(Nl1, Nc1, "Ptr Imag");
+        im_extend (DataB, *Ptr_Imag);
+    }
+    else Ptr_Imag = &DataB;
+       
+    /* read the Psf */     
+    io_read_ima_float(Name_Psf_In, Psf1);
+    Psf.alloc (Nl1, Nc1, "Resi");
+
+    /* centering the PSF */
+    if (PsfMaxShift == True) dec_center_psf (Psf1, Psf);
+    else Psf = Psf1;
+    Psf1.free ();
+
+  
+    /* blind dec */
+                 
+    MRNoiseModel ModelData(Stat_Noise,   Result.nl(),  Result.nc(), 
+                                  Nbr_Plan, Transform);
+    if (Noise_Ima > FLOAT_EPSILON) ModelData.SigmaNoise = Noise_Ima;
+          //if (UseNSigma  == True)
+          //for (i=0; i < Nbr_Plan; i++) ModelData.NSigma[i]=N_Sigma;
+    if (SupIsol == True) ModelData.SupIsol = True;
+    if (Dil == True) ModelData.DilateSupport = True;
+          //for (s=0; s < Nbr_Plan; s++) ModelData.TabEps[s] = EpsilonPoisson;
+          //ModelData.OnlyPositivDetect = KeepPositivSup;
+          //ModelData.NiterSigmaClip = NiterClip;
+          //ModelData.SizeBlockSigmaNoise = SizeBlock;
+          //ModelData.FirstDectectScale = FirstScale;
+     ModelData.CCD_Gain = PasCodeur;
+     ModelData.CCD_ReadOutSigma = SigmaGauss;
+     ModelData.CCD_ReadOutMean = MeanGauss;
+          // if (UseRMSMap == True)
+          // {
+          // ModelData.UseRmsMap = True;
+          // io_read_ima_float(Name_RMSMap, ModelData.RmsMap);
+          // }
+      ModelData.model(*Ptr_Imag);
+      Bool Pos=True;
+      Bool Sup_Set=False;
+      Bool ObjNonInit = True;
+      Bool Regul = False;
+      float WeightPsf = 1.; 
+      Ifloat GuestPsf (Nl1, Nc1, "Resi");
+      mr_blinddeconv(*Ptr_Imag, Result, Resi, Psf, GuestPsf,
+                   ModelData, Epsilon, Max_Iter,  Pos, 
+                   Sup_Set,  ObjNonInit, Regul, WeightPsf);
+  
+  
+    /* Save the result */
+    
+    if (ModifSize) im_extract (Result, DataB);
+    else DataB = Result;
+
+    io_write_ima_float(Name_Imag_Out, DataB, &Header);
+
+    if (WriteResi == True)
+    {
+        if (ModifSize) im_extract (Resi, DataB);
+        else DataB = Resi;
+
+        io_write_ima_float(Name_Resi, DataB, &Header);
+     }
+     exit(0);
+} 
+

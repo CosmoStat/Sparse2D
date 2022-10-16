@@ -25,7 +25,8 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew tap sfarrens/sf
-          brew install bigmac cfitsio fftw libomp
+          brew install bigmac
+          brew install cfitsio fftw libomp armadillo gsl healpix pybind11 python
 
       - name: Install Linux Dependencies
         if: runner.os == 'Linux'
@@ -33,12 +34,21 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libcfitsio-dev
           sudo apt-get install -y libfftw3-dev
+          sudo apt-get install -y libarmadillo-dev
+          sudo apt-get install -y libgsl-dev
+          sudo apt-get install -y libsharp-dev
+          sudo apt-get install -y libhealpix-cxx-dev
+          sudo apt-get install -y healpy-data
+          sudo apt-get install -y python3
+          sudo apt-get install -y python3-pip
+          python3 -m pip install pybind11
+          pip show pybind11
 
       - name: Compile Sparse2D Binaries
         run: |
           mkdir build
           cd build
-          cmake .. -DUSE_FFTW=ON -DBUILD_MSVST=ON
+          cmake .. --log-level=VERBOSE
           make
 
       - name: Run Unit Tests

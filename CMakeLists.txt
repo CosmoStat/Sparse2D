@@ -1,144 +1,153 @@
-#################
-# Sparse2D 2017 #
-#################
+############
+# Sparse2D #
+############
+
+# -------------- #
+# Project Set Up #
+# -------------- #
 
 cmake_minimum_required(VERSION 3.12.0)
-project(sparse2d)
+project(
+	Sparse2D
+	VERSION 3.0
+	DESCRIPTION "Sparsity-based signal processing tools"
+	LANGUAGES CXX
+)
 
-# Include modules in CMake module path
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/modules/")
+# Set policy for later versions of CMake
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
+		cmake_policy(SET CMP0135 NEW)
+endif()
+
+# Prohibit in-source builds
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+	message(FATAL_ERROR "In-source build is not permitted!")
+endif()
+
+# Include custom modules in CMake module path
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # Load CMake tools
 include(ExternalProject)
 include(FindPkgConfig)
 
-# Load custom CMake functions
-include(functions)
+# Load custom CMake functions: find_pkg, build_package, build_pybind
+include(FindPkg)
+include(BuildPackage)
+include(BuildPybind)
+include(BuildTests)
 
-# Set build type
+# Load Sparse2D build options
+include(BuildOptions)
+
+# Set default build type as Release
 if(CMAKE_BUILD_TYPE STREQUAL "")
   set(CMAKE_BUILD_TYPE "Release")
 endif()
 message(STATUS "CMake Build Type: ${CMAKE_BUILD_TYPE}")
 
+# Set RPATH options
+set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
+
 # ----------------- #
 # Find Dependencies #
 # ----------------- #
 
-# Locate OpenMP
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-  find_package(BigMac 0.0.1 REQUIRED)
-else()
-  find_package(OpenMP REQUIRED)
+# Use BigMac for local clang build
+if(
+	"${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang"
+	AND NOT "${CMAKE_CXX_COMPILER}" MATCHES "Homebrew"
+)
+  find_package(BigMac 0.0.5 REQUIRED)
 endif()
+
+# Locate OpenMP
+find_package(OpenMP REQUIRED)
 
 # Locate CFITSIO
 find_pkg(CFITSIO cfitsio)
 
-# Set build location for external modules
-set(MODULE_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/module_build/")
+if(USE_FFTW)
 
-# Set compilation flags
-if("${CMAKE_CXX_FLAGS}" STREQUAL "")
-  set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} -w -std=c++17 -DNO_DISP_IO -fPIC -Wno-write-strings\
-    ${OpenMP_CXX_FLAGS} ${BigMac_NOWARN}"
-  )
-endif()
-set(CMAKE_CXX_FLAGS_RELEASE
-  "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS} -g0 -fomit-frame-pointer"
-)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS} -O0")
-
-# ---- #
-# FFTW #
-# -----#
-
-# Optional use of FFTW
-option(USE_FFTW "Use FFTW for Fourier transformation" OFF)
-
-# Optional build of FFTW
-option(BUILD_FFTW "Build FFTW libraries" OFF)
-include(BuildFFTW)
-
-# ---- #
-# NFFT #
-# -----#
-
-# Optional build of NFFT
-option(BUILD_NFFT "Download and build NFFT" OFF)
-include(BuildNFFT)
-
-# ------------ #
-# Sparse2D STD #
-# -------------#
-
-# Build standard Sparse2D libs
-set(sparse2d_libs mga2d sparse3d sparse2d sparse1d tools)
-foreach(library ${sparse2d_libs})
-  build_lib(${library})
-endforeach()
-
-# Find all Sparse2D targets
-find_targets(sparse2d_targets src cc)
-
-# Build binaries
-foreach(program ${sparse2d_targets})
-  build_bin(${program} "${sparse2d_libs}" src cc)
-endforeach(program)
-
-# Install libraries
-install(TARGETS ${sparse2d_libs} DESTINATION lib EXPORT sparse2d_libs)
-install(EXPORT sparse2d_libs DESTINATION lib/cmake)
-
-# Install binaraies
-install(TARGETS ${sparse2d_targets} DESTINATION bin)
-
-# ----- #
-# MSVST #
-# ------#
-
-option(BUILD_MSVST "Build MSVST library" OFF)
-message(STATUS "MSVST Build: ${BUILD_MSVST}")
-
-if(BUILD_MSVST)
-
-  # Build MSVST lib
-  build_lib(msvst)
-  set(msvst_libs msvst tools)
-
-  # Find all MSVST targets
-  find_targets(msvst_targets src/msvst cc)
-
-  # Build binaries
-  foreach(program ${msvst_targets})
-    build_bin(${program} "${msvst_libs}" src/msvst cc)
-  endforeach(program)
-
-  # Install binaraies
-  install(TARGETS ${msvst_targets} DESTINATION bin)
+	# Locate FFTW
+	find_pkg(FFTW3 "fftw3 fftw3f")
 
 endif()
+
+if(BUILD_MRS)
+
+	# Locate HEALPix
+	find_pkg(HEALPIX healpix_cxx)
+
+endif()
+
+if(BUILD_DICLEARN)
+
+	# Locate GSL
+	find_pkg(GSL gsl)
+
+	# Locate Armadillo
+	find_package(Armadillo)
+	include_directories(${ARMADILLO_INCLUDE_DIRS})
+
+endif()
+
+if(BUILD_PYBIND)
+
+	# Locate Python
+	find_package(Python COMPONENTS Interpreter Development)
+	include_directories(${Python_INCLUDE_DIRS})
+	link_directories(${Python_LIBRARY_DIRS})
+
+	# Allow CMake to check the current Python environment for Pybind11
+	set(pybind11_cmake_path "/python*/*-packages/pybind11/share/*/*")
+	file(
+		GLOB
+		pybind11_path_list
+		"${Python_LIBRARY_DIRS}${pybind11_cmake_path}"
+		"/usr/local/lib${pybind11_cmake_path}"
+		"/home/runner/.local/lib${pybind11_cmake_path}"
+	)
+	if(pybind11_path_list)
+		list(GET pybind11_path_list 0 pybind11_DIR)
+	endif()
+
+	# Locate Pybind11
+	find_package(pybind11 REQUIRED)
+	include_directories(${pybind11_INCLUDE_DIR})
+
+endif()
+
+# ------------------ #
+# Compilation Set Up #
+# ------------------ #
+
+# Set CXX options
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Set CXX compilation flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BigMac_NOWARN} -DNO_DISP_IO -w -Wno-everything")
+if(USE_FFTW)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_FFTW")
+endif()
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS}")
+
+# -------------- #
+# Build Sources  #
+# -------------- #
+
+# Build packages in the source directory
+add_subdirectory(src)
 
 # ---------- #
-# UNIT TESTS #
+# Unit Tests #
 # -----------#
 
-option(RUN_TESTS "Build and run unit tests" ON)
-message(STATUS "Run Tests: ${RUN_TESTS}")
+# Enable unit Tests
+enable_testing()
 
-if(RUN_TESTS)
-
-  # Add unit tests
-  enable_testing()
-
-  # Find all unit test targets
-  find_targets(unit_tests tests cpp)
-
-  # Build binaries
-  foreach(program ${unit_tests})
-    build_bin(${program} "${sparse2d_libs}" tests cpp)
-    add_test(${program} ${program})
-  endforeach(program)
-
-endif()
+# Build unit tests
+add_subdirectory(tests)

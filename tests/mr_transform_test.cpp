@@ -90,16 +90,16 @@ bool test_recons(char* image_file_name, char* trans_file_name){
 /*UNIT TESTS FOR MR_TRANSFORM*/
 TEST_CASE("Unit tests on MR_TRANSFORM", "[mr_transform]") {
 
-    REQUIRE(test_transform("../tests/images/macos_cross.fits",
-            "../tests/images/macos_cross_t2_n4_U2.mr",
+    REQUIRE(test_transform("../../tests/images/macos_cross.fits",
+            "../../tests/images/macos_cross_t2_n4_U2.mr",
             TO_PAVE_BSPLINE, 4, DEF_UNDER_FILTER) == true);
 
-    REQUIRE(test_transform("../tests/images/macos_border.fits",
-            "../tests/images/macos_border_t16_n4_U2.mr",
+    REQUIRE(test_transform("../../tests/images/macos_border.fits",
+            "../../tests/images/macos_border_t16_n4_U2.mr",
             TO_PAVE_FEAUVEAU, 4, DEF_UNDER_FILTER) == true);
 
-    REQUIRE(test_transform("../tests/images/macos_circle.fits",
-            "../tests/images/macos_circle_t30_n4_U2.mr",
+    REQUIRE(test_transform("../../tests/images/macos_circle.fits",
+            "../../tests/images/macos_circle_t30_n4_U2.mr",
             TO_DIV_1, 4, DEF_UNDER_FILTER) == true);
 
 }
@@ -107,13 +107,13 @@ TEST_CASE("Unit tests on MR_TRANSFORM", "[mr_transform]") {
 /*UNIT TESTS FOR MR_RECONS*/
 TEST_CASE("Unit tests on MR_RECONS", "[mr_recons]") {
 
-    REQUIRE(test_recons("../tests/images/macos_cross.fits",
-            "../tests/images/macos_cross_t2_n4_U2.mr") == true);
+    REQUIRE(test_recons("../../tests/images/macos_cross.fits",
+            "../../tests/images/macos_cross_t2_n4_U2.mr") == true);
 
-    REQUIRE(test_recons("../tests/images/macos_border.fits",
-            "../tests/images/macos_border_t16_n4_U2.mr") == true);
+    REQUIRE(test_recons("../../tests/images/macos_border.fits",
+            "../../tests/images/macos_border_t16_n4_U2.mr") == true);
 
-    REQUIRE(test_recons("../tests/images/macos_circle.fits",
-            "../tests/images/macos_circle_t30_n4_U2.mr") == true);
+    REQUIRE(test_recons("../../tests/images/macos_circle.fits",
+            "../../tests/images/macos_circle_t30_n4_U2.mr") == true);
 
 }
