@@ -93,6 +93,7 @@ In order to build Sparse2D from source, you will need to ensure you have install
 #### Required
 
    - C/C++ compiler (*e.g.* `gcc` or `clang`)
+   - [Catch2](https://github.com/catchorg/Catch2) (>= v3)
    - [CMake](http://www.cmake.org) (>= v3.12)
    - [CFITSIO](https://heasarc.gsfc.nasa.gov/fitsio/)
    - [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/)

@@ -26,7 +26,7 @@ function(build_tests lib_deps_list)
     # Add target executable
     add_executable(${tarname} "${target}")
     # Link libraries to target
-    target_link_libraries(${tarname} ${lib_deps_list} OpenMP::OpenMP_CXX)
+    target_link_libraries(${tarname} ${lib_deps_list} OpenMP::OpenMP_CXX Catch2::Catch2WithMain)
     # Add unit test
     add_test(${tarname} ${tarname})
   endforeach()

@@ -22,6 +22,12 @@ RUN apt-get update && \
     apt-get install -y healpy-data && \
     apt-get clean
 
+RUN wget https://github.com/catchorg/Catch2/archive/refs/tags/v3.1.0.tar.gz && \
+    tar -xvf v3.1.0.tar.gz && \
+    cd Catch2-3.1.0 && \
+    cmake -Bbuild -H. -DBUILD_TESTING=OFF && \
+    cmake --build build/ --target install
+
 ENV HEALPIX /usr/share/healpy
 
 RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && \

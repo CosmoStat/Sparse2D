@@ -64,6 +64,9 @@ endif()
 # Locate OpenMP
 find_package(OpenMP REQUIRED)
 
+# Locat Catch2
+find_package(Catch2 3 REQUIRED)
+
 # Locate CFITSIO
 find_pkg(CFITSIO cfitsio)
 
