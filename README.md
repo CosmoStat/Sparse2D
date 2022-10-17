@@ -1,6 +1,6 @@
 # Sparse2D
 [![build](https://github.com/CosmoStat/Sparse2D/workflows/CI/badge.svg)](https://github.com/CosmoStat/Sparse2D/actions?query=workflow%3ACI)
-[![cpp](https://img.shields.io/badge/language-C%2B%2B-red)](https://isocpp.org/std/the-standard)
+[![cpp](https://img.shields.io/badge/language-C%2B%2B-red)](https://isocpp.org/std/the-standard)[![bigmac](https://img.shields.io/github/v/release/sfarrens/bigmac?label=BigMac&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABGdBTUEAALGPC%2FxhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAeGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABKARsABQAAAAEAAABSASgAAwAAAAEAAgAAh2kABAAAAAEAAABaAAAAAAAAAEgAAAABAAAASAAAAAEAAqACAAQAAAABAAAADqADAAQAAAABAAAADgAAAAABAtxLAAAACXBIWXMAAAsTAAALEwEAmpwYAAACZmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgICAgICAgICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICAgICA8dGlmZjpSZXNvbHV0aW9uVW5pdD4yPC90aWZmOlJlc29sdXRpb25Vbml0PgogICAgICAgICA8ZXhpZjpDb2xvclNwYWNlPjE8L2V4aWY6Q29sb3JTcGFjZT4KICAgICAgICAgPGV4aWY6UGl4ZWxYRGltZW5zaW9uPjUwPC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjUwPC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24%2BCiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE%2BCrh6Oa8AAAI%2BSURBVCgVhVLPaxNBFH7zY7tpkmKp2UgrwSrShkSNxYpFRXJqNVVQJBWpF1E8Fjx5HfwTPFXoQemtlYKKetCSFAsiQpHSVBQ1LWKlJK3Nj26y2d0ZZ7bkUhQHHvvt%2B7733rezD8GuMzWVJmkjjqCQEwBpAGPZw2hk2t0l3XkVApBgDP%2BVlEkmOaVp8h5QCYRATgBYenrrDOdiiGhaBDgHV6AfRPDX8csTbxXf1KImENLikt7xWNPwKKVUClQ3aUC44EiTtu284D7zWmJocltROJtlRHVaJIF77UEyum3adrlSU%2BGUq3WnVKlbrmtLBa%2F43aKjtOpQgKwHWnTS3XBsIMgFDkiTo6RWcL%2Bvhdp2feHYlUfXlVB9K0KMU5jz6mD%2BTW7tUCwCWtCHdIJBI0g24BxhFzcweq9ULx9c0FNjzFKYFnKGdykHOtu6a7MfYD1sgRMMQbXhhxbNxbptQ22xdFqJU2OvLAaAZXBsxAvezZZa%2FT87zw9Ab%2FQonOvX4XbqCwyeNPFhw8f7Lx5JzI%2BPTMpaQxXJSYisJlfwShb49KnPN2qrjT5zK2CVKyG0WQnzfGEfLzptIles1rO%2Fv58whxtdhVlrZo4BpUZs5%2F%2Fd7I1O9NT2DuOqHb7z6xkMlqPgJw48QV%2FhftdZGgl2rCda3fFlKIOq8WwyJn0zaeHbwz35%2FMKlmY1PxwcC%2B0PSGrwz1zautvd8PGjEnqO%2Bu1tNreK8w8S%2F1%2B2%2FGrktKJNJ0mQGqFp2FQqrnOKaDdTzD77QAxggF14iAAAAAElFTkSuQmCC)](https://github.com/sfarrens/bigmac)
 
 Sparse2D provides an array of sparsity-based signal processing tools and a convenient C++ library for performing various wavelet transforms.
 
@@ -12,10 +12,10 @@ The core Sparse2D libraries are used as a backend for [PySAP](https://github.com
 
 ### Pull the Docker image
 
-If you have [Docker](https://www.docker.com/) installed, you can pull the latest build of the Sparse2D image as follows:
+If you have [Docker](https://www.docker.com/) installed, you can pull the latest build of the [Sparse2D image](https://github.com/cosmostat/Sparse2D/pkgs/container/sparse2d) as follows:
 
 ```bash
-docker pull ghcr.io/cosmostat/sparse2d
+docker pull ghcr.io/cosmostat/sparse2d:master
 ```
 
 No further installation is required.
@@ -25,7 +25,7 @@ No further installation is required.
 To run a container on data in your current working directory, simply run:
 
 ```bash
-docker run -v ${PWD}:/workdir --rm cosmostat/sparse2d <EXECUTABLE> <ARGUMENTS>
+docker run -v ${PWD}:/workdir --rm ghcr.io/cosmostat/sparse2d:master <EXECUTABLE> <ARGUMENTS>
 ```
 
 where `<EXECUTABLE>` is one of the Sparse2D binaries and `<ARGUMENTS>` are the corresponding command line arguments for this executable. The reference to `${PWD}` can be replaced by the path to any directory on your system.
@@ -33,12 +33,12 @@ where `<EXECUTABLE>` is one of the Sparse2D binaries and `<ARGUMENTS>` are the c
 For example, to run a bspline wavelet transform on a FITS image called `myfile.fits` you would run:
 
 ```bash
-docker run -v ${PWD}:/workdir --rm cosmostat/sparse2d mr_transform -t 2 myfile.fits myoutput.mr
+docker run -v ${PWD}:/workdir --rm ghcr.io/cosmostat/sparse2d:master mr_transform -t 2 myfile.fits myoutput.mr
 ```
 
 > Tip: If you don't want to constantly write the full Docker run command you can create an alias *e.g.*:
 > ```bash
-> alias sparse2d="docker run -v ${PWD}:/workdir --rm cosmostat/sparse2d"
+> alias sparse2d="docker run -v ${PWD}:/workdir --rm ghcr.io/cosmostat/sparse2d:master"
 > ```
 > then you can simply run *e.g.*:
 > ```bash
@@ -50,7 +50,7 @@ docker run -v ${PWD}:/workdir --rm cosmostat/sparse2d mr_transform -t 2 myfile.f
 You can also run a Jupyter notebook with a Docker container as the backend in order to use the `pysparse` Python bindings to some Sparse2D tools.
 
 ```bash
-docker run -p 8888:8888 -v ${PWD}:/workdir --rm cosmostat/sparse2d notebook
+docker run -p 8888:8888 -v ${PWD}:/workdir --rm ghcr.io/cosmostat/sparse2d:master notebook
 ```
 
 ## Homebrew installation
@@ -110,7 +110,7 @@ In order to build Sparse2D from source, you will need to ensure you have install
 
 ### Full Sparse2D build
 
-Download the [latest release](https://github.com/CosmoStat/Sparse2D/releases).
+Download the [latest release of Sparse2D](https://github.com/CosmoStat/Sparse2D/releases).
 
 Create a build directory inside the root directory of the Sparse2D package:
 
@@ -164,4 +164,28 @@ system (*e.g.* `gcc` on macOS) you can do so as follows:
 
 ```bash
 CC=gcc CXX=g++ cmake ..
+```
+
+## Python bindings
+
+By default Sparse2D will build `pysparse`, which includes Python bindings to some Sparse2D tools. This file will need to be in your `PYTHONPATH` in order for these bindings to available outside of the build directory.
+
+`pysparse` can be imported in a given Python session as follows:
+
+```python
+import pysparse
+```
+
+To see what tools are available in this module run the `help` function.
+
+```python
+help(pysparse)
+```
+
+For example, to run a bspline wavelet transform on an image (stored in memory as a Numpy array) called `myimage` you would run:
+
+```python
+import pysparse
+mrt = pysparse.MRTransform(2)
+result = mrt.transform(myimage)
 ```
