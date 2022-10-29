@@ -226,6 +226,8 @@ class MCA1D {
    fltarray *TabALDCT;      // ALDCT bases decomposition
    float ALDCT_Sensibility;
    int ALDCT_InfoCost;
+   
+   bool UseMask_ ;
 
    // Routines
    // --------

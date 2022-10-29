@@ -87,8 +87,10 @@ void MCA1D::make_residual (fltarray& Data, fltarray& Residual)
    // Get the new solution
    reconstruction (Residual);
    
+   // std::cout << "UseMask:" << std::endl ;
+   
    // Get the Residual
-   if (UseMask == False)
+   if (UseMask_ == False)
     {
 		for (int i=0; i<Nx; i++) Residual(i) = Data(i) - Residual(i);
 		}
@@ -111,7 +113,7 @@ void MCA1D::reset()
     DataSigmaNoise = 0.;
     Verbose = False;
     RemoveSmoothPlane = False;
-    Write = True;
+    Write = False;
      
     AT_NbrScale1D = 4;
     AT_PositivRecSig = PositivRecSig;
@@ -166,17 +168,15 @@ void MCA1D::alloc(int NSig) // , fltarray * Tab)
    // int s;
    // for (int i=0; i < NbrBase; i++) Tab[i].alloc(Nx, "alloc");
 
-   cout << "ALLO ALLO Signal size: Nx = " << Nx << endl;
+   // cout << "ALLO ALLO Signal size: Nx = " << Nx << endl;
    Resi.alloc(Nx,"resi");
    for (int i =0; i < NbrBase; i++) 
    { 
        TabSigRec[i].alloc(Nx,StringMCA1DBase(TabSelect[i]));
-       cout << "ALLOC: Selection:" << StringMCA1DBase ((type_mca1dbase) TabSelect[i])  << endl;
+       if (Verbose == True) cout << "ALLOC: Selection:" << StringMCA1DBase ((type_mca1dbase) TabSelect[i])  << endl;
        
        switch (TabSelect[i]) {
-          
              case MCA1D_ATROU:
- 
                  AWT.alloc (AT_Trans, Nx, AT_NbrScale1D);
                  AWT.Verbose = Verbose;
                  AWT.Write = Write;
@@ -188,7 +188,7 @@ void MCA1D::alloc(int NSig) // , fltarray * Tab)
                  AWT.NSigmaSoft = NSigmaSoft;                 
                  break;
              case MCA1D_WT:
-                 cout << "ALLOC WT " << endl;
+                 // cout << "ALLOC WT " << endl;
                  if (WT_NbrScale1D < 2) {
                      cout << "Error: bad number of scales ... " << endl;
                      exit(-1);
@@ -210,7 +210,7 @@ void MCA1D::alloc(int NSig) // , fltarray * Tab)
                  {
                     cout << "WT: Nbr scales = " << WT_NbrScale1D << endl;
                  }   
-                 cout << "ALLOC WT " << endl;
+                 // cout << "ALLOC WT " << endl;
                  break;
               case MCA1D_COS:
 		 LDCT.alloc(Nx, COS_BlockSize, COS_Overlapping, CosWeightFirst);
@@ -222,13 +222,12 @@ void MCA1D::alloc(int NSig) // , fltarray * Tab)
                  LDCT.SigmaNoise  =  DataSigmaNoise;
                  LDCT.COSSupportMin = COSMin;
                  LDCT.SuppressDctCompCont = COS_SuppressDctCompCont;  
-                 LDCT.COS_Sensibility =  COS_Sensibility;            
+                 LDCT.COS_Sensibility =  COS_Sensibility;
                  break;
-                 
 	     case MCA1D_MCOS:
-		 M_DCT.Verbose=Verbose;
-	         M_DCT.BlockOverlap = MCOS_Overlapping;
-	         M_DCT.alloc(Nx, MCOS_NbrScale1D, MCOS_FirstBlockSize);
+                 M_DCT.Verbose=Verbose;
+                 M_DCT.BlockOverlap = MCOS_Overlapping;
+                 M_DCT.alloc(Nx, MCOS_NbrScale1D, MCOS_FirstBlockSize);
                  M_DCT.SigmaNoise = DataSigmaNoise;
                  M_DCT.COSMin = COSMin;
                  M_DCT.COS_Sensibility =  COS_Sensibility;            
@@ -238,7 +237,6 @@ void MCA1D::alloc(int NSig) // , fltarray * Tab)
                  M_DCT.NSigmaSoft = NSigmaSoft;                 
                  M_DCT.OnlyPositivDetect = FALSE;
                  break;
-                 
              case MCA1D_ALDCT:
                  AL_DCT.alloc(TabALDCT, Nx, ALDCT_NbrScale1D);
                  AL_DCT.SigmaNoise = DataSigmaNoise;
@@ -324,6 +322,8 @@ float MCA1D::compute_first_lambda (fltarray& Signal)
 {
    vector<float> VectMax;
    float M;
+    
+   // cout << " compute_first_lambda : SigNoise = " << DataSigmaNoise << endl;
    for (int b=0; b < NbrBase; b++) 
    {
       switch(TabSelect[b]) 
@@ -351,10 +351,10 @@ float MCA1D::compute_first_lambda (fltarray& Signal)
                 break;
  	     case MCA1D_MCOS:      
                 M_DCT.transform(Signal);
-		M = M_DCT.getAbsMaxTransf ();
-		if (Verbose == True) 
+                M = M_DCT.getAbsMaxTransf ();
+                if (Verbose == True)
                    cout << "MultiScale DCT: first threshold = " << M << endl;
-		VectMax.push_back(M);
+                VectMax.push_back(M);
                 break;
            case MCA1D_ALDCT:
                 AL_DCT.transform (Signal, TabALDCT);
@@ -368,12 +368,13 @@ float MCA1D::compute_first_lambda (fltarray& Signal)
                exit(-1);
       }
    }
+   
    if (NbrBase == 1) return VectMax[0];
    else 
    {
       sort (VectMax.begin(), VectMax.end());
       M = 1.01*VectMax[NbrBase-2];
-      if (Verbose == True) cout << "Fist Threshold = " << M << endl;
+      if (Verbose == True) cout << "First Threshold = " << M << endl;
       return M;
    }
    return 1.;    
@@ -431,10 +432,12 @@ void MCA1D::decomposition (fltarray& Signal)
        
        for (b=0; b < NbrBase; b++) 
        {
-           cout << " Base " << b+1 << ": Before" << endl;
-           TabSigRec[b].info("REC");
-           Resi.info("RESI");
-           
+           // cout << " Base " << b+1 << ": Before" << endl;
+           //if (Verbose == True)
+           // {
+           //   TabSigRec[b].info("REC");
+           //   Resi.info("RESI");
+           // }
           TVSig = TabSigRec[b];
           if (Write)
 	      {
@@ -443,7 +446,7 @@ void MCA1D::decomposition (fltarray& Signal)
              if (Iter % 1 == 0) io_1d_write_data (Name,TVSig );
 	      }
 	      TabSigRec[b] += Resi;
-          if (Write == False) TabSigRec[b].info();
+          // if (Write == False) TabSigRec[b].info();
 
           switch(TabSelect[b]) 
 	      {
@@ -518,18 +521,18 @@ void MCA1D::decomposition (fltarray& Signal)
                exit(-1);
           }     
 	  make_residual (Signal, Resi);
-         if (Write == True)
+     if (Write == True)
 	 {
 	    char Name[256];
 	    sprintf(Name, "Resi_%d_%d", b, Iter);
             if (Iter % 1 == 0) io_1d_write_data (Name,Resi );
 	 }
 	  
-	  // if (Verbose == True)
+	  if (Verbose == True)
 	  {
              cout << " Base " << b+1 << ": Reconstruction" << endl;
-             TabSigRec[b].info();
-             Resi.info();
+             TabSigRec[b].info("REC");
+             Resi.info("RESI");
 	  }
 	  
       } // ENDFOR (b=0 ...)
@@ -629,7 +632,7 @@ void MCA1D::cos_proj (fltarray& SigRec, float Lamba_Sigma,  int IterNumber)
    float NSig=Lamba_Sigma;
    
    LDCT.transform (Resi);
-   io_1d_write_data("xx_resi_dct.fits", LDCT.trans_Sig());  
+   // io_1d_write_data("xx_resi_dct.fits", LDCT.trans_Sig());
    if (UseMadForLambdaEstimation == True)
    {
       float *Ptr = LDCT.trans_Sig().buffer();
@@ -821,7 +824,7 @@ void MCA1D::infoVerbose (char *nameSignalIn, char *nameSignalOut)
     cout << "Estimated noise in signal : " << DataSigmaNoise << endl;
     if (UseNormL1) 
       cout << "Used L1 norm in threshold" << endl;
-      cout << "Selected basis : " << endl;
+      cout << "Selected basis : " << NbrBase << endl;
       for (int i =0; i < NbrBase; i++) 
         cout << " ==> " 
         << StringMCA1DBase ((type_mca1dbase) TabSelect[i]) 

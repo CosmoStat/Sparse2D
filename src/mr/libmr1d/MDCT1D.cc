@@ -40,12 +40,12 @@ void MDCT1D::alloc(int Nx, int Nbr_Plan, int FirstBlockSize){
     TabDCT = new LOCAL_DCT1D [Nbr_Plan];
     // TabTransMDCT = new fltarray [Nbr_Plan];
     
-    if (Write == True) cout << " Multiscale DCT allocation: Nbr_Plan =  " << Nbr_Plan << endl;
+    if (Verbose == True) cout << " Multiscale DCT allocation: Nbr_Plan =  " << Nbr_Plan << endl;
     for (s=0; s < Nbr_Plan; s++)
     {
         TabDCT[s].alloc(Nx, TabBlockSize(s), BlockOverlap);
 	// TabTransMDCT [s] = & (TabDCT[s]._DCTSig);
-	// if (Verbose == True) 
+	if (Verbose == True) 
 	   printf("   Band %d, BlockSize = %d, Nx = %d \n", 
 	          s+1, TabBlockSize(s), nx(s));
     }
@@ -60,12 +60,13 @@ void MDCT1D::transform(fltarray &Signal)
    AWT.transform(Signal, TabTransWT);
    for (s = 0; s < NbrScale; s++)
    {
-       if (Write == True) cout << "  Local DCT, band " << s + 1 << endl;
+       if (Write == True)
+           cout << "  Local DCT, band " << s + 1 << endl;
        TabDCT[s].transform(TabTransWT[s]);
        if (Verbose == True)
        {
           TabDCT[s]._DCTSig.info("DCT band");
- 	  if (Write == True)
+          if (Write == True)
              cout << "  Norm band  = " << norm_band(s) << endl;
        }
    }
@@ -158,15 +159,14 @@ void MDCT1D::recons(fltarray &Signal){
 } 
    
 /****************************************************************************/
-
+#define LastNoiseEstimBandNumber 15
 float MDCT1D::norm_band(int s){
-   static double TN[10] = 
+   static double TN[LastNoiseEstimBandNumber] =
     {0.721618,  0.286209, 0.178281, 0.121010, 0.083104, 0.0588543, 0.0446171,
-     0.0289142, 0.0177307, 0.};
-   if ((s < 0) || (s >= 10)) return 0;
+     0.0289142, 0.0177307, 0.015,  0.01, 0.008, 0.0056, 0.004, 0.003};
+   if ((s < 0) || (s >= LastNoiseEstimBandNumber)) return TN[LastNoiseEstimBandNumber-1];
    else return TN[s];
 }
-
  
 /****************************************************************************/
 
@@ -213,7 +213,7 @@ float MDCT1D::getAbsMaxTransf () {
       float MaxLevel = fabs(band(s).maxfabs());
       float NormMaxLevel = MaxLevel/SigmaNoise/norm_band(s)/COS_Sensibility;
                 
-      if (Write)
+      if (Verbose)
          cout << "Lambda M_Dct_"<< s+1 << "  : " <<  NormMaxLevel
               << ", Max amplitude_"<< s+1 << " : " << MaxLevel << endl;
       
