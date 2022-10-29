@@ -158,6 +158,8 @@ void MCA1D::reset()
     CFAR=CFDR=False;
     CFAR_NsigmaMad=5.;
     CFDR_Qparam=0.25;
+    
+    PowerConstraint = True;
 }
  
 /****************************************************************************/
@@ -433,18 +435,18 @@ void MCA1D::decomposition (fltarray& Signal)
        for (b=0; b < NbrBase; b++) 
        {
            // cout << " Base " << b+1 << ": Before" << endl;
-           //if (Verbose == True)
-           // {
+           // if (Verbose == True)
+           //{
            //   TabSigRec[b].info("REC");
            //   Resi.info("RESI");
            // }
-          TVSig = TabSigRec[b];
-          if (Write)
-	      {
-	         char Name[256];
-             sprintf(Name, "TVSig_%d_%d", b, Iter);
-             if (Iter % 1 == 0) io_1d_write_data (Name,TVSig );
-	      }
+          // TVSig = TabSigRec[b];
+          // if (Write)
+	      // {
+	      //   char Name[256];
+          //   sprintf(Name, "TVSig_%d_%d", b, Iter);
+          //    if (Iter % 1 == 0) io_1d_write_data (Name,TVSig );
+	      // }
 	      TabSigRec[b] += Resi;
           // if (Write == False) TabSigRec[b].info();
 
@@ -476,9 +478,8 @@ void MCA1D::decomposition (fltarray& Signal)
           }
           
 // 	  if (UseNormL1 == True) {
-	  
-	     for (i=0; i<Nx; i++)
-	          Resi(i) = (TabSigRec[b])(i) - TVSig(i); 
+//	     for (i=0; i<Nx; i++)
+//	          Resi(i) = (TabSigRec[b])(i) - TVSig(i);
           
 //	  }
 // 	  else {
@@ -490,16 +491,16 @@ void MCA1D::decomposition (fltarray& Signal)
 //  	     }
 	  
          // New residual calculation
-         if (    (TotalVariation == True) 
-             && (LambdaTV > 0)
-             && (TabSelect[b] != MCA1D_COS))
-         {
+//         if (    (TotalVariation == True)
+//             && (LambdaTV > 0)
+//             && (TabSelect[b] != MCA1D_COS))
+//         {
 //                RIM.obj_regul(TVIma, TabSigRec[b], LambdaTV);
 //	          regul_tv_haarwt(TabSigRec[b], TabSigRec[b], LambdaTV, NbrScaleTV);
 // 	          RIM.obj_regul(TVIma, TabSigRec[b], LambdaTV*Noise_Ima);
 //	          RIM.im_soft_threshold (TabSigRec[b], TabSigRec[b], 
 //                                      LambdaTV*Noise_Sig);
-	    }
+//	    }
 	  
 	 // Positivity constraint
 	 switch(TabSelect[b]) 
@@ -519,7 +520,38 @@ void MCA1D::decomposition (fltarray& Signal)
 	     default:
                cout << "Error: not implemeted transform ... " << endl;
                exit(-1);
-          }     
+          }
+    
+      // Power constraint for INPAINTING only
+    if ((UseMask_ == True) && (PowerConstraint == True))
+    {
+        int Nin=0;
+        int Nout=0;
+        double Ratio;
+        double PowInMask =0.;
+        double PowOutMask = 0;
+        for (int i=0; i<Nx; i++)
+        {
+            if (MaskedData(i) == 1)
+            {
+                Nin++;
+                PowInMask += TabSigRec[b](i) * TabSigRec[b](i);
+            }
+            else
+            {
+                Nout++;
+                PowOutMask += TabSigRec[b](i) * TabSigRec[b](i);
+            }
+        }
+        if (Nin > 0) PowInMask /= (double) Nin;
+        if (Nout > 0) PowOutMask /= (double) Nout;
+        if (PowOutMask > 0)
+        {
+            Ratio = sqrt( PowInMask / PowOutMask);
+            for (int i=0; i<Nx; i++)
+                if (MaskedData(i) == 0) TabSigRec[b](i) *= Ratio;
+        }
+    }
 	  make_residual (Signal, Resi);
      if (Write == True)
 	 {

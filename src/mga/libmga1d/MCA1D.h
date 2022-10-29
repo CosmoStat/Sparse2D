@@ -163,7 +163,9 @@ class MCA1D {
    Bool RemoveSmoothPlane;
    Bool Write;
    Bool Linear;        // If true (default), lambda is decreasing linearly, otherwise exponentially
-   Bool UseMask;
+   Bool PowerConstraint; // If UseMask is True (inpainting case), then we constraint the power when Mask = 0
+                         // to be equal to the power of the signal when Mask = 1. The inpainted part will have the same power as the
+                         // other part of the signal
 	 Ifloat MaskedData; // MaskedData(x,y) = 0 ==> missing data
                       // MaskedData(x,y) = 1 ==> good data
 

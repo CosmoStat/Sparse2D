@@ -108,6 +108,7 @@ Bool CFAR=False;       // If true, the threshold at each iteration is derived fr
 Bool CFDR=False;       // If true, the threshold at each iteration is derived from
                        // from the FDR. 
 float CFDR_Qparam=0.25;
+Bool InpaintPowerConstraint = False;
 
 /*********************************************************************/
 
@@ -141,6 +142,10 @@ static void usage(char *argv[])
     fprintf(OUTMAN, "             Data contained masked area (must have a zero value). Default is no. \n");    
     manline();
    
+    fprintf(OUTMAN, "         [-o]\n");
+    fprintf(OUTMAN, "             Inpainting Power constraint (when -H is set). Default is no. \n");
+    manline();
+    
 	  fprintf(OUTMAN, "         [-L]\n");
     fprintf(OUTMAN, "             Non-Linear step descent. Default is Linear. \n");    
     manline();
@@ -224,6 +229,7 @@ static void usage(char *argv[])
     fprintf(OUTMAN, "            Default is no.\n");
     manline();
     
+    
 //     manline();    
 //     fprintf(OUTMAN, "   HDWT settings\n");
 //     fprintf(OUTMAN, "   -------------\n");
@@ -265,9 +271,10 @@ static void filtinit(int argc, char *argv[])
 
     /* get options */
     while ((c= GetOpt 
-            (argc,argv,"HQ:q:cCUNAWLB:Ps:S:wu:t:KhF:Oi:g:n:vlR:zZkpD:I:")) != -1){
+            (argc,argv,"HQ:q:cCUNAWLB:Ps:S:wu:t:KhF:Ooi:g:n:vlR:zZkpD:I:")) != -1){
 	switch (c){	 
-   case 'H': UseMask = True; break; 
+     case 'H': UseMask = True; break;
+     case 'o': InpaintPowerConstraint = True; break;
 	 case 'C': CFDR=True; break;
 	 case 'c': CFAR=True; break;
 	 case 'Q':  if (sscanf(OptArg,"%f",&CFDR_Qparam) != 1)
@@ -565,6 +572,7 @@ int main(int argc, char *argv[])
     MB.alloc (Nx);
     
     MB.UseMask_ = UseMask ;
+    MB.PowerConstraint = InpaintPowerConstraint;
     
     if (MB.UseMask_ == True)
       {
