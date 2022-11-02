@@ -61,7 +61,6 @@ extern int  GetOpt(int argc, char **argv, char *opts);
 Bool Verbose=False; 
 Bool RemoveSmoothPlane=False; 
 int NbRemoveSmoothPlane=MAX_SMOOTH_REMOVE;
-Bool Write=False; 
 int NbrScale1D = 0;
 
 float Noise_Sig=-1;
@@ -89,7 +88,7 @@ type_mca1dbase TabSelect[NBR_MCA1D];
 int NbrBase = 0;
 
 int NbrUndecimatedScale = -1;
-Bool WriteAllRec=True;
+Bool WriteAllRec=False;
 float FirstSoftThreshold= -1;
 float LastSoftThreshold = DEF_MCA1D_LAST_SOFT_THRESHOLD;
 Bool TV = False;
@@ -109,6 +108,7 @@ Bool CFAR=False;       // If true, the threshold at each iteration is derived fr
 Bool CFDR=False;       // If true, the threshold at each iteration is derived from
                        // from the FDR. 
 float CFDR_Qparam=0.25;
+Bool InpaintPowerConstraint = False;
 
 /*********************************************************************/
 
@@ -116,8 +116,9 @@ int maxscalenumber (int Nc)
 {
     int Nmin = Nc;
     int ScaleMax;
+    int Use_MAX_SIZE_LAST_SCALE = 16;
     
-    ScaleMax=iround(log((float)Nmin/(float)MAX_SIZE_LAST_SCALE) / log(2.)+ 1.);
+    ScaleMax=iround(log((float)Nmin/(float)Use_MAX_SIZE_LAST_SCALE) / log(2.)+ 1.);
     return (ScaleMax);
 }
 
@@ -141,6 +142,10 @@ static void usage(char *argv[])
     fprintf(OUTMAN, "             Data contained masked area (must have a zero value). Default is no. \n");    
     manline();
    
+    fprintf(OUTMAN, "         [-o]\n");
+    fprintf(OUTMAN, "             Inpainting Power constraint (when -H is set). Default is no. \n");
+    manline();
+    
 	  fprintf(OUTMAN, "         [-L]\n");
     fprintf(OUTMAN, "             Non-Linear step descent. Default is Linear. \n");    
     manline();
@@ -218,7 +223,13 @@ static void usage(char *argv[])
     fprintf(OUTMAN, "            Suppress the zero frequency in the DCT.\n");
     fprintf(OUTMAN, "            Default is false.\n");    
     manline();
-                      
+
+    fprintf(OUTMAN, "         [-w]\n");
+    fprintf(OUTMAN, "            Write each recovered source.\n");
+    fprintf(OUTMAN, "            Default is no.\n");
+    manline();
+    
+    
 //     manline();    
 //     fprintf(OUTMAN, "   HDWT settings\n");
 //     fprintf(OUTMAN, "   -------------\n");
@@ -260,9 +271,10 @@ static void filtinit(int argc, char *argv[])
 
     /* get options */
     while ((c= GetOpt 
-            (argc,argv,"HQ:q:cCUNAWLB:Ps:S:wu:t:KhF:Oi:g:n:vlR:zZkpD:I:")) != -1){
+            (argc,argv,"HQ:q:cCUNAWLB:Ps:S:wu:t:KhF:Ooi:g:n:vlR:zZkpD:I:")) != -1){
 	switch (c){	 
-   case 'H': UseMask = True; break; 
+     case 'H': UseMask = True; break;
+     case 'o': InpaintPowerConstraint = True; break;
 	 case 'C': CFDR=True; break;
 	 case 'c': CFAR=True; break;
 	 case 'Q':  if (sscanf(OptArg,"%f",&CFDR_Qparam) != 1)
@@ -397,7 +409,7 @@ static void filtinit(int argc, char *argv[])
                 }
                 break;
            case 'v': Verbose = True;break;
-           case 'w': Write = True;break;
+           case 'w': WriteAllRec = True;break;
            case 'l': RemoveSmoothPlane= True; break;
            case 'R': 
                 if (sscanf(OptArg,"%d",&NbRemoveSmoothPlane) != 1){
@@ -455,8 +467,9 @@ static void filtinit(int argc, char *argv[])
 		fprintf(OUTMAN, "Too many parameters: %s ...\n", argv[OptInd]);
 		exit(-1);
 	}
+	
+	// std::cout << "static void filtinit :: UseMask " << UseMask << std::endl;
 
-       	   
 #ifdef LARGE_BUFF
     if (OptZ == True) vms_init(VMSSize, VMSName, Verbose);
 #endif  
@@ -468,11 +481,10 @@ int main(int argc, char *argv[])
 {
     int i,k;
     fitsstruct Header;
-    char Cmd[512];
+    char Cmd[1024];
     Cmd[0] = '\0';
     
     MCA1D MB;  // Multiple base decomposition Class
-    
     for (k =0; k < argc; k++) sprintf(Cmd, "%s %s", Cmd, argv[k]);
      
     // Get command line arguments, open input file(s) if necessary
@@ -494,8 +506,8 @@ int main(int argc, char *argv[])
     
     fltarray Data;
     io_1d_read_data(nameSignalIn, Data, &Header);
-    reform_to_1d(Data);
     Header.origin = Cmd;
+    reform_to_1d(Data);
     int Nx = Data.nx();
     
     if (NbrScale1D == 0) NbrScale1D=maxscalenumber(Nx);
@@ -543,10 +555,13 @@ int main(int argc, char *argv[])
     MB.ALDCT_Sensibility = COS_Sensibility;
     MB.ALDCT_InfoCost = Infocost;
         
-    if (Noise_Sig == -1) 
-       Noise_Sig = mr1d_detect_noise (Data);
- 
-       
+    if (Noise_Sig == -1)
+    {
+        if (UseMask == False) Noise_Sig = mr1d_detect_noise (Data);
+        else Noise_Sig = detect1d_noise_from_med(Data);
+    }
+    if (Noise_Sig == 0) Noise_Sig = Data.sigma();
+    
     MB.DataSigmaNoise = Noise_Sig;
     MB.CFAR = CFAR;
     MB.CFDR = CFDR;
@@ -556,7 +571,10 @@ int main(int argc, char *argv[])
     // MB.alloc (Nx, Tab); 
     MB.alloc (Nx);
     
-    if (UseMask == True)
+    MB.UseMask_ = UseMask ;
+    MB.PowerConstraint = InpaintPowerConstraint;
+    
+    if (MB.UseMask_ == True)
       {
       MB.MaskedData.alloc(Nx, "Mask");
         for (i=0; i < Nx; i++)
@@ -580,7 +598,9 @@ int main(int argc, char *argv[])
     if (FirstSoftThreshold < 0) 
          MB.FirstSoftThreshold=MB.compute_first_lambda (Data);
     else MB.FirstSoftThreshold = FirstSoftThreshold;
-      
+    // cout << "FFirstSoftThreshold == " << MB.FirstSoftThreshold <<endl;
+
+    
     MB.LastSoftThreshold = LastSoftThreshold;  
     
     MB.infoVerbose (nameSignalIn, nameSignalOut);

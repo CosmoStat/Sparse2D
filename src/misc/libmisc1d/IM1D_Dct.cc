@@ -45,6 +45,64 @@ void Block1D::alloc(int NSig, int ParamBlockSize, float Overlapping, Bool UseBlo
 */
 /***********************************************************************/
 
+void Block1D::alloc (int NSig, int ParamBlockSize, Bool UseBlockSizePow2)
+{
+    _Nx=NSig;
+    _BlockSize = ParamBlockSize;
+    BLOCKSIZE_Power_of_2 = UseBlockSizePow2;
+
+    if (_BlockSize==0) {
+       _Nxb = 1;
+       if (is_power_of_2(_Nx)) _BlockSize = _Nx;
+       else {
+          int i=1;
+          while (i < _Nx) i*=2;
+      _BlockSize = i;
+       }
+       _BlockOverlap=False;
+    } else if (_BlockSize==_Nx) {
+       _Nxb = 1;
+       int i=1;
+       if (is_power_of_2(_Nx)) _BlockSize = _Nx;
+       else {
+          while (i < _Nx) i*=2;
+         _BlockSize = i;
+       }
+       _BlockOverlap=False;
+    } else {
+       // cout << "BlockSize = " << BlockSize << endl;
+       if (_BlockOverlap == True){
+               _BlockSigSize = (_BlockSize+1)/2;
+               _Nxb =  (_Nx %  _BlockSigSize == 0) ?
+                       _Nx / _BlockSigSize - 1 : _Nx / _BlockSigSize + 1 ;
+       
+       }
+       else{ _BlockSigSize = _BlockSize;
+             _Nxb =  (_Nx %  _BlockSigSize == 0) ?
+                     _Nx / _BlockSigSize : _Nx / _BlockSigSize + 1 ;
+       
+       }
+       if (!(is_power_of_2(_BlockSize))){
+          int i=1, b=_BlockSize;
+          while (i < b) i*=2;
+         _BlockSize = i;
+       }
+    }
+    
+    _NbrBlock = _Nxb;
+    if (_BlockOverlap == False) _BlockSigSize = 0;
+    
+    if (_Verbose == True) {
+       cout << "Sig size = " << _Nx << ", BlockSize = " << _BlockSize << endl;
+       cout << "Nbr Blocks = " << _Nxb << endl;
+       if (_BlockOverlap == True)
+          cout << "Block Overlap: size = " << _BlockSigSize << endl;
+       else cout << "No Block Overlap" << endl;
+    }
+}
+/* PB code introduced in 2013 for dictionary learning, make cb_mca1d having a bad behavior
+ problem is not undertood.
+ 
 void Block1D::alloc (int NSig, int ParamBlockSize, Bool UseBlockSizePow2) 
 {
 
@@ -96,7 +154,8 @@ void Block1D::alloc (int NSig, int ParamBlockSize, Bool UseBlockSizePow2)
     
     _NbrBlock = _Nxb;
  
-    if (_Verbose == True) {
+   //  if (_Verbose == True)
+    {
        cout << "InParamBlockSize = " << ParamBlockSize << ". Sig size = " << _Nx << ", BlockSize = " << _BlockSize << endl;
        cout << "Nbr Blocks = " << _Nxb << endl;
        if (_BlockOverlap == True) 
@@ -104,11 +163,36 @@ void Block1D::alloc (int NSig, int ParamBlockSize, Bool UseBlockSizePow2)
        else cout << "No Block Overlap" << endl;
     }
 }
-
+*/
 /*********************************************************************/
 // Block1D::get_weight        
 /*********************************************************************/
+double Block1D::get_weight (int PosPix, int CurrentBlock, int MaxBlockNumber) {
 
+    double ValReturn=1.;
+    if ( (_BlockSize % 2 == 0) ||
+         ( (PosPix != 0)  && (PosPix != _BlockSize-1))) {
+         
+       int Center = _BlockSize / 2;
+       if ((CurrentBlock != 0)  &&  (PosPix < Center))
+           ValReturn =   (float) pow(sin((double) (PosPix)
+                       / (double) Center*PI/2.), 2.);
+       else if ((CurrentBlock != MaxBlockNumber-1)  &&  (PosPix > Center))
+           ValReturn =   (float) pow(cos((double)(PosPix-Center)
+                       / (double) Center *PI/2.), 2.);
+    
+    } else {
+    
+       if  ((CurrentBlock != 0) && (PosPix==0))
+          ValReturn=0.;
+       else if ((CurrentBlock != MaxBlockNumber-1) && (PosPix == _BlockSize-1))
+      ValReturn=0.;
+    }
+    return ValReturn;
+}
+
+/* PB code introduced in 2013 for dictionary learning, make cb_mca1d having a bad behavior
+ problem is not undertood.
 double Block1D::get_weight (int PosPix, int CurrentBlock, int MaxBlockNumber)
 {
 	double ValReturn;
@@ -127,11 +211,12 @@ double Block1D::get_weight (int PosPix, int CurrentBlock, int MaxBlockNumber)
 	return ValReturn;
     
 }
-        
+*/
 /*********************************************************************/
 // Block1D::get_block_sig        
 /*********************************************************************/
-
+/* PB code introduced in 2013 for dictionary learning, make cb_mca1d having a bad behavior
+ problem is not undertood.
 void Block1D::get_block_sig (int Bx, fltarray& Sig, fltarray& SigBlock, Bool Weight) 
 {
 // Extract the block (Bi) from SIg and put it in SigBlock
@@ -159,11 +244,31 @@ void Block1D::get_block_sig (int Bx, fltarray& Sig, fltarray& SigBlock, Bool Wei
    }
    //cout << "BLOCK: " << Bx <<", Dep = "<< Depx << endl;
 }
+*/
+void Block1D::get_block_sig (int Bx, fltarray& Sig, fltarray& SigBlock, Bool Weight) {
+// Extract the block (Bi) from SIg and put it in SigBlock
+
+   int Depx = (_BlockSize-_BlockSigSize)*Bx;
+   type_border Bord = I_MIRROR;
+   
+   if ((_BlockOverlap == False) || (_WeightFirst == False)) {
+      // cout << "get_block_ima NO Weight " << endl;
+      for (int k = 0; k < _BlockSize; k++)
+         SigBlock(k) = Sig(Depx+k,Bord);
+   
+   } else {
+      // cout << "get_block_ima  Weight " << endl;
+      for (int k = 0; k < _BlockSize; k++)
+         SigBlock(k) = Sig(Depx+k,Bord) * get_weight(k, Bx, _Nxb);
+   }
+   //cout << "BLOCK: " << Bx <<", Dep = "<< Depx << endl;
+}
 
 /*********************************************************************/
 // Block1D::put_block_sig          
 /*********************************************************************/
-
+/* PB code introduced in 2013 for dictionary learning, make cb_mca1d having a bad behavior
+ problem is not undertood.
 void Block1D::put_block_sig (int Bx, fltarray& Sig, fltarray& SigBlock) 
 {
 // Extract the block (Bi) from sig and put it in SigBlock
@@ -175,11 +280,25 @@ void Block1D::put_block_sig (int Bx, fltarray& Sig, fltarray& SigBlock)
 
    //cout << "BLOCK: " << Bx <<", Dep = "<< Depx << endl;
 }
+*/
 
+void Block1D::put_block_sig (int Bx, fltarray& Sig, fltarray& SigBlock) {
+// Extract the block (Bi) from sig and put it in SigBlock
+
+   int Depx = (_BlockSize-_BlockSigSize)*Bx;
+ 
+   for (int k=0; k<_BlockSize; k++)
+      if ((Depx+k >= 0) && (Depx+k < _Nx))
+         Sig(Depx+k) = SigBlock(k);
+
+   //cout << "BLOCK: " << Bx <<", Dep = "<< Depx << endl;
+}
 
 /*********************************************************************/
 // Block1D::add_block_sig       
 /*********************************************************************/
+/* PB code introduced in 2013 for dictionary learning, make cb_mca1d having a bad behavior
+   problem is not undertood.
 void Block1D::add_block_sig (int Bx, fltarray& Sig, fltarray& SigBlock, Bool Weight) 
 {
 // Add the block (Bx) SigBlock in Sig  with weighted values
@@ -202,6 +321,30 @@ void Block1D::add_block_sig (int Bx, fltarray& Sig, fltarray& SigBlock, Bool Wei
       for (int k=0; k<_BlockSize; k++)
          if ((Depx+k >= 0) && (Depx+k < _Nx)) 
             Sig(Depx+k) += SigBlock(k);  
+   }
+}
+ */
+
+void Block1D::add_block_sig (int Bx, fltarray& Sig, fltarray& SigBlock, Bool Weight) {
+// Add the block (Bx) SigBlock in Sig  with weighted values
+
+   int Depx = (_BlockSize-_BlockSigSize)*Bx;
+    
+   if ((_BlockOverlap == True) && (_WeightFirst == False)) {
+   
+      // cout << "add_block_sig Weight " << endl;
+      // if (_BlockOverlap == True) cout << "_BlockOverlap True" << endl;
+      // if (_WeightFirst == False) cout << "_WeightFirst False" << endl;
+      for (int k=0; k<_BlockSize; k++)
+         if ((Depx+k >= 0) && (Depx+k < _Nx))
+            Sig(Depx+k) += SigBlock(k)*get_weight(k, Bx, _Nxb);
+   
+   } else {
+   
+      // cout << "add_block_sig NO Weight " << endl;
+      for (int k=0; k<_BlockSize; k++)
+         if ((Depx+k >= 0) && (Depx+k < _Nx))
+            Sig(Depx+k) += SigBlock(k);
    }
 }
 
@@ -355,7 +498,6 @@ void LOCAL_DCT1D::alloc(int Nxi, int BS, Bool Overlapping, Bool WeightF) {
       exit(-1);
    }
    
-   
    if ((_BlockSize > _Nx) || (_BlockSize <= 0)) _BlockSize = _Nx;
    _B1D._BlockOverlap = Overlapping;
    _B1D._WeightFirst = WeightF;
@@ -363,7 +505,7 @@ void LOCAL_DCT1D::alloc(int Nxi, int BS, Bool Overlapping, Bool WeightF) {
    _BlockSize = _B1D.block_size();
    _Nxt = _B1D.nbr_block_nx() * _BlockSize;
    _B1DTrans.alloc (_Nxt, _BlockSize);
-   _DCTSig.alloc (_Nxt, "DCTSig");
+    _DCTSig.alloc (_Nxt, "DCTSig");
 }
 /*********************************************************************/
 

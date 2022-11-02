@@ -202,7 +202,8 @@ class MCA1D {
    fltarray *TabALDCT;      // ALDCT bases decomposition
    float ALDCT_Sensibility;
    int ALDCT_InfoCost;
-
+   
+   
    // Routines
    // --------
    MCA1D ()  {reset();}   // Constructor

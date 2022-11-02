@@ -296,7 +296,7 @@ float mr1d_level_noise (MR_1D &MR_Data, int s, float N_Sigma, float N_Sigma0)
 }
 
 /************************************************************************/
-
+#define PRINT_DATA 0
 float mr1d_detect_noise(fltarray &Sig, int NbrScale, float N_Sigma, 
                                        int Niter, int NiterClip)
 {
@@ -308,14 +308,16 @@ float mr1d_detect_noise(fltarray &Sig, int NbrScale, float N_Sigma,
     int s,i,nb,k=0;
 
     mr1d_noise_compute (NbrScale, TO1_PAVE_B3SPLINE);
-
+    // cout << "mr1d_noise_compute: " <<NbrScale << endl;
+    
     Noise = detect1d_noise_from_med(Sig); 
     fltarray Buff(Nx);
     filt1d_mediane  (Sig, Buff, Nx, 3);
     Buff = Sig - Buff;
 //    Noise = sigma_clip(Buff, NiterClip) / 0.972463;
     Noise = Buff.sigma_clip (NiterClip) / 0.972463;
-    
+    // cout << "mr1d_noise_compute: " <<Noise << endl;
+
     // Kill too large value in the input signal for noise estimation
     for (i=0;i<Nx;i++) 
     {
