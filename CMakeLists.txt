@@ -77,6 +77,13 @@ if(USE_FFTW)
 
 endif()
 
+if(BUILD_MR)
+
+	# Locate GSL
+	find_pkg(GSL gsl)
+
+endif()
+
 if(BUILD_MRS)
 
 	# Locate HEALPix
