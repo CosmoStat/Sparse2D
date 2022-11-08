@@ -58,7 +58,7 @@ if(
 	"${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang"
 	AND NOT "${CMAKE_CXX_COMPILER}" MATCHES "Homebrew"
 )
-  find_package(BigMac 0.0.5 REQUIRED)
+  find_package(BigMac 0.0.6 REQUIRED)
 endif()
 
 # Locate OpenMP

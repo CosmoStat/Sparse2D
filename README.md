@@ -102,6 +102,8 @@ In order to build Sparse2D from source, you will need to ensure you have install
 
    - [Armadillo](https://arma.sourceforge.net/)
      (not required if `ONLY_SPARSE=ON` or `ONLY_INPAINT=ON`)
+   - [BigMac](https://github.com/sfarrens/bigmac)
+     (only required if using macOS `clang`)(>= v0.0.6)
    - [FFTW](https://www.fftw.org/)
      (not required if `ONLY_SPARSE=ON` and `USE_FFTW=OFF`)
    - [GSL](https://www.gnu.org/software/gsl/) (not required if `ONLY_SPARSE=ON`)
