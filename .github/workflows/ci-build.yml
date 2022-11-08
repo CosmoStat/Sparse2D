@@ -55,7 +55,7 @@ jobs:
           mkdir build
           cd build
           cmake .. --log-level=VERBOSE
-          make
+          make -j 4
 
       - name: Run Unit Tests
         run: |
