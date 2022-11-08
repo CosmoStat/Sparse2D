@@ -24,7 +24,8 @@ option(BUILD_ASTRO_WL "BUILD_ASTRO_WL" ON)    # Build the ASTRO_WL package
 option(BUILD_ASTRO_GAL "BUILD_ASTRO_GAL" ON)  # Build the ASTRO_GAL package
 option(BUILD_PYBIND "BUILD_PYBIND" ON)        # Build Python bindings
 option(ONLY_SPARSE "ONLY_SPARSE" OFF)         # Only build the SPARSE package
-option(USE_FFTW "USE_FFTW" ON)                # Use FFTW libraries
+option(ONLY_INPAINT "ONLY_INPAINT" OFF)       # Only build the packages required for inpainting
+option(USE_FFTW "USE_FFTW" ON)                # Use FFTW libraries (optional for sparse package only)
 option(BUILD_CFITSIO "BUILD_CFITSIO" OFF)     # Build CFITSIO from source
 option(BUILD_FFTW3 "BUILD_FFTW3" OFF)         # BUILD FFTW3 from source
 option(BUILD_HEALPIX "BUILD_HEALPIX" OFF)     # BUILD HEALPix from source
@@ -43,6 +44,17 @@ if(ONLY_SPARSE)
   set(BUILD_MRS OFF)
   set(BUILD_ASTRO_WL OFF)
   set(BUILD_ASTRO_GAL OFF)
+endif()
+
+# If ONLY_INPAINT is set disable additional builds
+if(ONLY_INPAINT)
+  set(BUILD_MSVST OFF)
+  set(BUILD_MWIR OFF)
+  set(BUILD_DICLEARN OFF)
+  set(BUILD_MRS OFF)
+  set(BUILD_ASTRO_WL OFF)
+  set(BUILD_ASTRO_GAL OFF)
+  set(BUILD_PYBIND OFF)
 endif()
 
 # If BUILD_DEPS is set build all dependencies from source
@@ -107,6 +119,7 @@ message(VERBOSE "  BUILD_ASTRO_WL: ${BUILD_ASTRO_WL}")
 message(VERBOSE "  BUILD_ASTRO_GAL: ${BUILD_ASTRO_GAL}")
 message(VERBOSE "  BUILD_PYBIND: ${BUILD_PYBIND}")
 message(VERBOSE "  ONLY_SPARSE: ${ONLY_SPARSE}")
+message(VERBOSE "  ONLY_INPAINT: ${ONLY_INPAINT}")
 message(VERBOSE "  USE_FFTW: ${USE_FFTW}")
 message(VERBOSE "  BUILD_CFITSIO: ${BUILD_CFITSIO}")
 message(VERBOSE "  BUILD_FFTW3: ${BUILD_FFTW3}")
