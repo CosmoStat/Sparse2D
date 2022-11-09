@@ -100,13 +100,20 @@ In order to build Sparse2D from source, you will need to ensure you have install
 
 #### Optional
 
-   - [Armadillo](https://arma.sourceforge.net/) (not required if `ONLY_SPARSE=ON`)
-   - [FFTW](https://www.fftw.org/) (not required if `USE_FFTW=OFF`)
+   - [Armadillo](https://arma.sourceforge.net/)
+     (not required if `ONLY_SPARSE=ON` or `ONLY_INPAINT=ON`)
+   - [BigMac](https://github.com/sfarrens/bigmac)
+     (only required if using macOS `clang`)(>= v0.0.6)
+   - [FFTW](https://www.fftw.org/)
+     (not required if `ONLY_SPARSE=ON` and `USE_FFTW=OFF`)
    - [GSL](https://www.gnu.org/software/gsl/) (not required if `ONLY_SPARSE=ON`)
-   - [HEALPix](https://healpix.sourceforge.io/) (not required if `ONLY_SPARSE=ON`)
+   - [HEALPix](https://healpix.sourceforge.io/)
+     (not required if `ONLY_SPARSE=ON` or `ONLY_INPAINT=ON`)
    - [libomp](https://openmp.llvm.org/) (only required if using macOS `clang`)
-   - [Pybind11](https://pybind11.readthedocs.io/) (not required if `BUILD_PYBIND=OFF`)
-   - [Python](https://www.python.org/) (not required if `BUILD_PYBIND=OFF`)
+   - [Pybind11](https://pybind11.readthedocs.io/)
+     (not required if `BUILD_PYBIND=OFF` or `ONLY_INPAINT=ON`)
+   - [Python](https://www.python.org/)
+     (not required if `BUILD_PYBIND=OFF` or `ONLY_INPAINT=ON`)
 
 ### Full Sparse2D build
 
@@ -128,6 +135,10 @@ make
 make install
 ```
 
+> Tip: You can significantly increase the speed of compilation by using the
+> `--jobs` (or `-j`) option for `make`, which builds the targets in parallel.
+> For example, to use 8 cores you would run `make -j 8`.
+
 ### Build options
 
 Sparse2D supports the following CMake build options:
@@ -144,7 +155,8 @@ Sparse2D supports the following CMake build options:
 - `BUILD_ASTRO_GAL` (default `ON`): Build the ASTRO_GAL package
 - `BUILD_PYBIND` (default `ON`): Build Python bindings
 - `ONLY_SPARSE` (default `OFF`): Only build the SPARSE package
-- `USE_FFTW` (default `ON`): Use FFTW libraries
+- `ONLY_INPAINT` (default `OFF`): Only build the packages required for inpainting
+- `USE_FFTW` (default `ON`): Use FFTW libraries (optional for sparse package only)
 - `BUILD_CFITSIO` (default `OFF`): Build CFITSIO from source
 - `BUILD_FFTW3` (default `OFF`): BUILD FFTW3 from source
 - `BUILD_HEALPIX` (default `OFF`): BUILD HEALPix from source

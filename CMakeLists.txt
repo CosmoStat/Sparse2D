@@ -58,7 +58,7 @@ if(
 	"${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang"
 	AND NOT "${CMAKE_CXX_COMPILER}" MATCHES "Homebrew"
 )
-  find_package(BigMac 0.0.5 REQUIRED)
+  find_package(BigMac 0.0.6 REQUIRED)
 endif()
 
 # Locate OpenMP
@@ -74,6 +74,13 @@ if(USE_FFTW)
 
 	# Locate FFTW
 	find_pkg(FFTW3 "fftw3 fftw3f")
+
+endif()
+
+if(BUILD_MR)
+
+	# Locate GSL
+	find_pkg(GSL gsl)
 
 endif()
 
