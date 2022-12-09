@@ -39,7 +39,7 @@ function(build_pybind_target target libs)
   add_library(${tarname} SHARED ${target})
 
   # Link libraries to target
-  target_link_libraries(${tarname} "${libs}" OpenMP::OpenMP_CXX)
+  target_link_libraries(${tarname} "${libs}" OpenMP::OpenMP_CXX pybind11::module pybind11::lto pybind11::windows_extras)
 
   # Set system dependend properties
   if(APPLE)
@@ -49,8 +49,8 @@ function(build_pybind_target target libs)
   endif(APPLE)
 
   # Set target prefix and suffix properties
-  set_target_properties(${tarname} PROPERTIES SUFFIX .so)
-  set_target_properties(${tarname} PROPERTIES PREFIX "")
+  pybind11_extension(${tarname})
+  pybind11_strip(${tarname})
 
   # Set the install path for bindings
   install(TARGETS ${tarname} DESTINATION python)
