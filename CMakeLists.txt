@@ -126,6 +126,11 @@ if(BUILD_PYBIND)
 	find_package(pybind11 REQUIRED)
 	include_directories(${pybind11_INCLUDE_DIR})
 
+	# Set default install path for bindings
+	if(NOT DEFINED PYBIND_INSTALL_PATH)
+		set(PYBIND_INSTALL_PATH "python")
+	endif()
+
 endif()
 
 # ------------------ #

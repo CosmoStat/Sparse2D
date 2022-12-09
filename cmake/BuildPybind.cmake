@@ -53,6 +53,6 @@ function(build_pybind_target target libs)
   pybind11_strip(${tarname})
 
   # Set the install path for bindings
-  install(TARGETS ${tarname} DESTINATION python)
+  install(TARGETS ${tarname} DESTINATION ${PYBIND_INSTALL_PATH})
 
 endfunction()
