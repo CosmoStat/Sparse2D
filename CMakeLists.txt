@@ -64,8 +64,8 @@ endif()
 # Locate OpenMP
 find_package(OpenMP REQUIRED)
 
-# Locat Catch2
-find_package(Catch2 3 REQUIRED)
+# Locate Catch2
+find_package(Catch2 3)
 
 # Locate CFITSIO
 find_pkg(CFITSIO cfitsio)
@@ -161,8 +161,12 @@ add_subdirectory(src)
 # Unit Tests #
 # -----------#
 
-# Enable unit Tests
-enable_testing()
+if(Catch2_FOUND)
 
-# Build unit tests
-add_subdirectory(tests)
+	# Enable unit Tests
+	enable_testing()
+
+	# Build unit tests
+	add_subdirectory(tests)
+
+endif()
