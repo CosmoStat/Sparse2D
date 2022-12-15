@@ -16,17 +16,37 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest]
+        python-version: ["3.10"]
+
+    defaults:
+      run:
+        shell: bash -el {0}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+
+      - name: Set up Conda with Python ${{ matrix.python-version }}
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+          auto-activate-base: false
+          activate-environment: sparse2d
+
+      - name: Check Conda
+        run: |
+          conda info
+          conda list
+          python --version
 
       - name: Install macOS Dependencies
         if: runner.os == 'macOS'
         run: |
           brew tap sfarrens/sf
           brew install bigmac
-          brew install catch2 cfitsio fftw libomp armadillo gsl healpix pybind11 python
+          brew install catch2 cfitsio fftw libomp armadillo gsl healpix
 
       - name: Install Linux Dependencies
         if: runner.os == 'Linux'
@@ -39,16 +59,17 @@ jobs:
           sudo apt-get install -y libsharp-dev
           sudo apt-get install -y libhealpix-cxx-dev
           sudo apt-get install -y healpy-data
-          sudo apt-get install -y python3
-          sudo apt-get install -y python3-pip
-          python3 -m pip install pybind11
-          pip show pybind11
           wget https://github.com/catchorg/Catch2/archive/refs/tags/v3.1.0.tar.gz
           tar -xvf v3.1.0.tar.gz
           cd Catch2-3.1.0
           cmake -Bbuild -H. -DBUILD_TESTING=OFF
           sudo cmake --build build/ --target install
           cd
+
+      - name: Install Python Dependencies
+        run: |
+          pip install pybind11
+          pip show pybind11
 
       - name: Compile Sparse2D Binaries
         run: |
@@ -76,10 +97,20 @@ jobs:
 
     strategy:
       fail-fast: false
+      matrix:
+        python-version: ["3.10"]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Set up Conda with Python ${{ matrix.python-version }}
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+          auto-activate-base: false
+          activate-environment: sparse2d
 
       - name: Install Linux Dependencies
         run: |
@@ -87,14 +118,17 @@ jobs:
           sudo apt-get install -y libcfitsio-dev
           sudo apt-get install -y python3
           sudo apt-get install -y python3-pip
-          python3 -m pip install pybind11
-          pip show pybind11
           wget https://github.com/catchorg/Catch2/archive/refs/tags/v3.1.0.tar.gz
           tar -xvf v3.1.0.tar.gz
           cd Catch2-3.1.0
           cmake -Bbuild -H. -DBUILD_TESTING=OFF
           sudo cmake --build build/ --target install
           cd
+
+      - name: Install Python Dependencies
+        run: |
+          pip install pybind11
+          pip show pybind11
 
       - name: Compile Sparse2D Binaries
         run: |

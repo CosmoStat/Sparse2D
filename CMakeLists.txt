@@ -105,6 +105,7 @@ endif()
 if(BUILD_PYBIND)
 
 	# Locate Python
+	set(Python_FIND_STRATEGY LOCATION)
 	find_package(Python COMPONENTS Interpreter Development)
 	include_directories(${Python_INCLUDE_DIRS})
 	link_directories(${Python_LIBRARY_DIRS})
