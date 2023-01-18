@@ -35,6 +35,6 @@ ExternalProject_Add(healpix_build
 )
 
 # Set HEALPix variables
-set(HEALPIX_LIBRARY_DIRS ${CMAKE_BINARY_DIR}/healpix/lib/)
-set(HEALPIX_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/healpix/include/healpix_cxx/)
-set(HEALPIX_LIBRARIES -lhealpix_cxx)
+set(HEALPIX_LIBRARY_DIRS ${CMAKE_BINARY_DIR}/healpix/lib/ CACHE INTERNAL "")
+set(HEALPIX_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/healpix/include/healpix_cxx/ CACHE INTERNAL "")
+set(HEALPIX_LIBRARIES -lhealpix_cxx CACHE INTERNAL "")

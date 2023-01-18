@@ -93,7 +93,6 @@ In order to build Sparse2D from source, you will need to ensure you have install
 #### Required
 
    - C/C++ compiler (*e.g.* `gcc` or `clang`)
-   - [Catch2](https://github.com/catchorg/Catch2) (>= v3)
    - [CMake](http://www.cmake.org) (>= v3.12)
    - [CFITSIO](https://heasarc.gsfc.nasa.gov/fitsio/)
    - [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/)
@@ -104,6 +103,8 @@ In order to build Sparse2D from source, you will need to ensure you have install
      (not required if `ONLY_SPARSE=ON` or `ONLY_INPAINT=ON`)
    - [BigMac](https://github.com/sfarrens/bigmac)
      (only required if using macOS `clang`)(>= v0.0.6)
+   - [Catch2](https://github.com/catchorg/Catch2)
+     (only required for unit tests)(>= v3)
    - [FFTW](https://www.fftw.org/)
      (not required if `ONLY_SPARSE=ON` and `USE_FFTW=OFF`)
    - [GSL](https://www.gnu.org/software/gsl/) (not required if `ONLY_SPARSE=ON`)

@@ -12,31 +12,37 @@
 # Locate pkgconfig package
 function(find_pkg package module)
 
-  # Seach for the package module(s)
-  pkg_check_modules(${package} QUIET "${module}")
-
-  # Build from source or report package variables found
+  # Build from source or find package
   if(BUILD_${package})
 
+    # Include build package module
     message(STATUS "${package} will be built from source.")
+    set(${package}_FOUND TRUE)
     include("Build${package}")
-
-  elseif(${package}_FOUND)
-
-    message(STATUS "Found ${package}: version ${${package}_VERSION}")
-    message(VERBOSE "  ${package}_INCLUDE_DIRS: ${${package}_INCLUDE_DIRS}")
-    message(VERBOSE "  ${package}_LIBRARY_DIRS: ${${package}_LIBRARY_DIRS}")
-    message(VERBOSE "  ${package}_LIBRARIES: ${${package}_LIBRARIES}")
 
   else()
 
+    # Seach for the package module(s)
+    pkg_check_modules(${package} QUIET "${module}")
+
+  endif()
+
+  # Make sure the package was found
+  if(NOT ${package}_FOUND)
+
     message(
       FATAL_ERROR "${package} not found! Install this package or set \
-      BUILD_DEPS=ON. Note that some depenencies will take a long time to \
-      build."
+      BUILD_${package}=ON. Note that some depenencies will take a long time \
+      to build."
     )
 
   endif()
+
+  # Report package contents
+  message(VERBOSE "  Package: ${package}")
+  message(VERBOSE "  ${package}_INCLUDE_DIRS: ${${package}_INCLUDE_DIRS}")
+  message(VERBOSE "  ${package}_LIBRARY_DIRS: ${${package}_LIBRARY_DIRS}")
+  message(VERBOSE "  ${package}_LIBRARIES: ${${package}_LIBRARIES}")
 
   # Include paths to package header and library files
   include_directories(${${package}_INCLUDE_DIRS})

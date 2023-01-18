@@ -48,6 +48,9 @@ function(build_lib library)
   # Add the library
   add_library(${libname} STATIC ${src_${libname}})
   set_property(TARGET ${libname} PROPERTY POSITION_INDEPENDENT_CODE ON)
+  if(BUILD_CFITSIO)
+    add_dependencies(${libname} cfitsio_build)
+  endif()
 
   # Set the install path for header files and libraries
   install(FILES ${inc_${libname}} DESTINATION include/sparse2d)
