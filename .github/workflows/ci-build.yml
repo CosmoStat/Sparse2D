@@ -26,20 +26,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-
-      - name: Set up Conda with Python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
         with:
-          auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-          auto-activate-base: false
-          activate-environment: sparse2d
 
-      - name: Check Conda
-        run: |
-          conda info
-          conda list
-          python --version
+      - name: Check Python Version
+        run: python --version
 
       - name: Install macOS Dependencies
         if: runner.os == 'macOS'
@@ -65,11 +58,6 @@ jobs:
           cmake -Bbuild -H. -DBUILD_TESTING=OFF
           sudo cmake --build build/ --target install
           cd
-
-      - name: Install Python Dependencies
-        run: |
-          pip install pybind11
-          pip show pybind11
 
       - name: Compile Sparse2D Binaries
         run: |
@@ -104,13 +92,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Set up Conda with Python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
         with:
-          auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-          auto-activate-base: false
-          activate-environment: sparse2d
+
+      - name: Check Python Version
+        run: python --version
 
       - name: Install Linux Dependencies
         run: |
@@ -124,11 +112,6 @@ jobs:
           cmake -Bbuild -H. -DBUILD_TESTING=OFF
           sudo cmake --build build/ --target install
           cd
-
-      - name: Install Python Dependencies
-        run: |
-          pip install pybind11
-          pip show pybind11
 
       - name: Compile Sparse2D Binaries
         run: |

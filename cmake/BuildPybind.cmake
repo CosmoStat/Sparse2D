@@ -39,7 +39,7 @@ function(build_pybind_target target libs)
   add_library(${tarname} SHARED ${target})
 
   # Link libraries to target
-  target_link_libraries(${tarname} "${libs}" OpenMP::OpenMP_CXX pybind11::module pybind11::lto pybind11::windows_extras)
+  target_link_libraries(${tarname} "${libs}" OpenMP::OpenMP_CXX pybind11::headers)
 
   # Set system dependend properties
   if(APPLE)
