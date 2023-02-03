@@ -29,6 +29,7 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # Load CMake tools
 include(ExternalProject)
+include(FetchContent)
 include(FindPkgConfig)
 
 # Load custom CMake functions: find_pkg, build_package, build_pybind
@@ -52,6 +53,19 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
 # ----------------- #
 # Find Dependencies #
 # ----------------- #
+
+if(BUILD_PYBIND)
+
+	# Locate Python
+	set(Python_FIND_STRATEGY LOCATION)
+	find_package(Python COMPONENTS Interpreter Development)
+	include_directories(${Python_INCLUDE_DIRS})
+	link_directories(${Python_LIBRARY_DIRS})
+
+	# Source Pybind11
+	include(FetchPybind11)
+
+endif()
 
 # Use BigMac for local clang build
 if(
@@ -99,38 +113,6 @@ if(BUILD_DICLEARN)
 	# Locate Armadillo
 	find_package(Armadillo)
 	include_directories(${ARMADILLO_INCLUDE_DIRS})
-
-endif()
-
-if(BUILD_PYBIND)
-
-	# Locate Python
-	set(Python_FIND_STRATEGY LOCATION)
-	find_package(Python COMPONENTS Interpreter Development)
-	include_directories(${Python_INCLUDE_DIRS})
-	link_directories(${Python_LIBRARY_DIRS})
-
-	# Allow CMake to check the current Python environment for Pybind11
-	set(pybind11_cmake_path "/python*/*-packages/pybind11/share/*/*")
-	file(
-		GLOB
-		pybind11_path_list
-		"${Python_LIBRARY_DIRS}${pybind11_cmake_path}"
-		"/usr/local/lib${pybind11_cmake_path}"
-		"/home/runner/.local/lib${pybind11_cmake_path}"
-	)
-	if(pybind11_path_list)
-		list(GET pybind11_path_list 0 pybind11_DIR)
-	endif()
-
-	# Locate Pybind11
-	find_package(pybind11 REQUIRED)
-	include_directories(${pybind11_INCLUDE_DIR})
-
-	# Set default install path for bindings
-	if(NOT DEFINED PYBIND_INSTALL_PATH)
-		set(PYBIND_INSTALL_PATH "python")
-	endif()
 
 endif()
 
