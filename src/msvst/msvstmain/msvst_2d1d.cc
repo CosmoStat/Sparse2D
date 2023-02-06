@@ -49,6 +49,7 @@ double GLEVEL = 3.5;        // Gauss-detection level (k-sigma)
 bool   TRANSF2 = false;     // ver2 in the transform
 bool   MODELIM = false;     // model image
 type_border TBORDER = I_MIRROR;  // border type
+bool   VARMODCORR = false;  // modified correction for detail-detail variances
 bool   WRITESNR = false;
 
 // NOTICE : FDR are all band-by-band tested
@@ -81,6 +82,7 @@ static void usage(char *argv[])
   cout << "                      B = 1 : mirror (default)" << endl;
   cout << "                      B = 2 : period" << endl;
   cout << "                      B = 3 : zero" << endl;
+  cout << "    [-S] use modified correction for detail-detail variances" << endl;
   cout << "    [-v] verbose mode" << endl;
   cout << endl;
 }
@@ -93,7 +95,7 @@ static void filtinit(int argc, char *argv[])
     int c;  
 
     // get options 
-    while ((c = GetOpt(argc,argv,"M:E:s:c:n:N:F:f:I:i:Q:B:TKpv")) != -1) 
+    while ((c = GetOpt(argc,argv,"M:E:s:c:n:N:F:f:I:i:Q:B:TKpSv")) != -1) 
     {
        switch (c) 
 	   {	
@@ -230,7 +232,11 @@ static void filtinit(int argc, char *argv[])
 	case 'p': 
 	  DETPOS = true;
 	  break;
-   
+
+   	case 'S': 
+	  VARMODCORR = true;
+	  break;
+
    	case 'v': 
 	  VERBOSE = true;
 	  break;
@@ -386,6 +392,7 @@ template <typename SUPTYPE>
 void b3SplineDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup)
 {
     double sigma;
+    double corr;
     
 	// wavelet filter configuration
 	B3VSTAtrous2D1D atrous(TBORDER);
@@ -451,8 +458,20 @@ void b3SplineDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup)
                 }
                 // denoise ddxyz
                 sigma = sqrt(Utils<double>::b32D1DVSTCoefXYVar (3, sxy, sz-1));
-                // sqrt(tau_2(g_1D)) = 0.7235; ignore correlation
-                bandDenoise<SUPTYPE>(*ddxyz, 0.7235*sigma, &multiSup[s], sxy, sz);      
+
+                if (VARMODCORR) 
+                {
+                    if ((sxy > 1) && (sz == 1))
+                        corr = 0.5 * sqrt(2);
+                    else
+                        corr = 0.5;
+                } 
+                else 
+                {
+                    // sqrt(tau_2(g_1D)) = 0.7235; ignore correlation
+                    corr = 0.7235;
+                }
+                bandDenoise<SUPTYPE>(*ddxyz, corr*sigma, &multiSup[s], sxy, sz);      
                 s++;                
             }
         }
@@ -757,6 +776,7 @@ int main(int argc, char *argv[])
 	    cout << "First detection scalez : " << FSCALEZ << endl;
 	    cout << "Ignore the last approx. band : " << (KILLLAST ? "true" : "false") << endl;
 	    cout << "Detect only positive coefficients : " << (DETPOS ? "true" : "false") << endl;
+	    cout << "Use modified variance corrections : " << (VARMODCORR ? "true" : "false") << endl;
   }
    
    // Denoising
