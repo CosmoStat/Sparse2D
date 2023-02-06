@@ -48,6 +48,7 @@ int    FSCALEZ = 1;         // First detection scalez
 double GLEVEL = 3.5;        // Gauss-detection level (k-sigma)
 bool   TRANSF2 = false;     // ver2 in the transform
 bool   MODELIM = false;     // model image
+type_border TBORDER = I_MIRROR;  // border type
 bool   WRITESNR = false;
 
 // NOTICE : FDR are all band-by-band tested
@@ -75,6 +76,11 @@ static void usage(char *argv[])
   cout << "                      I = 1 : L1-regularized iterative mode (default)" << endl;
   cout << "    [-i value] number of iteration (default = 10)" << endl; 
   cout << "    [-Q value] write SNR file for every band" << endl;
+  cout << "    [-B value] border modes" << endl;
+  cout << "                      B = 0 : cont" << endl;
+  cout << "                      B = 1 : mirror (default)" << endl;
+  cout << "                      B = 2 : period" << endl;
+  cout << "                      B = 3 : zero" << endl;
   cout << "    [-v] verbose mode" << endl;
   cout << endl;
 }
@@ -87,7 +93,7 @@ static void filtinit(int argc, char *argv[])
     int c;  
 
     // get options 
-    while ((c = GetOpt(argc,argv,"M:E:s:c:n:N:F:f:I:i:Q:TKpv")) != -1) 
+    while ((c = GetOpt(argc,argv,"M:E:s:c:n:N:F:f:I:i:Q:B:TKpv")) != -1) 
     {
        switch (c) 
 	   {	
@@ -196,6 +202,23 @@ static void filtinit(int argc, char *argv[])
 	  WRITESNR = true;  
 	  break;
 
+	case 'B':
+	  int border;
+	  if (sscanf(OptArg, "%d", &border) != 1)
+	    {
+	      cerr << "Bad or missing parameter " << OptArg << endl;
+	      exit(-1);
+	    }
+	  if (border == 0)
+	    TBORDER = I_CONT;
+	  else if (border == 1)
+	    TBORDER = I_MIRROR;
+	  else if (border == 2)
+	    TBORDER = I_PERIOD;
+	  else
+	    TBORDER = I_ZERO;
+	  break;
+	
 	case 'K': 
 	  KILLLAST = true;
 	  break;
@@ -365,7 +388,7 @@ void b3SplineDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup)
     double sigma;
     
 	// wavelet filter configuration
-	B3VSTAtrous2D1D atrous;
+	B3VSTAtrous2D1D atrous(TBORDER);
 
 	fltarray *cxy = new fltarray, *dxy = new fltarray;
 	fltarray *ccxyz = new fltarray[NSCALEZ+1];
@@ -499,7 +522,7 @@ void posProject (fltarray &data)
 // solve with the iterative algo. in using the multiresolution support
 void multiSupIter (fltarray &origdata, fltarray &solution, fltarray *model, fltarray *multiSup, int niter)
 {
-  Atrous2D1D atrous(I_MIRROR, TRANSF2);
+  Atrous2D1D atrous(TBORDER, TRANSF2);
   double lambda = 0, delta = 0;
   
   if (ITERMODE == L1REG)
@@ -727,6 +750,7 @@ int main(int argc, char *argv[])
     		cout << "Iterative Mode : L1 - Regularized" << endl;
     	cout << "Max. Iteration : " << NITER << endl;
     
+	    cout << "Border mode : " << TBORDER << endl;
         cout << "Max scalexy(s) : " << NSCALEXY << endl;
         cout << "Max scalez(s) : " << NSCALEZ << endl;
 	    cout << "First detection scalexy : " << FSCALEXY << endl;
