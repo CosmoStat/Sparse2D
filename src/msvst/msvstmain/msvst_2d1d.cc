@@ -355,7 +355,7 @@ void bandDenoise(fltarray &band, double sigma, to_array<SUPTYPE, true> *ms, int 
     {
         pr = ws.gaussHardThreshold(band, PROBA[PROGMODE], sigma, ms);
         if (VERBOSE)
-	      cerr << "(scalexy, scalez) = (" << sxy << ", " << sz << ") cut-off p-value = " << setprecision(6) << pr << endl;                 
+	      cout << "(scalexy, scalez) = (" << sxy << ", " << sz << ") cut-off p-value = " << setprecision(6) << pr << endl;                 
         if (WRITESNR)
         {
               sprintf(snr_filename, "%s_XY%d_Z%d.fits", Name_Imag_SNR, sxy, sz);
@@ -372,7 +372,7 @@ void bandDenoise(fltarray &band, double sigma, to_array<SUPTYPE, true> *ms, int 
     {
         fdrp = ws.gaussFDRThreshold(band, sigma, PROBA[PROGMODE], FDRINDEP, ms);
         if (VERBOSE)
-          cerr << "(scalexy, scalez) = (" << sxy << ", " << sz << ") cut-off p-value = " << setprecision(6) << fdrp << endl;                 
+          cout << "(scalexy, scalez) = (" << sxy << ", " << sz << ") cut-off p-value = " << setprecision(6) << fdrp << endl;                 
         if (WRITESNR)
         {
               sprintf(snr_filename, "%s_XY%d_Z%d.fits", Name_Imag_SNR, sxy, sz);
@@ -405,7 +405,7 @@ void b3SplineDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup)
     fltarray *ddxyz = new fltarray;
     fltarray *temp = new fltarray;
     
-    if (VERBOSE) cerr << "Atrous transform ... " << endl;
+    if (VERBOSE) cout << "Atrous transform ... " << endl;
 
     // create the ccpxyz of sxy = 0
     *temp = data;
@@ -572,7 +572,7 @@ void multiSupIter (fltarray &origdata, fltarray &solution, fltarray *model, flta
   for (int i=0; i<niter; i++)
   {
       int s = 0;
-      if (VERBOSE) cerr << "Iteration = " << (i+1) << " ... " << endl;
+      if (VERBOSE) cout << "Iteration = " << (i+1) << " ... " << endl;
       *tempd = origdata;
       if (MODELIM) *tempd -= *model;
       
@@ -698,16 +698,16 @@ void denoise (fltarray &data, fltarray *model)
  	fltarray *multiSup = new fltarray[NSCALEXY*(NSCALEZ+1) + NSCALEZ];
 
 	if (VERBOSE)
-	  cerr << "Initial denoising ... " << endl;
+	  cout << "Initial denoising ... " << endl;
 	  
     b3SplineDenoise<float>(data, multiSup);
 	data = *origData;
 	
 	if (VERBOSE)
-	  cerr << "Entering into the iterative denoising ..." << endl;
+	  cout << "Entering into the iterative denoising ..." << endl;
     multiSupIter (*origData, data, model, multiSup, NITER);
 	if (VERBOSE)
-	  cerr << "Iteration complete." << endl;
+	  cout << "Iteration complete." << endl;
 
 	delete origData; origData = NULL; 
     delete [] multiSup; multiSup = NULL;
@@ -784,10 +784,10 @@ int main(int argc, char *argv[])
 	   denoise(*data, model);
 
        if (VERBOSE)
-    	   cerr << "Writing denoising result file ... " << endl;
+    	   cout << "Writing denoising result file ... " << endl;
        fits_write_fltarr(Name_Imag_Out, *data, &header);
        if (VERBOSE)
-    	 cerr << "Writing complete." << endl;
+    	 cout << "Writing complete." << endl;
 
        if (MODELIM)
        {

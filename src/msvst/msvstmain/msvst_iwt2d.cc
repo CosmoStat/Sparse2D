@@ -331,21 +331,21 @@ void b3SplineDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup)
 		{
           // sigma = l2 norm of Id-B3 filter
 		  if (VERBOSE)
-              cerr << "Var = " << Utils<double>::b3VSTSepCoefVar (dim, s) << endl;
+              cout << "Var = " << Utils<double>::b3VSTSepCoefVar (dim, s) << endl;
           pr = ws.gaussHardThreshold(*cg, PROBA[PROGMODE], 
                                      sqrt(Utils<double>::b3VSTSepCoefVar (dim, s)), 
                                      ms ? &multiSup[s-1] : NULL);
 		  if (VERBOSE)
-		    cerr << "scale = " << s << " cut-off p-value = " << setprecision(6) << pr << endl;                 
+		    cout << "scale = " << s << " cut-off p-value = " << setprecision(6) << pr << endl;                 
         }
 		else if (PROGMODE == FDR)
 		{
 		  if (VERBOSE)
-              cerr << "Var = " << Utils<double>::b3VSTSepCoefVar (dim, s) << endl;
+              cout << "Var = " << Utils<double>::b3VSTSepCoefVar (dim, s) << endl;
           fdrp = ws.gaussFDRThreshold(*cg, sqrt(Utils<double>::b3VSTSepCoefVar (dim, s)), 
                                       PROBA[PROGMODE], FDRINDEP, ms ? &multiSup[s-1] : NULL);
 		  if (VERBOSE)
-		    cerr << "scale = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;                 
+		    cout << "scale = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;                 
         }
 	}
     
@@ -410,7 +410,7 @@ void multiSupIter (fltarray &origdata, fltarray &solution, fltarray *multiSup, i
 
   for (int i=0; i<niter; i++)
   {
-      if (VERBOSE) cerr << "Iteration = " << (i+1) << " ... " << endl;
+      if (VERBOSE) cout << "Iteration = " << (i+1) << " ... " << endl;
       *tempd = origdata;
       
 	  for (int s=1; s<=NSCALE; s++)
@@ -455,7 +455,7 @@ void denoise (fltarray &data)
     }
 
 	if (VERBOSE)
-	  cerr << "Initial denoising ... " << endl;
+	  cout << "Initial denoising ... " << endl;
 	  
     b3SplineDenoise<float>(data, multiSup);
     data = *origData;
@@ -463,10 +463,10 @@ void denoise (fltarray &data)
     if (NITER > 1)
     {
     	if (VERBOSE)
-	       cerr << "Entering into the iterative denoising ..." << endl;
+	       cout << "Entering into the iterative denoising ..." << endl;
         multiSupIter (*origData, data, multiSup, NITER);
 	    if (VERBOSE)
-	       cerr << "Iteration complete." << endl;
+	       cout << "Iteration complete." << endl;
     }
     
 	delete origData; origData = NULL; 
@@ -543,10 +543,10 @@ int main(int argc, char *argv[])
 	   denoise(*data);
 
        if (VERBOSE)
-    	   cerr << "Writing denoising result file ... " << endl;
+    	   cout << "Writing denoising result file ... " << endl;
        fits_write_fltarr(Name_Imag_Out, *data, &header);
        if (VERBOSE)
-    	 cerr << "Writing complete." << endl;
+    	 cout << "Writing complete." << endl;
 
        delete data; data = NULL; 
    }

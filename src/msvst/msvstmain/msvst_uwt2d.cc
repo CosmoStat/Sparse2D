@@ -485,7 +485,7 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 
     if ((PROGMODE==ANSC || PROGMODE == FISZ) && dim == 1)
 	{
-	    if (VERBOSE) cerr << "Wavelet transform 1D ... " << endl;
+	    if (VERBOSE) cout << "Wavelet transform 1D ... " << endl;
 		fltarray *ch = new fltarray;
 		fltarray *cg = new fltarray[NSCALE];
 		for (int s=1; s<=NSCALE; s++)
@@ -494,7 +494,7 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 			mwirWT->transform1D(data, *ch, cg[s-1], s, dec[0]);
 			data = *ch;
 		}
-		if (VERBOSE) cerr << "Transform complete." << endl << "Wavelet thresholding ... " << endl;
+		if (VERBOSE) cout << "Transform complete." << endl << "Wavelet thresholding ... " << endl;
 		
 		for (int s=NSCALE; s>=1; s--)
 		{
@@ -525,7 +525,7 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 			  }	  		  
 
 			  if (VERBOSE)
-			    cerr << "scale = " << s << " cut-off p-value = " << setprecision(6) << (FDRTHRESH ? fdrp : pr) << endl;
+			    cout << "scale = " << s << " cut-off p-value = " << setprecision(6) << (FDRTHRESH ? fdrp : pr) << endl;
 			}
 			mwirWT->reconstruction1D(*ch, cg[s-1], data, s, dec[0]);
 			extractData(data, ext[s-1]);
@@ -533,11 +533,11 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 		}
 		delete ch; delete [] cg; 
 		ch = NULL; cg = NULL; 
-		if (VERBOSE) cerr << "Thresholding complete." << endl;
+		if (VERBOSE) cout << "Thresholding complete." << endl;
 	}
 	else if ((PROGMODE==ANSC || PROGMODE == FISZ) && dim == 2)
 	{
-	    if (VERBOSE) cerr << "Wavelet transform 2D ... " << endl;
+	    if (VERBOSE) cout << "Wavelet transform 2D ... " << endl;
 		fltarray *chh = new fltarray;
 		fltarray *chg = new fltarray[NSCALE];
 		fltarray *cgh = new fltarray[NSCALE];
@@ -548,7 +548,7 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 			mwirWT->transform2D(data, *chh, chg[s-1], cgh[s-1], cgg[s-1], s, dec);
 			data = *chh;
 		}
-		if (VERBOSE) cerr << "Transform complete." << endl << "Wavelet thresholding ... " << endl;
+		if (VERBOSE) cout << "Transform complete." << endl << "Wavelet thresholding ... " << endl;
 
 		for (int s=NSCALE; s>=1; s--)
 		{
@@ -575,13 +575,13 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 			        {
 			    	    fdrp = ws.gaussFDRThreshold (chg[s-1], stdhg, pr, FDRINDEP, &multiSup[3*(s-1)]);
 	  			        if (VERBOSE)
-			   		       cerr << "scale(hg) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
+			   		       cout << "scale(hg) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
 			    	    fdrp = ws.gaussFDRThreshold (cgh[s-1], stdgh, pr, FDRINDEP, &multiSup[3*(s-1)+1]);
 	  			        if (VERBOSE)
-			   		       cerr << "scale(gh) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
+			   		       cout << "scale(gh) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
 			    	    fdrp = ws.gaussFDRThreshold (cgg[s-1], stdgg, pr, FDRINDEP, &multiSup[3*(s-1)+2]);
 	  			        if (VERBOSE)
-			   		       cerr << "scale(gg) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
+			   		       cout << "scale(gg) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
 			    	}
 			        else
 			        {	
@@ -589,7 +589,7 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 				      pr = ws.gaussHardThreshold(cgh[s-1], pr, stdgh, &multiSup[3*(s-1)+1]);
 				      pr = ws.gaussHardThreshold(cgg[s-1], pr, stdgg, &multiSup[3*(s-1)+2]);				
 		  		      if (VERBOSE)
-				    	cerr << "scale = " << s << " cut-off p-value = " << setprecision(6) << pr << endl;
+				    	cout << "scale = " << s << " cut-off p-value = " << setprecision(6) << pr << endl;
 				    }
 			  }
 			  else
@@ -598,13 +598,13 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 			        {
 			    	    fdrp = ws.gaussFDRThreshold (chg[s-1], stdhg, pr, FDRINDEP);
 	  			        if (VERBOSE)
-			   		       cerr << "scale(hg) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
+			   		       cout << "scale(hg) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
 			    	    fdrp = ws.gaussFDRThreshold (cgh[s-1], stdgh, pr, FDRINDEP);
     	  			    if (VERBOSE)
-			   		       cerr << "scale(gh) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
+			   		       cout << "scale(gh) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
 			    	    fdrp = ws.gaussFDRThreshold (cgg[s-1], stdgg, pr, FDRINDEP);
 	  			        if (VERBOSE)
-			   		       cerr << "scale(gg) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
+			   		       cout << "scale(gg) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
 			    	}
 			        else
 			        {	
@@ -612,7 +612,7 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 				      pr = ws.gaussHardThreshold(cgh[s-1], pr, stdgh);
 				      pr = ws.gaussHardThreshold(cgg[s-1], pr, stdgg);				
 				      if (VERBOSE)
-				    	cerr << "scale = " << s << " cut-off p-value = " << setprecision(6) << pr << endl;
+				    	cout << "scale = " << s << " cut-off p-value = " << setprecision(6) << pr << endl;
 				    }
 			  }
 			}
@@ -622,11 +622,11 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 		}
 		delete chh; delete [] chg; delete [] cgh; delete [] cgg;
 		chh = NULL; chg = NULL; cgh = NULL; cgg = NULL;
-		if (VERBOSE) cerr << "Thresholding complete." << endl;
+		if (VERBOSE) cout << "Thresholding complete." << endl;
 	}
     else if ((PROGMODE == MSVST) && (dim == 1))
     {
-	    if (VERBOSE) cerr << "Wavelet transform 1D ... " << endl;	    
+	    if (VERBOSE) cout << "Wavelet transform 1D ... " << endl;	    
 	    fltarray *vstData = new fltarray;
 		fltarray *chvst = new fltarray, *ch = new fltarray;
 		fltarray *cg = new fltarray[NSCALE];
@@ -653,7 +653,7 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 				   ws.gaussHardThreshold(cg[s-1], PROBA[0], stdg, &multiSup[s-1]);
 			    }
 			  if (VERBOSE)
-			    cerr << "scale = " << s << " cut-off p-value = " << setprecision(6) << PROBA[0] << endl;
+			    cout << "scale = " << s << " cut-off p-value = " << setprecision(6) << PROBA[0] << endl;
 			}
 			else if (FDRTHRESH)
 			{
@@ -661,7 +661,7 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 			    {
 				fdrp = ws.gaussFDRThreshold(cg[s-1], stdg, PROBA[1], FDRINDEP, &multiSup[s-1]);
 				if (VERBOSE)
-				  cerr << "scale (g) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
+				  cout << "scale (g) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
 			    }
             }
 		}
@@ -670,7 +670,7 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
     }    
 	else if ((PROGMODE == MSVST) && (dim == 2))
 	{
-	    if (VERBOSE) cerr << "Wavelet transform 2D ... " << endl;
+	    if (VERBOSE) cout << "Wavelet transform 2D ... " << endl;
 	    fltarray *vstData = new fltarray;
 		fltarray *chhvst = new fltarray, *chh = new fltarray;
 		fltarray *chg = new fltarray[NSCALE], \
@@ -704,7 +704,7 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 				ws.gaussHardThreshold(cgg[s-1], PROBA[0], stdgg, &multiSup[3*(s-1)+2]);
 			    }
 			  if (VERBOSE)
-			    cerr << "scale = " << s << " cut-off p-value = " << setprecision(6) << PROBA[0] << endl;
+			    cout << "scale = " << s << " cut-off p-value = " << setprecision(6) << PROBA[0] << endl;
 			}
 			else if (FDRTHRESH)
 			{
@@ -712,20 +712,20 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 			    {
 				fdrp = ws.gaussFDRThreshold(chg[s-1], stdhg, PROBA[1], FDRINDEP, &multiSup[3*(s-1)]);
 				if (VERBOSE)
-				  cerr << "scale (hg) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
+				  cout << "scale (hg) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
 				fdrp = ws.gaussFDRThreshold(cgh[s-1], stdgh, PROBA[1], FDRINDEP, &multiSup[3*(s-1)+1]);
 				if (VERBOSE)
-				  cerr << "scale (gh) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
+				  cout << "scale (gh) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
 				fdrp = ws.gaussFDRThreshold(cgg[s-1], stdgg, PROBA[1], FDRINDEP, &multiSup[3*(s-1)+2]);
 				if (VERBOSE)
-				  cerr << "scale (gg) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
+				  cout << "scale (gg) = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;
 			    }
             }
 		}
 		delete chh; delete [] chg; delete [] cgh; delete [] cgg; delete chhvst; delete vstData;
 		chh = NULL; chg = NULL; cgh = NULL; cgg = NULL; chhvst = NULL; vstData = NULL;
 	}
-	if (VERBOSE) cerr << "Thresholding complete." << endl;
+	if (VERBOSE) cout << "Thresholding complete." << endl;
 	delete mwirWT; mwirWT = NULL;
 }
 
@@ -753,10 +753,10 @@ void anscombeDenoise (fltarray &data)
   
   // Anscombe transform
   if (VERBOSE)
-    cerr << "Anscombe transform ... " << endl;
+    cout << "Anscombe transform ... " << endl;
   Utils<float>::anscombeTransform(data);	
   if (VERBOSE)
-    cerr << "Anscombe transform complete. " << endl;
+    cout << "Anscombe transform complete. " << endl;
 	
   // denoising and restoration
   waveletDenoise<float>(data, sbf, DEC);
@@ -784,7 +784,7 @@ void fiszDenoise (fltarray &data, int DX, int DY, int DZ)
 	for (int tx=-dx; tx<=dx; tx++)
 	{
 	  if (VERBOSE)
-	    cerr << "Cycle transition : tx = " << tx << " ty = " << ty << " tz = " << tz << endl;
+	    cout << "Cycle transition : tx = " << tx << " ty = " << ty << " tz = " << tz << endl;
 		cycleTrans (data, tx, ty, tz);
 	
 		// data extension to do the fisz transform
@@ -799,7 +799,7 @@ void fiszDenoise (fltarray &data, int DX, int DY, int DZ)
         sbf[0].Border = sbf[1].Border = sbf[2].Border = T_BORDER;
 
 		if (VERBOSE)
-		  cerr << "Fisz transform ... " << endl;
+		  cout << "Fisz transform ... " << endl;
 		// Fisz transform
 		if (dim == 1)
 			fisztr.fisz1D(data);
@@ -808,7 +808,7 @@ void fiszDenoise (fltarray &data, int DX, int DY, int DZ)
 		else // dim == 3
 			fisztr.fisz3D(data);
 		if (VERBOSE)
-		  cerr << "Fisz transform complete. " << endl;
+		  cout << "Fisz transform complete. " << endl;
 	
 		// denoising and restoration
 		waveletDenoise<float>(data, sbf, DEC);
@@ -833,14 +833,14 @@ void fiszDenoise (fltarray &data, int DX, int DY, int DZ)
 	}
 	
 	if (VERBOSE)
-	  cerr << " Calculate mean of all the cycle spins ... " << endl;
+	  cout << " Calculate mean of all the cycle spins ... " << endl;
 	if (c != 0)
 	{
 		for (int j=0; j<dlen; j++)
            data(j) = (*sumData)(j) / (float)c;
 	}
 	if (VERBOSE)
-	  cerr << " Calculation complete. " << endl;
+	  cout << " Calculation complete. " << endl;
 
 	// free all the variables	
 	delete origData;  delete sumData;
@@ -907,7 +907,7 @@ void multiSupIter (fltarray &origdata, fltarray &solution, SubBandFilter sbf[], 
 
   for (int i=0; i<niter; i++)
   {
-      if (VERBOSE) cerr << "Iteration = " << (i+1) << " ... " << endl;
+      if (VERBOSE) cout << "Iteration = " << (i+1) << " ... " << endl;
       *tempd = origdata;
       
       if (dim == 1)
@@ -926,7 +926,7 @@ void multiSupIter (fltarray &origdata, fltarray &solution, SubBandFilter sbf[], 
               setConst(*chs, *ch, 0.);    
 	      else
               *chs = *ch; // same approximation band
-		  if (VERBOSE) cerr << "Wavelet transform 1D complete. " << endl << "Wavelet reconstruction ... " << endl;
+		  if (VERBOSE) cout << "Wavelet transform 1D complete. " << endl << "Wavelet reconstruction ... " << endl;
 
 		  for (int s=NSCALE; s>=1; s--)
 		  {
@@ -934,7 +934,7 @@ void multiSupIter (fltarray &origdata, fltarray &solution, SubBandFilter sbf[], 
 		      extractData(solution, ext[s-1]); 
 		      *chs = solution;
 		  }
-		  if (VERBOSE) cerr << "Wavelet reconstruction complete. " << endl;
+		  if (VERBOSE) cout << "Wavelet reconstruction complete. " << endl;
       
           posProject(solution);
           lambda -= delta;
@@ -957,7 +957,7 @@ void multiSupIter (fltarray &origdata, fltarray &solution, SubBandFilter sbf[], 
               setConst(*chhs, *chh, 0.);    
 	      else
               *chhs = *chh; // same approximation band
-		  if (VERBOSE) cerr << "Wavelet transform 2D complete. " << endl << "Wavelet reconstruction ... " << endl;
+		  if (VERBOSE) cout << "Wavelet transform 2D complete. " << endl << "Wavelet reconstruction ... " << endl;
 
 		  for (int s=NSCALE; s>=1; s--)
 		  {
@@ -965,7 +965,7 @@ void multiSupIter (fltarray &origdata, fltarray &solution, SubBandFilter sbf[], 
 		      extractData(solution, ext[s-1]); 
 		      *chhs = solution;
 		  }
-		  if (VERBOSE) cerr << "Wavelet reconstruction complete. " << endl;
+		  if (VERBOSE) cout << "Wavelet reconstruction complete. " << endl;
       
           posProject(solution);
           lambda -= delta;
@@ -1004,7 +1004,7 @@ void denoise (fltarray &data)
     }
 
 	if (VERBOSE)
-	  cerr << "Initial denoising ... " << endl;
+	  cout << "Initial denoising ... " << endl;
 	  
     waveletDenoise<float>(data, sbf, DEC, multiSup);
     data = *origData;
@@ -1012,10 +1012,10 @@ void denoise (fltarray &data)
     if (NITER > 1)
     {
     	if (VERBOSE)
-	       cerr << "Entering into the iterative denoising ..." << endl;
+	       cout << "Entering into the iterative denoising ..." << endl;
         multiSupIter (*origData, data, sbf, DEC, multiSup, NITER);
 	    if (VERBOSE)
-	       cerr << "Iteration complete." << endl;
+	       cout << "Iteration complete." << endl;
     }
     
 	delete origData; origData = NULL; 
@@ -1089,10 +1089,10 @@ int main(int argc, char *argv[])
 	     denoise(*data);
 
        if (VERBOSE)
-    	   cerr << "Writing denoising result file ... " << endl;
+    	   cout << "Writing denoising result file ... " << endl;
        fits_write_fltarr(Name_Imag_Out, *data, &header);
        if (VERBOSE)
-    	 cerr << "Writing complete." << endl;
+    	 cout << "Writing complete." << endl;
 
        delete data; data = NULL; 
    }

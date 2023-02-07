@@ -365,12 +365,12 @@ void b3SplineDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup)
 		{
           // sigma = l2 norm of Id-B3 filter
 		  if (VERBOSE)
-              cerr << "Var = " << Utils<double>::b3VSTCoefVar (dim, s) << endl;
+              cout << "Var = " << Utils<double>::b3VSTCoefVar (dim, s) << endl;
           pr = ws.gaussHardThreshold(cg[s-1], PROBA[PROGMODE], 
                                      sqrt(Utils<double>::b3VSTCoefVar (dim, s)), 
                                      ms ? &multiSup[s-1] : NULL);
 		  if (VERBOSE)
-		    cerr << "scale = " << s << " cut-off p-value = " << setprecision(6) << pr << endl;                 
+		    cout << "scale = " << s << " cut-off p-value = " << setprecision(6) << pr << endl;                 
 		  
           if (WRITESNR)
           {
@@ -388,11 +388,11 @@ void b3SplineDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup)
 		else if (PROGMODE == FDR)
 		{
 		  if (VERBOSE)
-              cerr << "Var = " << Utils<double>::b3VSTCoefVar (dim, s) << endl;
+              cout << "Var = " << Utils<double>::b3VSTCoefVar (dim, s) << endl;
           fdrp = ws.gaussFDRThreshold(cg[s-1], sqrt(Utils<double>::b3VSTCoefVar (dim, s)), 
                                       PROBA[PROGMODE], FDRINDEP, ms ? &multiSup[s-1] : NULL);
 		  if (VERBOSE)
-		    cerr << "scale = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;                 
+		    cout << "scale = " << s << " cut-off p-value = " << setprecision(6) << fdrp << endl;                 
 
           if (WRITESNR)
           {
@@ -478,7 +478,7 @@ void multiSupIter (fltarray &origdata, fltarray &solution, fltarray *model, flta
 
   for (int i=0; i<niter; i++)
   {
-      if (VERBOSE) cerr << "Iteration = " << (i+1) << " ... " << endl;
+      if (VERBOSE) cout << "Iteration = " << (i+1) << " ... " << endl;
       *tempd = origdata;
       if (MODELIM) *tempd -= *model;
       
@@ -533,7 +533,7 @@ void denoise (fltarray &data, fltarray *model)
     }
 
 	if (VERBOSE)
-	  cerr << "Initial denoising ... " << endl;
+	  cout << "Initial denoising ... " << endl;
 
 	fltarray *modelbk = NULL;
 	if (MODELIM)
@@ -548,10 +548,10 @@ void denoise (fltarray &data, fltarray *model)
     if (NITER > 1)
     {
     	if (VERBOSE)
-	       cerr << "Entering into the iterative denoising ..." << endl;
+	       cout << "Entering into the iterative denoising ..." << endl;
         multiSupIter (*origData, data, modelbk, multiSup, NITER);
 	    if (VERBOSE)
-	       cerr << "Iteration complete." << endl;
+	       cout << "Iteration complete." << endl;
     }
     else
     {
@@ -645,10 +645,10 @@ int main(int argc, char *argv[])
 	   denoise(*data, model);
 
        if (VERBOSE)
-    	   cerr << "Writing denoising result file ... " << endl;
+    	   cout << "Writing denoising result file ... " << endl;
        fits_write_fltarr(Name_Imag_Out, *data, &header);
        if (VERBOSE)
-    	 cerr << "Writing complete." << endl;
+    	 cout << "Writing complete." << endl;
 
        delete data; data = NULL; 
        if (MODELIM)
