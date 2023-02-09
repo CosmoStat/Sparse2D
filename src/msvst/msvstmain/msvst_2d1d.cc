@@ -48,6 +48,8 @@ int    FSCALEZ = 1;         // First detection scalez
 double GLEVEL = 3.5;        // Gauss-detection level (k-sigma)
 bool   TRANSF2 = false;     // ver2 in the transform
 bool   MODELIM = false;     // model image
+type_border TBORDER = I_MIRROR;  // border type
+bool   VARMODCORR = false;  // modified correction for detail-detail variances
 bool   WRITESNR = false;
 
 // NOTICE : FDR are all band-by-band tested
@@ -75,6 +77,12 @@ static void usage(char *argv[])
   cout << "                      I = 1 : L1-regularized iterative mode (default)" << endl;
   cout << "    [-i value] number of iteration (default = 10)" << endl; 
   cout << "    [-Q value] write SNR file for every band" << endl;
+  cout << "    [-B value] border modes" << endl;
+  cout << "                      B = 0 : cont" << endl;
+  cout << "                      B = 1 : mirror (default)" << endl;
+  cout << "                      B = 2 : period" << endl;
+  cout << "                      B = 3 : zero" << endl;
+  cout << "    [-S] use modified correction for detail-detail variances" << endl;
   cout << "    [-v] verbose mode" << endl;
   cout << endl;
 }
@@ -87,7 +95,7 @@ static void filtinit(int argc, char *argv[])
     int c;  
 
     // get options 
-    while ((c = GetOpt(argc,argv,"M:E:s:c:n:N:F:f:I:i:Q:TKpv")) != -1) 
+    while ((c = GetOpt(argc,argv,"M:E:s:c:n:N:F:f:I:i:Q:B:TKpSv")) != -1) 
     {
        switch (c) 
 	   {	
@@ -196,6 +204,23 @@ static void filtinit(int argc, char *argv[])
 	  WRITESNR = true;  
 	  break;
 
+	case 'B':
+	  int border;
+	  if (sscanf(OptArg, "%d", &border) != 1)
+	    {
+	      cerr << "Bad or missing parameter " << OptArg << endl;
+	      exit(-1);
+	    }
+	  if (border == 0)
+	    TBORDER = I_CONT;
+	  else if (border == 1)
+	    TBORDER = I_MIRROR;
+	  else if (border == 2)
+	    TBORDER = I_PERIOD;
+	  else
+	    TBORDER = I_ZERO;
+	  break;
+	
 	case 'K': 
 	  KILLLAST = true;
 	  break;
@@ -207,7 +232,11 @@ static void filtinit(int argc, char *argv[])
 	case 'p': 
 	  DETPOS = true;
 	  break;
-   
+
+   	case 'S': 
+	  VARMODCORR = true;
+	  break;
+
    	case 'v': 
 	  VERBOSE = true;
 	  break;
@@ -326,7 +355,7 @@ void bandDenoise(fltarray &band, double sigma, to_array<SUPTYPE, true> *ms, int 
     {
         pr = ws.gaussHardThreshold(band, PROBA[PROGMODE], sigma, ms);
         if (VERBOSE)
-	      cerr << "(scalexy, scalez) = (" << sxy << ", " << sz << ") cut-off p-value = " << setprecision(6) << pr << endl;                 
+	      cout << "(scalexy, scalez) = (" << sxy << ", " << sz << ") cut-off p-value = " << setprecision(6) << pr << endl;                 
         if (WRITESNR)
         {
               sprintf(snr_filename, "%s_XY%d_Z%d.fits", Name_Imag_SNR, sxy, sz);
@@ -343,7 +372,7 @@ void bandDenoise(fltarray &band, double sigma, to_array<SUPTYPE, true> *ms, int 
     {
         fdrp = ws.gaussFDRThreshold(band, sigma, PROBA[PROGMODE], FDRINDEP, ms);
         if (VERBOSE)
-          cerr << "(scalexy, scalez) = (" << sxy << ", " << sz << ") cut-off p-value = " << setprecision(6) << fdrp << endl;                 
+          cout << "(scalexy, scalez) = (" << sxy << ", " << sz << ") cut-off p-value = " << setprecision(6) << fdrp << endl;                 
         if (WRITESNR)
         {
               sprintf(snr_filename, "%s_XY%d_Z%d.fits", Name_Imag_SNR, sxy, sz);
@@ -363,9 +392,10 @@ template <typename SUPTYPE>
 void b3SplineDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup)
 {
     double sigma;
+    double corr;
     
 	// wavelet filter configuration
-	B3VSTAtrous2D1D atrous;
+	B3VSTAtrous2D1D atrous(TBORDER);
 
 	fltarray *cxy = new fltarray, *dxy = new fltarray;
 	fltarray *ccxyz = new fltarray[NSCALEZ+1];
@@ -375,7 +405,7 @@ void b3SplineDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup)
     fltarray *ddxyz = new fltarray;
     fltarray *temp = new fltarray;
     
-    if (VERBOSE) cerr << "Atrous transform ... " << endl;
+    if (VERBOSE) cout << "Atrous transform ... " << endl;
 
     // create the ccpxyz of sxy = 0
     *temp = data;
@@ -428,8 +458,20 @@ void b3SplineDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup)
                 }
                 // denoise ddxyz
                 sigma = sqrt(Utils<double>::b32D1DVSTCoefXYVar (3, sxy, sz-1));
-                // sqrt(tau_2(g_1D)) = 0.7235; ignore correlation
-                bandDenoise<SUPTYPE>(*ddxyz, 0.7235*sigma, &multiSup[s], sxy, sz);      
+
+                if (VARMODCORR) 
+                {
+                    if ((sxy > 1) && (sz == 1))
+                        corr = 0.5 * sqrt(2);
+                    else
+                        corr = 0.5;
+                } 
+                else 
+                {
+                    // sqrt(tau_2(g_1D)) = 0.7235; ignore correlation
+                    corr = 0.7235;
+                }
+                bandDenoise<SUPTYPE>(*ddxyz, corr*sigma, &multiSup[s], sxy, sz);      
                 s++;                
             }
         }
@@ -499,7 +541,7 @@ void posProject (fltarray &data)
 // solve with the iterative algo. in using the multiresolution support
 void multiSupIter (fltarray &origdata, fltarray &solution, fltarray *model, fltarray *multiSup, int niter)
 {
-  Atrous2D1D atrous(I_MIRROR, TRANSF2);
+  Atrous2D1D atrous(TBORDER, TRANSF2);
   double lambda = 0, delta = 0;
   
   if (ITERMODE == L1REG)
@@ -530,7 +572,7 @@ void multiSupIter (fltarray &origdata, fltarray &solution, fltarray *model, flta
   for (int i=0; i<niter; i++)
   {
       int s = 0;
-      if (VERBOSE) cerr << "Iteration = " << (i+1) << " ... " << endl;
+      if (VERBOSE) cout << "Iteration = " << (i+1) << " ... " << endl;
       *tempd = origdata;
       if (MODELIM) *tempd -= *model;
       
@@ -656,16 +698,16 @@ void denoise (fltarray &data, fltarray *model)
  	fltarray *multiSup = new fltarray[NSCALEXY*(NSCALEZ+1) + NSCALEZ];
 
 	if (VERBOSE)
-	  cerr << "Initial denoising ... " << endl;
+	  cout << "Initial denoising ... " << endl;
 	  
     b3SplineDenoise<float>(data, multiSup);
 	data = *origData;
 	
 	if (VERBOSE)
-	  cerr << "Entering into the iterative denoising ..." << endl;
+	  cout << "Entering into the iterative denoising ..." << endl;
     multiSupIter (*origData, data, model, multiSup, NITER);
 	if (VERBOSE)
-	  cerr << "Iteration complete." << endl;
+	  cout << "Iteration complete." << endl;
 
 	delete origData; origData = NULL; 
     delete [] multiSup; multiSup = NULL;
@@ -727,12 +769,14 @@ int main(int argc, char *argv[])
     		cout << "Iterative Mode : L1 - Regularized" << endl;
     	cout << "Max. Iteration : " << NITER << endl;
     
+	    cout << "Border mode : " << TBORDER << endl;
         cout << "Max scalexy(s) : " << NSCALEXY << endl;
         cout << "Max scalez(s) : " << NSCALEZ << endl;
 	    cout << "First detection scalexy : " << FSCALEXY << endl;
 	    cout << "First detection scalez : " << FSCALEZ << endl;
 	    cout << "Ignore the last approx. band : " << (KILLLAST ? "true" : "false") << endl;
 	    cout << "Detect only positive coefficients : " << (DETPOS ? "true" : "false") << endl;
+	    cout << "Use modified variance corrections : " << (VARMODCORR ? "true" : "false") << endl;
   }
    
    // Denoising
@@ -740,10 +784,10 @@ int main(int argc, char *argv[])
 	   denoise(*data, model);
 
        if (VERBOSE)
-    	   cerr << "Writing denoising result file ... " << endl;
+    	   cout << "Writing denoising result file ... " << endl;
        fits_write_fltarr(Name_Imag_Out, *data, &header);
        if (VERBOSE)
-    	 cerr << "Writing complete." << endl;
+    	 cout << "Writing complete." << endl;
 
        if (MODELIM)
        {
