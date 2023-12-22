@@ -28,14 +28,32 @@
 #include "map"
 #include "vector"
 
+using namespace std;
+
 struct Pt {int x; int y;};
 struct InfoBlock {int IndImage; int Num; Pt BeginCoord; Pt Size;};
+/* 
 struct CmpInfoBlock :
-   public binary_function <const InfoBlock, const InfoBlock, bool> {
-   bool operator () (const InfoBlock& Key1, const InfoBlock& Key2) const {
-      return (Key1.Num < Key2.Num ? true : false);
-   }
-};
+    public binary_function <const InfoBlock, const InfoBlock, bool> {
+    bool operator () (const InfoBlock& Key1, const InfoBlock& Key2) const {
+       return (Key1.Num < Key2.Num ? true : false);
+    }
+ };
+*/
+// binary_function is deprecated, and cannot be compiled anymore with clang-15.0
+// In https://reviews.llvm.org/D35455 (line 73), it is proposed to use instead the following lines:
+//
+struct CmpInfoBlock {
+    typedef InfoBlock first_argument_type;
+    typedef InfoBlock second_argument_type;
+    typedef bool result_Type;
+
+    bool operator() (const InfoBlock& Key1, const InfoBlock& Key2) const {
+        return (Key1.Num < Key2.Num ? true : false);
+     }
+  };
+
+
 struct InfoTrans {InfoBlock Parent; vector<InfoBlock> Child;};
 typedef  map <InfoBlock,InfoTrans,CmpInfoBlock> MapInfo;
 typedef  map <int,Ifloat*> MapTransf;
