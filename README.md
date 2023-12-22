@@ -76,10 +76,10 @@ brew info sparse2d
 
 ### Python bindings
 
-The `pysparse` bindings will be saved to `/usr/local/opt/sparse2d/python` by default. You will need to add this to your `PYTHONPATH` in order to access the bindings. For example, for Bash you would run the following:
+The `pysparse` bindings will be saved to `/sparse2d/python` in your Homebrew directory (i.e. `/usr/local/opt` for macOS with Intel or `/opt/homebrew` for macOS with Apple silicon). You will need to add this to your `PYTHONPATH` in order to access the bindings. For example, for a recent Apple computer you would run the following:
 
 ```bash
-PYTHONPATH="/usr/local/opt/sparse2d/python:$PYTHONPATH"
+export PYTHONPATH="/opt/homebrew/sparse2d/python:$PYTHONPATH"
 ```
 
 Note that `pysparse` will be built using the Python executable installed by Homebrew. These bindings will only work with the same version of Python.
@@ -181,7 +181,11 @@ CC=gcc CXX=g++ cmake ..
 
 ## Python bindings
 
-By default Sparse2D will build `pysparse`, which includes Python bindings to some Sparse2D tools. This file will need to be in your `PYTHONPATH` in order for these bindings to available outside of the build directory.
+By default Sparse2D will build `pysparse`, which includes Python bindings to some Sparse2D tools. This file will need to be in your `PYTHONPATH` in order for these bindings to available outside of the build directory. You can manually specify an install location for this file passing the option `PYBIND_INSTALL_PATH` to CMake, *e.g.*:
+
+```bash
+cmake .. -DPYBIND_INSTALL_PATH=<path to your Python environment>
+```
 
 `pysparse` can be imported in a given Python session as follows:
 
