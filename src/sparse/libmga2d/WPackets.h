@@ -32,7 +32,7 @@ using namespace std;
 
 struct Pt {int x; int y;};
 struct InfoBlock {int IndImage; int Num; Pt BeginCoord; Pt Size;};
-/*
+/* 
 struct CmpInfoBlock :
     public binary_function <const InfoBlock, const InfoBlock, bool> {
     bool operator () (const InfoBlock& Key1, const InfoBlock& Key2) const {
