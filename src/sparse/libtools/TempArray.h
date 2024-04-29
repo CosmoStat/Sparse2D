@@ -1211,7 +1211,7 @@ double to_array<PARAM_TYPE,ARRAY_TYPE>::sigma () const {
     ad_val = po_Buffer[i] - ao_moy;
     ad_sigma += ad_val*ad_val;
   }
-  if ((ad_sigma /= i_NbElem) > 1e-07) ad_sigma = sqrt (ad_sigma);
+  if ((ad_sigma /= i_NbElem) > 0) ad_sigma = sqrt (ad_sigma);
   else ad_sigma = 0.;
   return ad_sigma;
 }

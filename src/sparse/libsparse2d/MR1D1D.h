@@ -90,8 +90,10 @@ class MR1D1D {
        
        void read(char *Name);
        // Read a transformation from a file
-       
+        
        void transform_to_vectarray(fltarray &Data, fltarray &TabVect);
+
+       void transform_to_vectdblarray(dblarray &Data, dblarray &TabVect);
        // Apply the 2D-1D transfrom, but the transformation is not stored in TabBand, and
        // reconstruction is possible
        //  get_band, put_band, read, write routines cannot be used

@@ -25,32 +25,49 @@
 
 /****************************************************************************/
 
-void GMCA::run_gmca(fltarray &TabCannels, fltarray & TabSource)
+void GMCA::run_gmca(dblarray &TabCannels, dblarray & TabSource)
 { 
  // Declaring some local variables
-
+    //cout << "IN" << endl;
+    
+    double SigmaData = TabCannels.sigma();
+     if (Verbose == True) cout << "SigmaData = " << SigmaData << endl;
+     //cout << "SigmaData = " << SigmaData << endl;
+    
+    
    int Nmax = Max_GMCA_Iter;
    float KThrd;
    if (Inpainting == False) KThrd = 10;  // For K-Mad filtering  -- UN PEU ELEVE ?
    if (Inpainting == True) KThrd = 25; 
    float KThrd_min = KMin;  // May be an option ?
    float DiffKThrd = (KThrd-KThrd_min)/(Nmax-1);//,lsparse1=0,L1Crit=0;  // For K-Mad filtering - defines the speed of convergence
-   fltarray WhiteMat,RecSource,Data,DataRec;    
+   dblarray WhiteMat,RecSource,Data,DataRec;    
    KStart = 1;
-      
+  //  cout << "init_mixmat" << endl;
+
    init_mixmat(TabCannels);  // May use a random initialization
    
+   // cout << "init_mixmat" << endl;
+
    //if (MatNbrScale1D < 2) MatNbrScale1D = get_nbr_scale (NbrCannels);
    FilterAnaSynt *PtrFAS;
    FAS.alloc(F_MALLAT_7_9);
    PtrFAS = &FAS;
+    
    MR_Mat.alloc(NbrCannels, TO1_MALLAT, MatNbrScale1D, PtrFAS, NORM_L2, False);
-      
-   if ((Verbose == True) && (L1_Matrix_Constraint == True)) 
+
+// Verbose = True;
+
+   if ((Verbose == True) && (L1_Matrix_Constraint == True))
         cout << " WT1D of the mixing matrix: nbr of scales = " << MatNbrScale1D << endl;
-        
+
+   // cout << " WT1D of the mixing matrix: nbr of scales = " << MatNbrScale1D << endl;
+
    if (L1_Matrix_Constraint == True) KStart = (int) NbrCannels/pow((float) 2, (float) MatNbrScale1D-1);
    
+    // cout << " KStart = " << KStart << endl;
+
+    
   // cout << "KStart" << KStart << endl;
 //   {
 //    mat_wt1d_trans(TabCannels);
@@ -61,7 +78,8 @@ void GMCA::run_gmca(fltarray &TabCannels, fltarray & TabSource)
 //  }
 //   
    NbrCoef = TabCannels.nx();
-   
+    if (Verbose == True) cout << "NbrCoef = " << NbrCoef << endl;
+
    
    if (PositiveMatrix == True)
    {
@@ -72,26 +90,33 @@ void GMCA::run_gmca(fltarray &TabCannels, fltarray & TabSource)
    {
         if (Verbose == True)  cout << "Use mask and inpaint" << endl;
         recons_data(TabCannels,Data);
-        fits_write_fltarr ("DataIn.fits",Data);
+        // fits_write_dblarr ("DataIn.fits",Data);
    }
    
    
-   float SigmaData = TabCannels.sigma();
-  
+
+    
 // Main loop
    if (Verbose == True)  cout << "Number of sources : " << NbrSources << endl;
    if (Verbose == True)  cout << "Last K-Mad : " << KMin << endl;
+   // cout << "IN " << SigmaData << endl;
 
    for (int i=0; i < Nmax; i++)
    {
       // Update the sources :
 
       // Normalizing the mixing matrix                              
-            
+    //   cout << "Normal_Mixmat "  << endl;
+
       Normal_Mixmat();  
                
+    //   cout << "Update_Sources "  << endl;
+
       Update_Sources(TabCannels,TabSource, KThrd);
-            
+
+     //  TabCannels.info("TabCannels");
+     //  TabSource.info("TabSource");
+
       Sort_Sources(TabSource);  // A retirer eventuellement
 
       if (PositiveSource == True) 
@@ -102,13 +127,15 @@ void GMCA::run_gmca(fltarray &TabCannels, fltarray & TabSource)
       }                                         
                         
       // Update the mixing matrix :
-            
+           
+      // cout << "Update_MixingMat:  "  << SigmaData << endl;
+
        Update_MixingMat(TabCannels,TabSource,KThrd);
-       
+
        // Compute the L2 error :
        
-      L2err =  l2_error(TabCannels,TabSource);
-      L2err = -20.*log10(L2err/SigmaData + 1e-100);
+      L2err =  l2_error(TabCannels,TabSource) / SigmaData;
+      // L2err = -20.*log10(L2err + 1e-100);
       
       if (PositiveMatrix == True) positive_mixmat_constraint();
       
@@ -119,8 +146,8 @@ void GMCA::run_gmca(fltarray &TabCannels, fltarray & TabSource)
        if (Inpainting == True)
       {
          reform_data(TabSource,DataRec);
-         fits_write_fltarr("DataRec.fits",DataRec);
-         apply_mask(Data,Mask,DataRec); 
+         // fits_write_dblarr("DataRec.fits",DataRec);
+         apply_mask(Data,Mask,DataRec);
          transform_data(DataRec,TabCannels);
       } 
      
@@ -134,16 +161,16 @@ void GMCA::run_gmca(fltarray &TabCannels, fltarray & TabSource)
       
    }
 
-   //fits_write_fltarr ("cc_EstMixmat.fits", MixingMat);
-   //fits_write_fltarr ("cc_EstSources.fits", TabSource);
+   //fits_write_dblarr ("cc_EstMixmat.fits", MixingMat);
+   //fits_write_dblarr ("cc_EstSources.fits", TabSource);
    
    if (Inpainting == True)
    {
     transrecons_sources(TabSource,RecSource);
-    fits_write_fltarr ("xx_InpaintedSources.fits", RecSource);
+    fits_write_dblarr ("xx_InpaintedSources.fits", RecSource);
     reform_data(TabSource,DataRec);
-    fits_write_fltarr ("xx_InpaintedData.fits", DataRec);
-    cout << "Inpaint Fin" << endl;
+    fits_write_dblarr ("xx_InpaintedData.fits", DataRec);
+    //cout << "Inpaint Fin" << endl;
    }
    
    //if (L1_Matrix_Constraint == True)
@@ -161,10 +188,10 @@ void GMCA::run_gmca(fltarray &TabCannels, fltarray & TabSource)
 
 void GMCA::PCAMixMat()
 {
-	fltarray Mat;
-	fltarray tMat;
-	fltarray Res;
-	fltarray Q(NbrCannels,NbrSources);
+	dblarray Mat;
+	dblarray tMat;
+	dblarray Res;
+	dblarray Q(NbrCannels,NbrSources);
 	int i,k;
 	for (i=0;i<NbrCannels;i++) for (k=0;k<NbrSources;k++) Q(i,k) = SingVec(i,k);
 	
@@ -179,8 +206,9 @@ void GMCA::PCAMixMat()
 void GMCA::positive_mixmat_constraint()
 {
  int i,k,s;
- fltarray V(NbrSources),W(NbrSources),Q(NbrCannels);
- 
+ dblarray W(NbrSources),Q(NbrCannels);
+ fltarray V(NbrSources);
+
  // Reconstruction
  
  if (L1_Matrix_Constraint == True) mat_wt1d_recons(MixingMat);
@@ -210,7 +238,7 @@ void GMCA::positive_mixmat_constraint()
         
         for (k=0; k < NbrSources; k++)
         {
-            for (i=0;i<NbrCannels; i++) Vect(i) = MixingMat(i,k);  
+            for (i=0;i<NbrCannels; i++) Vect(i) = (float) MixingMat(i,k);
             
             MR_Mat.transform(Vect);
             
@@ -220,7 +248,7 @@ void GMCA::positive_mixmat_constraint()
             {
                 for (i=0; i < MR_Mat.size_scale_np (s); i++) 
                 {
-                    MixingMat(ind+i,k) = MR_Mat(s,i);
+                    MixingMat(ind+i,k) = (double) MR_Mat(s,i);
                     
                 }
                 
@@ -233,10 +261,10 @@ void GMCA::positive_mixmat_constraint()
 
 /****************************************************************************/
 
-void GMCA::positive_cube_constraint(fltarray &Data)
+void GMCA::positive_cube_constraint(dblarray &Data)
 {
     int i,j,z;
-    fltarray V(Data.nz()),W(Data.nz()),Frame(Data.nx(),Data.ny());
+    dblarray V(Data.nz()),W(Data.nz()),Frame(Data.nx(),Data.ny());
     
     for (z=0;z < Data.nz();z++)
     {
@@ -259,11 +287,11 @@ void GMCA::positive_cube_constraint(fltarray &Data)
 
 /****************************************************************************/
 
-void GMCA::ortho_hypcube(fltarray &TabSource)
+void GMCA::ortho_hypcube(dblarray &TabSource)
 {
 	int i,k,l;
 	int NbrCoef = TabSource.nx();
-	fltarray P(NbrCoef*NbrCannels,NbrSources);
+	dblarray P(NbrCoef*NbrCannels,NbrSources);
 	
 	int Indo = 0;
 	
@@ -279,7 +307,7 @@ void GMCA::ortho_hypcube(fltarray &TabSource)
 		
 	}
 	
-	fltarray MMV,tQ,Q;
+	dblarray MMV,tQ,Q;
 	
 	ortho_sources_svd(P,Q);
 	
@@ -292,21 +320,21 @@ void GMCA::ortho_hypcube(fltarray &TabSource)
 
 /****************************************************************************/
 
-void GMCA::pca(fltarray &Mat,fltarray &VMat)
+void GMCA::pca(dblarray &Mat,dblarray &VMat)
 // Compute the Singular Vectors of the covariance matrix of Mat
 // Mat = TabCannels
 
 {
   void dsvdcmp(double **a, int m, int n, double w[], double **v);
   int i,j;
-  fltarray  M1,tMat;
-  fltarray CovMatSources;
+  dblarray  M1,tMat;
+  dblarray CovMatSources;
   float MMean;
   
   // 1) retirer la moyenne
   
-  fltarray NMat = Mat;
-  fltarray MeanMat(NMat.nx());
+  dblarray NMat = Mat;
+  dblarray MeanMat(NMat.nx());
   for(i=0; i < NMat.nx(); i++)
   { 
   		for(j=0; j < NMat.ny(); j++) MeanMat(j) =   Mat(i,j);
@@ -326,13 +354,13 @@ void GMCA::pca(fltarray &Mat,fltarray &VMat)
 
   int P = CovMatSources.ny(); // number of lines
   int Q = CovMatSources.nx(); // number of columns
-  fltarray U(Q,P);  // composed of eigen value of  B B^t 
-  fltarray V(Q,Q);  // composed of eigen vector of B^t B
-  fltarray Ut(P,Q); // composed of eigen value of  B B^t 
-  fltarray Vt(Q,Q); // composed of eigen vector of B^t B
-  fltarray EV;
+  dblarray U(Q,P);  // composed of eigen value of  B B^t 
+  dblarray V(Q,Q);  // composed of eigen vector of B^t B
+  dblarray Ut(P,Q); // composed of eigen value of  B B^t 
+  dblarray Vt(Q,Q); // composed of eigen vector of B^t B
+  dblarray EV;
   
-  fltarray Diag(Q,Q);
+  dblarray Diag(Q,Q);
   Diag.init();
   double **a; // matrix P lines, Q columns
   double **v; // eigenvectors matrix 
@@ -371,14 +399,14 @@ void GMCA::pca(fltarray &Mat,fltarray &VMat)
 
 /****************************************************************************/
 
-void GMCA::ortho_sources_svd(fltarray &Mat,fltarray &VMat)
+void GMCA::ortho_sources_svd(dblarray &Mat,dblarray &VMat)
 // Orthogonalization by svd
-
-{
+ 
+{ 
   void dsvdcmp(double **a, int m, int n, double w[], double **v);
   int i,j;
-  fltarray  M1,tMat;
-  fltarray CovMatSources;
+  dblarray  M1,tMat;
+  dblarray CovMatSources;
 
   MAT.transpose(Mat,tMat);
   MAT.mat_mult(Mat,tMat,CovMatSources);
@@ -389,13 +417,13 @@ void GMCA::ortho_sources_svd(fltarray &Mat,fltarray &VMat)
 
   int P = CovMatSources.ny(); // number of lines
   int Q = CovMatSources.nx(); // number of columns
-  fltarray U(Q,P);  // composed of eigen value of  B B^t 
-  fltarray V(Q,Q);  // composed of eigen vector of B^t B
-  fltarray Ut(P,Q); // composed of eigen value of  B B^t 
-  fltarray Vt(Q,Q); // composed of eigen vector of B^t B
-  fltarray EV;
+  dblarray U(Q,P);  // composed of eigen value of  B B^t 
+  dblarray V(Q,Q);  // composed of eigen vector of B^t B
+  dblarray Ut(P,Q); // composed of eigen value of  B B^t 
+  dblarray Vt(Q,Q); // composed of eigen vector of B^t B
+  dblarray EV;
   
-  fltarray Diag(Q,Q);
+  dblarray Diag(Q,Q);
   Diag.init();
   double **a; // matrix P lines, Q columns
   double **v; // eigenvectors matrix 
@@ -428,8 +456,8 @@ void GMCA::ortho_sources_svd(fltarray &Mat,fltarray &VMat)
   free_dmatrix(v, 1, Q, 1, Q);
   free_dvector(w, 1, Q);
   
-  fltarray MMat;
-  fltarray tV;
+  dblarray MMat;
+  dblarray tV;
   MAT.transpose(V,tV);
   MAT.mat_mult(tV,Mat,MMat);
   Mat = MMat;
@@ -455,8 +483,8 @@ void GMCA::ortho_spectra_svd()
 {
   void dsvdcmp(double **a, int m, int n, double w[], double **v);
   int i,j;
-  fltarray  M1,tMat;
-  fltarray CovMatSources;
+  dblarray  M1,tMat;
+  dblarray CovMatSources;
 
   MAT.transpose(MixingMat,tMat);
   MAT.mat_mult(MixingMat,tMat,CovMatSources);
@@ -467,13 +495,13 @@ void GMCA::ortho_spectra_svd()
 
   int P = CovMatSources.ny(); // number of lines
   int Q = CovMatSources.nx(); // number of columns
-  fltarray U(Q,P);  // composed of eigen value of  B B^t 
-  fltarray V(Q,Q);  // composed of eigen vector of B^t B
-  fltarray Ut(P,Q); // composed of eigen value of  B B^t 
-  fltarray Vt(Q,Q); // composed of eigen vector of B^t B
-  fltarray EV;
+  dblarray U(Q,P);  // composed of eigen value of  B B^t 
+  dblarray V(Q,Q);  // composed of eigen vector of B^t B
+  dblarray Ut(P,Q); // composed of eigen value of  B B^t 
+  dblarray Vt(Q,Q); // composed of eigen vector of B^t B
+  dblarray EV;
   
-  fltarray Diag(Q,Q);
+  dblarray Diag(Q,Q);
   Diag.init();
   double **a; // matrix P lines, Q columns
   double **v; // eigenvectors matrix 
@@ -506,8 +534,8 @@ void GMCA::ortho_spectra_svd()
   free_dmatrix(v, 1, Q, 1, Q);
   free_dvector(w, 1, Q);
   
-  fltarray MMat;
-  fltarray tV;
+  dblarray MMat;
+  dblarray tV;
   MAT.transpose(V,tV);
   MAT.mat_mult(tV,MixingMat,MMat);
   MixingMat = MMat;
@@ -530,7 +558,7 @@ void GMCA::ortho_spectra_svd()
 void GMCA::force_disjspec()
 {
     int i,k,m;
-    fltarray V(NbrSources),Q(NbrCannels),P(NbrSources);
+    dblarray V(NbrSources),Q(NbrCannels),P(NbrSources);
         
    // int MaxSpecIndex = (int) NbrCannels*(1-1/((float) MatNbrScale1D));
     
@@ -566,11 +594,11 @@ void GMCA::force_disjspec()
 
 /****************************************************************************/
 
-void GMCA::force_disjsources(fltarray &TabSource)
+void GMCA::force_disjsources(dblarray &TabSource)
 {
     int i,k;
     int NbrCoef = TabSource.nx();
-    fltarray V(NbrSources);
+    dblarray V(NbrSources);
 
         
     for (i=0;i<NbrCoef;i++) 
@@ -584,13 +612,13 @@ void GMCA::force_disjsources(fltarray &TabSource)
 }
 
 /****************************************************************************/
-void GMCA::subs_mean(fltarray &Data)
+void GMCA::subs_mean(dblarray &Data)
 {
 	int i,k;
 	int NbC = Data.ny();
 	int NbS = Data.nx();
 	
-	fltarray V(NbS);
+	dblarray V(NbS);
 	
 	for (i=0;i<NbC;i++)
 	{
@@ -609,7 +637,7 @@ void GMCA::subs_mean(fltarray &Data)
 void GMCA::print_mixmatnorm()
 {
     int i,k;
-    fltarray V(NbrCannels);
+    dblarray V(NbrCannels);
         
     for (i=0;i<NbrSources;i++) 
     {
@@ -621,10 +649,10 @@ void GMCA::print_mixmatnorm()
 
 /****************************************************************************/
 
-void GMCA::Calc_InvMixingMat(fltarray &TabSource)
+void GMCA::Calc_InvMixingMat(dblarray &TabSource)
 {
-	fltarray LeftA;
-	fltarray TabMMTemp,IndexA(NbrSources);
+	dblarray LeftA;
+	dblarray TabMMTemp,IndexA(NbrSources);
     int i,k,NbNzS = NbrSources,NLin_Mat = MixingMat.axis(1),NCol_Mat = MixingMat.axis(2);
 
     // Evalve the indices of the non-zero columns of the mixing matrix :
@@ -661,11 +689,11 @@ void GMCA::Calc_InvMixingMat(fltarray &TabSource)
 
 /****************************************************************************/
 
-void GMCA::Update_MixingMat(fltarray &TabData,fltarray &TabSource , float &KThrd)
+void GMCA::Update_MixingMat(dblarray &TabData,dblarray &TabSource , float &KThrd)
 {
     // Definitions
-    fltarray IndexS(NbrSources);
-    fltarray TabMMTemp,TabSTemp,RightS;
+    dblarray IndexS(NbrSources);
+    dblarray TabMMTemp,TabSTemp,RightS;
     int i,k,NbNzS = NbrSources,NLin_Mat = MixingMat.axis(1),NbrCoef = TabSource.nx();
     
     
@@ -701,7 +729,7 @@ void GMCA::Update_MixingMat(fltarray &TabData,fltarray &TabSource , float &KThrd
      // Thresholding :
      if (L1_Matrix_Constraint == True) 
      {
-     	fltarray TempM;
+     	dblarray TempM;
         mat_wt1d_trans(TabMMTemp);     
      	HT_MixMat(TabMMTemp,KThrd);
      	MAT.transpose(TabMMTemp,TempM);  // Confusion transpose ou pas --- a controler
@@ -726,10 +754,10 @@ void GMCA::Update_MixingMat(fltarray &TabData,fltarray &TabSource , float &KThrd
  }
  
 /****************************************************************************/
-void GMCA::init_TabSource(fltarray &TabSource,int &NbrSamples)
+void GMCA::init_TabSource(dblarray &TabSource,int &NbrSamples)
 {
     int i,k;
-    fltarray Temp(NbrSamples,NbrSources);
+    dblarray Temp(NbrSamples,NbrSources);
     
     for (i=0;i<NbrSamples;i++) for (k=0;k<NbrSources;k++) Temp(i,k)=0;
     
@@ -737,7 +765,7 @@ void GMCA::init_TabSource(fltarray &TabSource,int &NbrSamples)
 }
 
 /****************************************************************************/
-void GMCA::print_mat(fltarray &Mat)
+void GMCA::print_mat(dblarray &Mat)
 {
  int Nx = Mat.nx();
  int Ny = Mat.ny();
@@ -753,7 +781,7 @@ void GMCA::print_mat(fltarray &Mat)
 
 /****************************************************************************/
 
-void GMCA::Sort_Sources(fltarray &TabSource)
+void GMCA::Sort_Sources(dblarray &TabSource)
 {
     void indexx(int n, double arr[], int indx[]);
     int i,k,l;
@@ -785,7 +813,7 @@ void GMCA::Sort_Sources(fltarray &TabSource)
    
    // Sorting the mixing matrix :
    
-   fltarray MMTemp = MixingMat;
+   dblarray MMTemp = MixingMat;
    
     for (i=0;i<NbrSources;i++)
     {
@@ -799,10 +827,10 @@ void GMCA::Sort_Sources(fltarray &TabSource)
   
 /****************************************************************************/
 
-void GMCA::RetrieveSourcesFromMixmat(fltarray &TabData,fltarray & TabSource)
+void GMCA::RetrieveSourcesFromMixmat(dblarray &TabData,dblarray & TabSource)
 {
     // Definitions
-    fltarray TabMMTemp,TabSTemp,LeftA;
+    dblarray TabMMTemp,TabSTemp,LeftA;
 
      // Compute the pseudo-inverse:
      
@@ -810,7 +838,7 @@ void GMCA::RetrieveSourcesFromMixmat(fltarray &TabData,fltarray & TabSource)
      InvMixingMat = LeftA;
 
      // Estimate the corresponding sources :
-     fltarray NLeftA=LeftA;
+     dblarray NLeftA=LeftA;
      
      MAT.transpose(NLeftA,LeftA);
      MAT.mat_mult(LeftA,TabData,TabSTemp);
@@ -821,11 +849,11 @@ void GMCA::RetrieveSourcesFromMixmat(fltarray &TabData,fltarray & TabSource)
   
 /****************************************************************************/
 
-void GMCA::Update_Sources(fltarray &TabData,fltarray &TabSource ,  float &KThrd)
+void GMCA::Update_Sources(dblarray &TabData,dblarray &TabSource ,  float &KThrd)
 {
     // Definitions
-    fltarray IndexA(NbrSources);
-    fltarray TabMMTemp,TabSTemp,LeftA;
+    dblarray IndexA(NbrSources);
+    dblarray TabMMTemp,TabSTemp,LeftA;
     int i,k,NbNzS = NbrSources,NLin_Mat = MixingMat.axis(1),NCol_Mat = MixingMat.axis(2),NbrCoef = TabSource.nx();
     
      // Evalve the indices of the non-zero columns of the mixing matrix :
@@ -852,14 +880,14 @@ void GMCA::Update_Sources(fltarray &TabData,fltarray &TabSource ,  float &KThrd)
      InvMixingMat = LeftA;
 
      // Estimate the corresponding sources :
-     fltarray NLeftA=LeftA;
+     dblarray NLeftA=LeftA;
      
      MAT.transpose(NLeftA,LeftA);
      MAT.mat_mult(LeftA,TabData,TabSTemp);
      
      // if (GetRelax == True)
      //{
-     // fltarray TabTemp = TabData - ...	
+     // dblarray TabTemp = TabData - ...	
      //	MAT.mat_mult(LeftA,TabData,TabSTemp);
      //}
           
@@ -873,7 +901,7 @@ void GMCA::Update_Sources(fltarray &TabData,fltarray &TabSource ,  float &KThrd)
      {
         if (IndexA(i) == 1)
         { 
-                //fltarray V(NbrCoef);
+                //dblarray V(NbrCoef);
                 for (k=0; k < NbrCoef;k++) TabSource(k,i) = TabSTemp(k,Indi);
                 //for (k=0; k < NbrCoef;k++) V(k) = TabSTemp(k,Indi);
                 Indi++;
@@ -883,10 +911,10 @@ void GMCA::Update_Sources(fltarray &TabData,fltarray &TabSource ,  float &KThrd)
 
 /****************************************************************************/
 
-void GMCA::Where_MixingMat(fltarray &Mat, fltarray &IndexA, int &NbNzS)
+void GMCA::Where_MixingMat(dblarray &Mat, dblarray &IndexA, int &NbNzS)
 { 
     int i,k,NLin_Mat = Mat.axis(1),NCol_Mat = Mat.axis(2); 
-    fltarray V(NLin_Mat);
+    dblarray V(NLin_Mat);
     
     NbNzS = 0;
     
@@ -909,10 +937,10 @@ void GMCA::Where_MixingMat(fltarray &Mat, fltarray &IndexA, int &NbNzS)
 
 /****************************************************************************/
 
-void GMCA::Where_Sources(fltarray &TabSource, fltarray &IndexS,int &NbNzS)
+void GMCA::Where_Sources(dblarray &TabSource, dblarray &IndexS,int &NbNzS)
 { 
     int i,k,NbrCoef = TabSource.nx(),Nyd = TabSource.ny();
-    fltarray V(NbrCoef);
+    dblarray V(NbrCoef);
         
     NbNzS = 0;
         
@@ -941,7 +969,7 @@ void GMCA::Normal_Mixmat()
 { 
     int i,k;
     float Norm_V;
-    fltarray V(NbrCannels);
+    dblarray V(NbrCannels);
         
     for (i=0; i < NbrSources; i++)
     {
@@ -960,10 +988,10 @@ void GMCA::Normal_Mixmat()
 
 /****************************************************************************/
 
-float GMCA::calc_L1norm(fltarray &TabSource) 
+double GMCA::calc_L1norm(dblarray &TabSource)
 {
     int i,k;
-    float L1n = 0;
+    double L1n = 0;
     
     for (i=0;i<TabSource.nx();i++) for (k=0;k<TabSource.ny();k++) L1n += ABS(TabSource(i,k));
     return L1n;
@@ -971,10 +999,10 @@ float GMCA::calc_L1norm(fltarray &TabSource)
 
 /****************************************************************************/
 
-float GMCA::calc_L0norm(fltarray &TabSource) 
+double GMCA::calc_L0norm(dblarray &TabSource)
 {
     int i,k;
-    float L0n = 0;
+    double L0n = 0;
     
     for (i=0;i<TabSource.nx();i++) for (k=0;k<TabSource.ny();k++) if(ABS(TabSource(i,k)) > ErrRate) L0n++;
     return L0n;
@@ -982,11 +1010,11 @@ float GMCA::calc_L0norm(fltarray &TabSource)
 
 /****************************************************************************/
 
-float GMCA::l2_error(fltarray & TabData, fltarray & TabSource)
-{ 
-    fltarray TabChannel;
-    fltarray TranspMixingMat;
-    fltarray Mat= MixingMat;
+double GMCA::l2_error(dblarray & TabData, dblarray & TabSource)
+{
+    dblarray TabChannel;
+    dblarray TranspMixingMat;
+    dblarray Mat= MixingMat;
     MAT.transpose(Mat,TranspMixingMat);
     MAT.mat_mult(TranspMixingMat, TabSource, TabChannel);
     TabChannel -= TabData;
@@ -995,15 +1023,15 @@ float GMCA::l2_error(fltarray & TabData, fltarray & TabSource)
 
 /****************************************************************************/
 
-float GMCA::CountResiThrd(fltarray & TabData, fltarray & TabSource, float & Thrd)
-{ 
-    fltarray TabChannel;
-    fltarray TranspMixingMat;
-    fltarray Mat= MixingMat;
+double GMCA::CountResiThrd(dblarray & TabData, dblarray & TabSource, float & Thrd)
+{
+    dblarray TabChannel;
+    dblarray TranspMixingMat;
+    dblarray Mat= MixingMat;
     MAT.transpose(Mat,TranspMixingMat);
     MAT.mat_mult(TranspMixingMat, TabSource, TabChannel);
     TabChannel -= TabData;
-    float count=0;
+    double count=0;
     int i,j;
     for (i=0; i<TabChannel.nx(); i++) for (j=0; j<TabChannel.ny(); j++) if (abs(TabChannel(i,j)) > Thrd) count++;
     return count;
@@ -1011,17 +1039,17 @@ float GMCA::CountResiThrd(fltarray & TabData, fltarray & TabSource, float & Thrd
 
 /****************************************************************************/
 
-float GMCA::MyKurt(fltarray & TabData)
-{ 
+double GMCA::MyKurt(dblarray & TabData)
+{
     int Nx = TabData.nx();
     int Ny = TabData.ny(); 
-    float KurtV,MeanVal,SigVal;
+    double KurtV,MeanVal,SigVal;
     int i,j,p=0;
-    fltarray V(Ny);
+    dblarray V(Ny);
     int NCol = Nx* Ny;
-    fltarray W(NCol);
-    
-    for (i=0; i<Nx; i++) 
+    dblarray W(NCol);
+     
+    for (i=0; i<Nx; i++)
     {
     	for (j=0; j<Ny; j++) V(j) = TabData(i,j);
     	MeanVal = V.mean();
@@ -1032,20 +1060,20 @@ float GMCA::MyKurt(fltarray & TabData)
     		p++;
     	}
     }
-
-	KurtV = curtosis(W.buffer(),NCol);    
+ 
+	KurtV = curtosis(W.buffer(),NCol);
     return KurtV;
 }
 
 /****************************************************************************/
 
-float GMCA::CalcSigmaMadResidual(fltarray & TabData, fltarray & TabSource)
-{ 
-    fltarray TabChannel;
-    fltarray TranspMixingMat;
-    fltarray Mat= MixingMat;
-    float MadValue;
-    fltarray V;
+double GMCA::CalcSigmaMadResidual(dblarray & TabData, dblarray & TabSource)
+{
+    dblarray TabChannel;
+    dblarray TranspMixingMat;
+    dblarray Mat= MixingMat;
+    double MadValue;
+    dblarray V;
     int NCol_Mat;
     int p=0;
     int i,k;
@@ -1074,14 +1102,14 @@ float GMCA::CalcSigmaMadResidual(fltarray & TabData, fltarray & TabSource)
 
 /****************************************************************************/
 
-float GMCA::CalcKurtosisResidual(fltarray & TabData)
-{ 
-    fltarray TabChannel;
+double GMCA::CalcKurtosisResidual(dblarray & TabData)
+{
+    dblarray TabChannel;
     float KurtValue;
 
     
     // Definitions
-    fltarray TabMMTemp,TabSTemp,LeftA;
+    dblarray TabMMTemp,TabSTemp,LeftA;
 
     // Compute the pseudo-inverse:
      
@@ -1089,13 +1117,13 @@ float GMCA::CalcKurtosisResidual(fltarray & TabData)
     InvMixingMat = LeftA;
 
     // Estimate the corresponding sources :
-    fltarray NLeftA=LeftA;
+    dblarray NLeftA=LeftA;
      
     MAT.transpose(NLeftA,LeftA);
     MAT.mat_mult(LeftA,TabData,TabSTemp);
      
-    fltarray TranspMixingMat;
-    fltarray Mat= MixingMat;
+    dblarray TranspMixingMat;
+    dblarray Mat= MixingMat;
             
     MAT.transpose(Mat,TranspMixingMat);
     MAT.mat_mult(TranspMixingMat, TabSTemp, TabChannel);
@@ -1108,16 +1136,16 @@ float GMCA::CalcKurtosisResidual(fltarray & TabData)
 
 /****************************************************************************/
 
-void GMCA::init_mixmat(fltarray &TabCannels) // Devrait être fait dans le constructeur
+void GMCA::init_mixmat(dblarray &TabCannels) // Devrait être fait dans le constructeur
 { 
    int i,k;
-   fltarray Temp(NbrCannels,NbrSources);
+   dblarray Temp(NbrCannels,NbrSources);
    fltarray Vec(NbrCannels);
    
    // Initialize with a PCA
    
    //pca(TabCannels,Temp);
-   
+   // cout << " IN init_mixmat " << NbrCannels << " " << NbrSources << endl;
    for (i=0;i < NbrCannels;i++)
    {
       for (k=0;k < NbrSources;k++)
@@ -1125,7 +1153,8 @@ void GMCA::init_mixmat(fltarray &TabCannels) // Devrait être fait dans le const
          Temp(i,k) = get_random(-1,1);
       }
    }
-      
+   // cout << "    NbrColumnInit " << NbrColumnInit <<  endl;
+
    if (NbrColumnInit > 0)   // Initialize with a known sub-matrix
    {
    	if (L1_Matrix_Constraint == True)
@@ -1133,7 +1162,7 @@ void GMCA::init_mixmat(fltarray &TabCannels) // Devrait être fait dans le const
              if (NbrColumnInit > 1)
              {
                  // Transform the known spectra
-                    fltarray TempM(NbrColumnInit,NbrCannels);
+                    dblarray TempM(NbrColumnInit,NbrCannels);
                     MAT.transpose(MatColumnInit,TempM);
                     mat_wt1d_trans(TempM);
                     MAT.transpose(TempM,MatColumnInit);
@@ -1141,7 +1170,7 @@ void GMCA::init_mixmat(fltarray &TabCannels) // Devrait être fait dans le const
     
             if (NbrColumnInit == 1)
             {
-            for (k=0;k<NbrCannels; k++) Vec(k) = MatColumnInit(k);
+            for (k=0;k<NbrCannels; k++) Vec(k) = (float) MatColumnInit(k);
             MR_Mat.transform(Vec);
             int ind=0;
 	        for (int s=0; s < MR_Mat.nbr_band (); s++)
@@ -1171,7 +1200,7 @@ void GMCA::init_mixmat(fltarray &TabCannels) // Devrait être fait dans le const
              if (NbrKnownColumn > 1)
              {
                  // Transform the known spectra
-                    fltarray TempM(NbrKnownColumn,NbrCannels);
+                    dblarray TempM(NbrKnownColumn,NbrCannels);
                     MAT.transpose(MatKnownColumn,TempM);
                     mat_wt1d_trans(TempM);
                     MAT.transpose(TempM,MatKnownColumn);
@@ -1192,7 +1221,8 @@ void GMCA::init_mixmat(fltarray &TabCannels) // Devrait être fait dans le const
    } 
    
    
-   
+  //  cout << " IN init_mixmat " << NbrKnownColumn << endl;
+
    {
    	for (i=0;i < NbrKnownColumn;i++)
    	{
@@ -1200,14 +1230,15 @@ void GMCA::init_mixmat(fltarray &TabCannels) // Devrait être fait dans le const
    	if (NbrKnownColumn == 1) for (k=0;k < NbrCannels;k++) Temp(k,i)=MatKnownColumn(k);
    	}
    }
-   
+   // cout << " IN init_mixmat " << NbrKnownColumn << endl;
+
    MixingMat = Temp;
    RecMixingMat = Temp;
 }
 
 /****************************************************************************/
 
-void GMCA::mat_wt1d_trans(fltarray &Mat)  // Il vaudrait mieux mettre un fltarray en entree car ce sont les colonnes de TabData que nous allons transformer
+void GMCA::mat_wt1d_trans(dblarray &Mat)  // Il vaudrait mieux mettre un dblarray en entree car ce sont les colonnes de TabData que nous allons transformer
 {
     int i,k,s;
     fltarray Vect(NbrCannels);
@@ -1226,7 +1257,7 @@ void GMCA::mat_wt1d_trans(fltarray &Mat)  // Il vaudrait mieux mettre un fltarra
 	 {
 	 for (k=0; k < MR_Mat.size_scale_np (s); k++) 
 	       {
-	           Mat(i,ind+k) = MR_Mat(s,k);
+	           Mat(i,ind+k) = (double) MR_Mat(s,k);
 	           
 	       }
 	       
@@ -1237,7 +1268,7 @@ void GMCA::mat_wt1d_trans(fltarray &Mat)  // Il vaudrait mieux mettre un fltarra
 
 /****************************************************************************/
 
-void GMCA::mat_wt1d_recons(fltarray &Mat)
+void GMCA::mat_wt1d_recons(dblarray &Mat)
 {
     int i,k;
     fltarray Vect(NbrCannels);
@@ -1246,21 +1277,21 @@ void GMCA::mat_wt1d_recons(fltarray &Mat)
     {
 	 int ind=0;
       for (int s=0; s < MR_Mat.nbr_band (); s++)
-	 for (k=0; k < MR_Mat.size_scale_np (s); k++) MR_Mat(s,k) = Mat(ind++,i); 
+	 for (k=0; k < MR_Mat.size_scale_np (s); k++) MR_Mat(s,k) = (float) Mat(ind++,i);
       MR_Mat.recons(Vect);
-      for (k=0;k<NbrCannels; k++) Mat(k,i) = Vect(k);  
+      for (k=0;k<NbrCannels; k++) Mat(k,i) = (double) Vect(k);
     }
 }
 
 /****************************************************************************/
 
-void GMCA::leftpi_mat(fltarray &Mat,fltarray &LPIMat)  // compute the inverse matrix (should be great to define a similar function to compute pseudo-inverses (left and right))
+void GMCA::leftpi_mat(dblarray &Mat,dblarray &LPIMat)  // compute the inverse matrix (should be great to define a similar function to compute pseudo-inverses (left and right))
 {
     
-    fltarray transpM;
-    fltarray cM;
-    fltarray IcM;
-	fltarray tempA;
+    dblarray transpM;
+    dblarray cM;
+    dblarray IcM;
+	dblarray tempA;
 		
     MAT.transpose(Mat,transpM); // X -> X^T
     MAT.mat_mult(Mat,transpM,cM); // X -> X^T*X
@@ -1274,12 +1305,12 @@ void GMCA::leftpi_mat(fltarray &Mat,fltarray &LPIMat)  // compute the inverse ma
 
 /****************************************************************************/
 
-void GMCA::rightpi_mat(fltarray &Mat, fltarray &RPIMat)  // compute the inverse matrix (should be great to define a similar function to compute pseudo-inverses (left and right))
+void GMCA::rightpi_mat(dblarray &Mat, dblarray &RPIMat)  // compute the inverse matrix (should be great to define a similar function to compute pseudo-inverses (left and right))
 {
-    fltarray transpM;
-    fltarray cM;
-    fltarray IcM;
-	fltarray tempA;
+    dblarray transpM;
+    dblarray cM;
+    dblarray IcM;
+	dblarray tempA;
 	    
     MAT.transpose(Mat,transpM);
     MAT.mat_mult(Mat,transpM,cM);
@@ -1292,11 +1323,11 @@ void GMCA::rightpi_mat(fltarray &Mat, fltarray &RPIMat)  // compute the inverse 
 
 /******************** CalcMadMat ******************************/
 
-float GMCA::CalcMadMat(fltarray &TabSource)
+double GMCA::CalcMadMat(dblarray &TabSource)
 {
     int i,k;
     int Nxd = TabSource.nx(),Nyd = TabSource.ny();
-    fltarray V(Nxd*Nyd);
+    dblarray V(Nxd*Nyd);
     int Val = 0;
     
     for (i=0;i < Nxd;i++)
@@ -1312,13 +1343,13 @@ float GMCA::CalcMadMat(fltarray &TabSource)
 
 /******************** Hard Threshold the sources******************************/
 
-void GMCA::HT_Sources(fltarray &TabSource, float &KThrd)  // Applying the matrix on the data
+void GMCA::HT_Sources(dblarray &TabSource, float &KThrd)  // Applying the matrix on the data
 {
    int NbrCoef = TabSource.nx();
    int Nyd = TabSource.ny();
    int i,k;
    float Mad;
-   fltarray V(NbrCoef);
+   dblarray V(NbrCoef);
    float Thrd;
    
    if (GlobThrd == True)
@@ -1350,13 +1381,13 @@ void GMCA::HT_Sources(fltarray &TabSource, float &KThrd)  // Applying the matrix
 
 /******************** Hard Threshold the spectra******************************/
 
-void GMCA::HT_MixMat(fltarray &Mat, float &KThrd)  // Applying the matrix on the data
+void GMCA::HT_MixMat(dblarray &Mat, float &KThrd)  // Applying the matrix on the data
 {
    int NLin_Mat = Mat.axis(1);
    int NCol_Mat = Mat.axis(2);
    int i,k;
    float Mad;
-   fltarray V;
+   dblarray V;
    
    V.alloc(1,NCol_Mat-KStart);
                  
@@ -1377,12 +1408,12 @@ void GMCA::HT_MixMat(fltarray &Mat, float &KThrd)  // Applying the matrix on the
 
 /****************************************************************************/
 
-void GMCA::apply_mat(fltarray & TabData, fltarray &Mat, fltarray & Result)  // Applying the matrix on the data
+void GMCA::apply_mat(dblarray & TabData, dblarray &Mat, dblarray & Result)  // Applying the matrix on the data
 {
    int NbrCoef = TabData.nx();
    int Nyd = TabData.ny();
    int i,k,NCol_Mat = Mat.axis(2);
-   fltarray V,R;
+   dblarray V,R;
    
    V.alloc(1,Nyd);
    R.alloc(1,NCol_Mat);
@@ -1401,13 +1432,13 @@ void GMCA::apply_mat(fltarray & TabData, fltarray &Mat, fltarray & Result)  // A
 
 /******************** Hard Threshold the sources******************************/
 
-void GMCA::recons_sources(fltarray &DataIn, fltarray &EstSources)  // Applying the matrix on the data
+void GMCA::recons_sources(dblarray &DataIn, dblarray &EstSources)  // Applying the matrix on the data
 {
  int Nx = DataIn.nx();
  int Ny = DataIn.ny();
  int Nz = DataIn.nz();
  int i,k,l;
-  fltarray RefData,RefSources;
+  dblarray RefData,RefSources;
   int Deb = 0;
    
  // Reform the data
@@ -1442,7 +1473,7 @@ void GMCA::recons_sources(fltarray &DataIn, fltarray &EstSources)  // Applying t
  
   /**********************************************************************************/
  
- void GMCA::apply_mask(fltarray &Data,fltarray &Mask,fltarray &DataRec)
+ void GMCA::apply_mask(dblarray &Data,dblarray &Mask,dblarray &DataRec)
  {
     int i,k,s;
     for (i=0;i<Data.nx();i++)
@@ -1452,9 +1483,9 @@ void GMCA::recons_sources(fltarray &DataIn, fltarray &EstSources)  // Applying t
  
  /**********************************************************************************/
  
- void GMCA::reform_data(fltarray &TabSources,fltarray &Data)
+ void GMCA::reform_data(dblarray &TabSources,dblarray &Data)
  {
-  fltarray TabCh(TabSources.nx(),NbrCannels);
+  dblarray TabCh(TabSources.nx(),NbrCannels);
   int i,k,l;
   
   for (i=0;i<TabSources.nx();i++)
@@ -1474,7 +1505,7 @@ void GMCA::recons_sources(fltarray &DataIn, fltarray &EstSources)  // Applying t
  
   /**********************************************************************************/
  
- void GMCA::transform_data(fltarray &DataRec,fltarray &TabCannels)
+ void GMCA::transform_data(dblarray &DataRec,dblarray &TabCannels)
  {
     //cout << DataRec.nx() << DataRec.ny() << endl;
     transform_sources(DataRec,TabCannels);
@@ -1483,7 +1514,7 @@ void GMCA::recons_sources(fltarray &DataIn, fltarray &EstSources)  // Applying t
  
  /**********************************************************************************/
  
- void GMCA::recons_data(fltarray &TabCannels,fltarray &Data)
+ void GMCA::recons_data(dblarray &TabCannels,dblarray &Data)
  {
   // First if 1D 
   if (L1_Matrix_Constraint == True)
@@ -1496,9 +1527,9 @@ void GMCA::recons_sources(fltarray &DataIn, fltarray &EstSources)  // Applying t
     {
 	 int ind=0;
       for (int s=0; s < MR_Mat.nbr_band (); s++)
-	 for (k=0; k < MR_Mat.size_scale_np (s); k++) MR_Mat(s,k) = TabCannels(i,ind++); 
+	 for (k=0; k < MR_Mat.size_scale_np (s); k++) MR_Mat(s,k) = (float) TabCannels(i,ind++);
       MR_Mat.recons(Vect);
-      for (k=0;k<NbrCannels; k++) TabCannels(i,k) = Vect(k);  
+      for (k=0;k<NbrCannels; k++) TabCannels(i,k) = (double) Vect(k);
     }
   
   }

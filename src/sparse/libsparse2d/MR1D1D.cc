@@ -426,6 +426,56 @@ void MR1D1D::transform_to_vectarray(fltarray &Data, fltarray &TabVect)
         for (b=0; b < NbrBandX; b++)
         {
            for (i=0; i < WT_x.size_scale_np (b); i++)  TabVect(Pix++,y) = WT_x(b,i);
+           if (y == 0) TabPosBand(b) = Pix;
+        }
+    }
+#ifdef DB_MR1D1D
+ cout << "1D_Y " << NbrBandY << endl;
+#endif
+   // 1D wt
+   if (NbrBandY >= 2)
+   {
+          for (b=0; b < NbrBandX; b++)
+       for (i=0; i < WT_x.size_scale_np (b); i++)
+       {
+           for (y=0; y< Ny; y++) Vect(y) = TabBand[b](i,y);   TabVect(TabPosBand(b)+i*WT_x.size_scale_np(b)+i, y);
+           WT_y.transform(Vect);
+           y = 0;
+           for (int b1=0; b1 < NbrBandY; b1++)
+           for (int p=0; p < WT_y.size_scale_np (b1); p++)  TabVect(TabPosBand(b)+i* WT_x.size_scale_np(b)+i,y) = WT_y(b1,p);
+        }
+   }
+#ifdef DB_MR1D1D
+ cout << "END TRANS " << endl;
+#endif
+}
+
+/****************************************************************************/
+
+void MR1D1D::transform_to_vectdblarray(dblarray &Data, dblarray &TabVect)
+{ 
+   int Nsx = nbr_coef_x();
+   int Nsy = nbr_coef_y();
+#ifdef DB_MR1D1D
+   cout << "ALLOC transform_to_vectarray " << Nsx << " " << Nsy << endl;
+#endif
+   TabVect.alloc(nbr_coef_x(), nbr_coef_y());
+   int x,b,y,i;
+   Nx = Data.nx();
+   Ny = Data.ny();
+   fltarray Frame(Nx);
+   fltarray Vect(Ny);
+   intarray TabPosBand(NbrBandX);
+    
+   // 2D wt transform per frame
+   for (y=0; y < Ny; y++)
+   {
+         int Pix=0;
+        for (i=0; i < Nx; i++) Frame(i) = Data(i,y);
+        WT_x.transform(Frame);
+        for (b=0; b < NbrBandX; b++)
+        {
+           for (i=0; i < WT_x.size_scale_np (b); i++)  TabVect(Pix++,y) = WT_x(b,i);
 	       if (y == 0) TabPosBand(b) = Pix;  
         }
     }

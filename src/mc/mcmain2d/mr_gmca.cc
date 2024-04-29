@@ -229,20 +229,18 @@ static void usage(char *argv[])
     fprintf(OUTMAN, "             Apply a l_1 constraint also on the mixing matrix.  Default is no. \n");  
     fprintf(OUTMAN, "         [-d]\n");
     fprintf(OUTMAN, "             Estimate the number of sources.  Default is no. \n"); 
-    fprintf(OUTMAN, "         [-d]\n");
-    fprintf(OUTMAN, "             Estimate the number of sources.  Default is no. \n"); 
     fprintf(OUTMAN, "         [-m]\n");
     fprintf(OUTMAN, "             Mad-based stopping criterion when the number of sources is estimated.  Default is 5 - default criterion is l2-based. \n"); 
     fprintf(OUTMAN, "         [-L]\n");
     fprintf(OUTMAN, "             L2-based stopping criterion when the number of sources is estimated.  Default is 40 (in dB). \n"); 
-    fprintf(OUTMAN, "         [-D] \n");
-    fprintf(OUTMAN, "             Spectra with disjoint supports for thresholds higher than 7 Mad.  \n");   // Should be an option
+//    fprintf(OUTMAN, "         [-D] \n");
+//    fprintf(OUTMAN, "             Spectra with disjoint supports for thresholds higher than 7 Mad.  \n");   // Should be an option
     fprintf(OUTMAN, "         [-K Last K-Mad]\n");
     fprintf(OUTMAN, "             Last value of K for K-Mad Thresholding.  \n");
     fprintf(OUTMAN, "         [-G Global Thresholding]\n");
-    fprintf(OUTMAN, "         [-O]\n");        
-    fprintf(OUTMAN, "                 Orthogonalization of the spectra\n");       
-    verbose_usage();    
+//    fprintf(OUTMAN, "         [-O]\n");
+//    fprintf(OUTMAN, "                 Orthogonalization of the spectra\n");
+    verbose_usage();
     vm_usage();
      manline();
     exit(-1);
@@ -435,7 +433,7 @@ static void transinit(int argc, char *argv[])
   
 int main(int argc, char *argv[]) 
 {
-    fltarray Dat;
+    dblarray Dat;
     /* Get command line arguments, open input file(s) if necessary */
    fitsstruct Header;
    char Cmd[512];
@@ -466,38 +464,44 @@ int main(int argc, char *argv[])
 	
        if (Verbose == True) cout << "\n Reading the data"<< endl;
    
-       io_3d_read_data(Name_Cube_In, Dat, &Header);
- 
+       // io_3d_read_data(Name_Cube_In, Dat, &Header);
+       fits_read_dblarr (Name_Cube_In, Dat);
+
        int Nx = Dat.nx();
        int Ny = Dat.ny();
        int Nz = Dat.nz();
-       if (Verbose == True) cout << "Nx = " << Dat.nx() << " Ny = " << Dat.ny() << " Nz = " << Dat.nz() << endl;
-     
+       if (Verbose == True) 
+           cout << "Nx = " << Dat.nx() << " Ny = " << Dat.ny() << " Nz = " << Dat.nz() << endl;
+      // Dat.info("READ data");
+    
+    
        if (Normalize == True)
        {
          double Mean = Dat.mean();
          double Sigma = Dat.sigma();
+         //  cout << "Data mean  = " << Mean << " Sigma = " << Sigma << endl;
+         //  printf("Sigmad=f = %f", Sigma);
          for (int i=0;i<Nx;i++)
          for (int j=0;j<Ny;j++)
          for (int k=0;k<Nz;k++) Dat(i,j,k) = (Dat(i,j,k)-Mean)/Sigma;
        }    
-    
+       // Dat.info("Normalized data");
+
    
        // MR2D1D WT;
        GMCA_2D WT;
-       
        if (Verbose == True) cout << "Alloc ...  " << endl;
        WT.alloc(Nx, Ny, Nz, Transform, NbrScale2d, 1); // On ne regularise que la MixingMat
  
        if (Verbose == True)	cout << "2d1d_trans ... "<< endl;
  
        //WT.transform (Dat);  // Pas utile
-       
+        
        // WT.write(Name_Out);
        // Compute the 2D1D transform
-       fltarray TabVect;
-       WT.transform_to_vectarray(Dat, TabVect);
-       // fits_write_fltarr ("xx_tabvect.fits", TabVect);
+       dblarray TabVect;
+       WT.transform_to_vectdblarray(Dat, TabVect);
+       // fits_write_dblarr ("xx_tabvect.fits", TabVect);
 
        // Initalize the class for GMCA
        
@@ -518,7 +522,7 @@ int main(int argc, char *argv[])
        WT.GlobThrd = GThrd;
        WT.SVConst = UsePCA;
        WT.MatNbrScale1D = Nbr_Plan;
-       fltarray QSVec;
+       dblarray QSVec;
        
        if (UsePCA == True)
        {
@@ -528,12 +532,12 @@ int main(int argc, char *argv[])
        
        if (UseMask == True)
        {
-          fits_read_fltarr (Name_Mask, WT.Mask);
+          fits_read_dblarr (Name_Mask, WT.Mask);
        }
        
        if (UseKnownColomn  == True)
        {
-          fits_read_fltarr (Name_KnowColumn, WT.MatKnownColumn);
+          fits_read_dblarr (Name_KnowColumn, WT.MatKnownColumn);
 	      if (WT.MatKnownColumn.naxis() == 1) WT.NbrKnownColumn = 1;
 	      else WT.NbrKnownColumn = WT.MatKnownColumn.axis(2);
        }
@@ -543,7 +547,7 @@ int main(int argc, char *argv[])
 	   
 	  if (EstimNbSources == False)  // THE NUMBER OF SOURCES IS FIXED
        {
-       	fltarray TabSource;
+       	dblarray TabSource;
        	int NbrCoef = TabVect.nx();
       	TabSource.alloc(NbrCoef,NbrSources);
        	WT.GMCA::Verbose = Verbose;
@@ -554,19 +558,19 @@ int main(int argc, char *argv[])
        if (EstimNbSources == TRUE)  // THE NUMBER OF SOURCES IS ESTIMATED
        {
        	int NbrSourcesMax = NbrSources;
-       	float RelError = 0;
+       	double RelError = 0;
        	//float SigmaData=TabVect.sigma();
        	NbrSources = 1;
        	bool ExitCriterion = False; /// CHANGEDDDDD
-       	float OldRelError=0;
-       	float DiffRelError;
+        double OldRelError=0;
+        double DiffRelError;
        	
        	while (NbrSources <= NbrSourcesMax && ExitCriterion == False)
        	{
        		NbrSources++;
        		if (Verbose == True) cout << "Running GMCA ... Number of Estimated Sources : " << NbrSources << endl;
        		WT.NbrSources = NbrSources;
-       		fltarray TabSource;
+       		dblarray TabSource;
        		int NbrCoef = TabVect.nx();
 	      	TabSource.alloc(NbrCoef,NbrSources);
        		WT.GMCA::Verbose = Verbose;
@@ -605,17 +609,17 @@ int main(int argc, char *argv[])
        
        // Reconstruction :
        if (Verbose == True) cout << "Reconstruction ... "<< endl;
-       fltarray EstSources;
+       dblarray EstSources;
        WT.recons_sources(Dat,EstSources);
        // WT.Sort_Sources(EstSources);
 
        if (Verbose == True) cout << "Write results ... "<< endl;
        // fits_write_fltarr ("xx_EstSources.fits", EstSources);
-       fits_write_fltarr ("xx_EstMixmat.fits", WT.MixingMat);
-       fits_write_fltarr ("xx_InvMixingMat.fits", WT.InvMixingMat);
+        fits_write_dblarr ("xx_EstMixmat.fits", WT.MixingMat);
+        fits_write_dblarr ("xx_InvMixingMat.fits", WT.InvMixingMat);
 
     // Header.origin = Cmd;	 
-    fits_write_fltarr(Name_Out, EstSources);
+    fits_write_dblarr(Name_Out, EstSources);
  
     exit(0);
 }
