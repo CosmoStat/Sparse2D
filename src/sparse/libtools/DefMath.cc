@@ -282,6 +282,22 @@ float get_sigma_mad(float *Image, int N)
 
 /***************************************************************************/
 
+double get_sigma_mad(double *Image, int N)
+{
+    double Noise, Med;
+    int i;
+    dblarray Buff(N);
+
+    for (i = 0; i < N; i++) Buff(i) = Image[i];
+    Med = get_median(Buff.buffer(), N);
+
+    for (i = 0; i < N; i++) Buff(i) = ABS(Image[i] - Med);
+    Noise = get_median(Buff.buffer(), N);
+    return (Noise/0.6745);
+}
+
+/***************************************************************************/
+
 float get_sigma_clip (float *Data, int N, int Nit, Bool Average_Non_Null,
             Bool UseBadPixel, float BadPVal)
 {
@@ -423,7 +439,36 @@ double curtosis(float *Dat, int N)
    else Curt = 0.;
    return Curt; 
 }
+/****************************************************************************/
 
+double curtosis(double *Dat, int N)
+{
+   double Curt;
+   double x1,x2,x3,x4,Sigma;
+   int i;
+   x1=x2=x3=x4=0.;
+   for (i=0; i < N; i++)
+   {
+      x1 += Dat[i];
+      x2 +=  pow((double) Dat[i], (double) 2.);
+      x3 +=  pow((double) Dat[i], (double) 3.);
+      x4 +=  pow((double) Dat[i], (double) 4.);
+   }
+   x1 /= (double) N;
+   x2 /= (double) N;
+   x3 /= (double) N;
+   x4 /= (double) N;
+   Sigma = x2 - x1*x1;
+   if (Sigma > 0.)
+   {
+      double x1_2 = x1*x1;
+      double x1_4 = x1_2*x1_2;
+      Sigma = sqrt(Sigma);
+      Curt = 1. / pow(Sigma,(double) 4.) * (x4 -4*x1*x3 + 6.*x2*x1_2 -3.*x1_4 ) - 3.;
+   }
+   else Curt = 0.;
+   return Curt;
+}
 /****************************************************************************/
 
 // old version

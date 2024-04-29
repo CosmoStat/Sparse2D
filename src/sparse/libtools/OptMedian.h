@@ -38,10 +38,13 @@ float opt_med7(float  *p);
 float opt_med9(float  *p);
 float kth_smallest(float a[], int n, int k);
 float get_median(float a[], int n);
+double get_median(double a[], int n);
+
 float abs_kth_smallest(float a[], int n, int k);
 float get_abs_median(float a[], int n);
 
 int hmedian(int  *ra, int n);
 float hmedian(float  *ra, int n);
+double hmedian(double  *ra, int n);
 
 #endif

@@ -432,7 +432,57 @@ void MR2D1D::transform_to_vectarray(fltarray &Data, fltarray &TabVect)
 {
    int Nsx = nbr_coef_2d();
    int Nsy = nbr_coef_1d();
-   cout << "ALLOC " << Nsx << " " << Nsy << endl;
+ //   cout << "ALLOC " << Nsx << " " << Nsy << endl;
+   TabVect.alloc(nbr_coef_2d(), nbr_coef_1d());
+   int i,j,b,z;
+   Nx = Data.nx();
+   Ny = Data.ny();
+   Nz = Data.nz();
+   Ifloat Frame(Ny, Nx);
+   fltarray Vect(Nz);
+   intarray TabPosBand(nbr_band_2d());
+    
+   // 2D wt transform per frame
+   for (z=0; z < Nz; z++)
+   {
+      int Pix=0;
+      for (i=0; i < Ny; i++)
+      for (j=0; j < Nx; j++) Frame(i,j) = Data(j,i,z);
+      WT2D.transform(Frame);
+      for (b=0; b < nbr_band_2d(); b++)
+      {
+         for (i=0; i < WT2D.size_band_nl(b); i++)
+     for (j=0; j < WT2D.size_band_nc(b); j++) TabVect(Pix++,z) = WT2D(b,i,j);
+     if (z == 0) TabPosBand(b) = Pix;
+       }
+   }
+ // cout << "1D " << NbrBand1D << endl;
+   // 1D wt
+   if (NbrBand1D >= 2)
+   {
+     for (b=0; b <  nbr_band_2d(); b++)
+     for (i=0; i < WT2D.size_band_nl(b); i++)
+     for (j=0; j < WT2D.size_band_nc(b); j++)
+     {
+        for (z=0; z < Nz; z++) Vect(z) = TabVect(TabPosBand(b)+i*WT2D.size_band_nc(b)+j,z);     // TabBand[b](j,i,z);
+        WT1D.transform(Vect);
+        z = 0;
+        for (int b1=0; b1 < NbrBand1D; b1++)
+        {
+         for (int p=0; p < WT1D.size_scale_np (b1); p++)  TabVect(TabPosBand(b)+i*WT2D.size_band_nc(b)+j,z) = WT1D(b1,p);
+        }
+      }
+   }
+ // cout << "END TRANS " << endl;
+}
+
+/****************************************************************************/
+
+void MR2D1D::transform_to_vectdblarray(dblarray &Data, dblarray &TabVect)
+{
+   int Nsx = nbr_coef_2d();
+   int Nsy = nbr_coef_1d();
+   // cout << "ALLOC " << Nsx << " " << Nsy << endl;
    TabVect.alloc(nbr_coef_2d(), nbr_coef_1d());
    int i,j,b,z;
    Nx = Data.nx();
@@ -456,8 +506,8 @@ void MR2D1D::transform_to_vectarray(fltarray &Data, fltarray &TabVect)
 	 if (z == 0) TabPosBand(b) = Pix;
        }
    }
- cout << "1D " << NbrBand1D << endl;
-   // 1D wt 
+ // cout << "1D " << NbrBand1D << endl;
+   // 1D wt
    if (NbrBand1D >= 2)
    {
      for (b=0; b <  nbr_band_2d(); b++)
@@ -473,7 +523,7 @@ void MR2D1D::transform_to_vectarray(fltarray &Data, fltarray &TabVect)
         }
       }
    }    
- cout << "END TRANS " << endl;
+// cout << "END TRANS " << endl;
 }
 
 

@@ -238,11 +238,14 @@ float get_random();
 double b3_spline (double x);
 double entropy (float *Data, int Npix, float StepHisto=1.);
 float get_sigma_mad(float *Data, int N);
-float get_sigma_clip(float *Data, int N, int Nit=3, Bool Average_Non_Null=True, 
+double get_sigma_mad(double *Data, int N);
+
+float get_sigma_clip(float *Data, int N, int Nit=3, Bool Average_Non_Null=True,
                     Bool UseBadPixel=False, float BadPVal=0.);
 double skewness(float *Dat, int N);
 double curtosis(float *Dat, int N);
-void moment4(float *Dat, int N, double &Mean, double &Pow, 
+double curtosis(double *Dat, int N);
+void moment4(float *Dat, int N, double &Mean, double &Pow,
              double &M3, double & M4, float & Min, float & Max, bool not_centered=false);
 void moment4(double *Dat, int N, double &Mean, double &Sigma, 
              double &Skew, double & Curt, double & Min, double & Max);

@@ -27,3 +27,7 @@
 #undef elem_type  
 #define  elem_type float
 #include "GenMedian.h"
+
+#undef elem_type
+#define  elem_type double
+#include "GenMedian.h"

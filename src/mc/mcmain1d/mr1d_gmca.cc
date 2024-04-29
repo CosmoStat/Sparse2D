@@ -27,6 +27,7 @@
 #include "Array.h"
 #include "NR.h"
 #include "IM_Obj.h"
+#include "IM_IO.h"
 #include "GMCA.h"
 #include "MR1D1D.h"
 #include "IM_Noise.h"
@@ -34,8 +35,8 @@
 #include "MR1D_Filter.h"
  
 /****************************************************************************/
-
-class GMCA_1D: public MR1D1D, public GMCA 
+ 
+class GMCA_1D: public MR1D1D, public GMCA
 {
     public:
     Bool UseRMSMap;
@@ -46,7 +47,7 @@ class GMCA_1D: public MR1D1D, public GMCA
     void inpainting_run(fltarray &TabCannels, fltarray & InpData);
     void transrecons_sources(fltarray &TabVect,fltarray &Recdata);
     void transform_sources(fltarray &Data,fltarray &TabVect);
-    void recons_sources(fltarray &DataIn, fltarray &EstSources);  // Applying the matrix on the data
+    void recons_sources(dblarray &DataIn, dblarray &EstSources);  // Applying the matrix on the data
     void  HT_Sources(fltarray &TabSource, float &KThrd) ;
 
    ~GMCA_1D() {} ;
@@ -170,12 +171,12 @@ void GMCA_1D::transrecons_sources(fltarray &TabVect,fltarray &Recdata)
 
 /****************************************************************************/
 
-void GMCA_1D::recons_sources(fltarray &DataIn, fltarray &EstSources)  // Applying the matrix on the data
+void GMCA_1D::recons_sources(dblarray &DataIn, dblarray &EstSources)  // Applying the matrix on the data
 {
     int Nx = DataIn.nx();
     int Ny = DataIn.ny();
     int i,k,l;
-    fltarray RefData,RefSources;
+    dblarray RefData,RefSources;
     int Deb = 0;
     
     // cout << "NEW recons_sources " << endl;
@@ -588,7 +589,7 @@ int test_main(int argc, char *argv[])
 
 int main(int argc, char *argv[]) 
 {
-    fltarray Dat;
+    dblarray Dat;
     /* Get command line arguments, open input file(s) if necessary */
    fitsstruct Header;
    char Cmd[512];
@@ -624,7 +625,7 @@ int main(int argc, char *argv[])
 	
        if (Verbose == True) cout << "\n Reading the data"<< endl;
    
-       fits_read_fltarr(Name_Cube_In, Dat, &Header);
+       fits_read_dblarr(Name_Cube_In, Dat);
  
        int Nx = Dat.nx();
        int Ny = Dat.ny();
@@ -676,8 +677,8 @@ int main(int argc, char *argv[])
        
        // WT.write(Name_Out);
        // Compute the 2D1D transform
-       fltarray TabVect;
-       WT.transform_to_vectarray(Dat, TabVect);
+       dblarray TabVect;
+       WT.transform_to_vectdblarray(Dat, TabVect);
        // fits_write_fltarr ("xx_tabvect.fits", TabVect);
 
        // Initalize the class for GMCA
@@ -699,7 +700,7 @@ int main(int argc, char *argv[])
        WT.GlobThrd = GThrd;
        WT.SVConst = UsePCA;
        WT.MatNbrScale1D = Nbr_Plan;
-       fltarray QSVec;
+       dblarray QSVec;
     
     if (UsePCA == True)
     {
@@ -709,13 +710,13 @@ int main(int argc, char *argv[])
        
     if (UseMask == True)
     {
-          fits_read_fltarr (Name_Mask, WT.Mask);
+          fits_read_dblarr (Name_Mask, WT.Mask);
     }
        
       
     if (UseKnownColomn  == True)
     {
-        fits_read_fltarr (Name_KnowColumn, WT.MatKnownColumn);
+        fits_read_dblarr (Name_KnowColumn, WT.MatKnownColumn);
         if (WT.MatKnownColumn.naxis() == 1) WT.NbrKnownColumn = 1;
         else WT.NbrKnownColumn = WT.MatKnownColumn.axis(2);
     }
@@ -726,7 +727,7 @@ int main(int argc, char *argv[])
 	   
     if (EstimNbSources == False)  // THE NUMBER OF SOURCES IS FIXED
     {
-       	fltarray TabSource;
+       	dblarray TabSource;
        	int NbrCoef = TabVect.nx();
       	TabSource.alloc(NbrCoef,NbrSources);
        	WT.GMCA::Verbose = Verbose;
@@ -749,7 +750,7 @@ int main(int argc, char *argv[])
        		NbrSources++;
        		if (Verbose == True) cout << "Running GMCA ... Number of Estimated Sources : " << NbrSources << endl;
        		WT.NbrSources = NbrSources;
-       		fltarray TabSource;
+       		dblarray TabSource;
        		int NbrCoef = TabVect.nx();
 	      	TabSource.alloc(NbrCoef,NbrSources);
        		WT.GMCA::Verbose = Verbose;
@@ -782,7 +783,7 @@ int main(int argc, char *argv[])
        
        // Reconstruction :
     if (Verbose == True) cout << "Reconstruction ... "<< endl;
-    fltarray EstSources;
+    dblarray EstSources;
        // cout << "GO REC" << endl;
        
     WT.recons_sources(Dat,EstSources);
@@ -795,16 +796,16 @@ int main(int argc, char *argv[])
        // fits_write_fltarr ("xx_InvMixingMat.fits", WT.InvMixingMat);
 
     // Header.origin = Cmd;	 
-    fits_write_fltarr(Name_Out, EstSources);
-    if (WriteMixing == True) fits_write_fltarr (Name_Out_2, WT.RecMixingMat);
-    if (WriteChannels == True) 
+    fits_write_dblarr(Name_Out, EstSources);
+    if (WriteMixing == True) fits_write_dblarr (Name_Out_2, WT.RecMixingMat);
+    if (WriteChannels == True)
     {
-       fltarray EstChannels, TranspMixingMat;
+       dblarray EstChannels, TranspMixingMat;
        MatOper MAT;  // See file $Tools/MatrixOper.cc and .h
        MAT.transpose(WT.MixingMat,TranspMixingMat);
        WT.apply_mat(EstSources, TranspMixingMat, EstChannels);
        // WT.apply_mat(EstSources, WT.MixingMat, EstChannels);
-      fits_write_fltarr (Name_Out_3, EstChannels);
+        fits_write_dblarr (Name_Out_3, EstChannels);
     }
     exit(0);
 }
