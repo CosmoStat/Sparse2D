@@ -90,6 +90,7 @@ Bool Normalize=False;       // normalize data in
  
 type_border Bord = I_MIRROR;
 Bool Reverse = False;
+Bool ModifiedATWT = False;
 
 /*********************************************************************/
 
@@ -146,10 +147,11 @@ static void transinit(int argc, char *argv[])
 #endif   
 
     /* get options */
-    while ((c = GetOpt(argc,argv,"rN:t:n:MvzZ:")) != -1) 
+    while ((c = GetOpt(argc,argv,"ArN:t:n:MvzZ:")) != -1)
     {
 	switch (c) 
         {
+          case 'A': ModifiedATWT = True; break;
            case 't':
 		/* -d <type> type of transform */
 		if (sscanf(OptArg,"%d",&c ) != 1) 
@@ -256,8 +258,6 @@ int main(int argc, char *argv[])
    
     lm_check(LIC_MR3);
     transinit(argc, argv);
- 
-
     
     if (Reverse == False)
     {
@@ -291,7 +291,7 @@ int main(int argc, char *argv[])
        MR2D1D WT;
        if (Verbose == True) cout << "Alloc ...  " << endl;
        WT.alloc(Nx, Ny, Nz, Transform, NbrScale2d, Nbr_Plan);
-
+        WT.ModifiedATWT = ModifiedATWT;
        if (Verbose == True) cout << "Transform ...  " << endl;
        WT.transform (Dat);
 
@@ -312,12 +312,14 @@ int main(int argc, char *argv[])
         //  fits_write_fltarr(Name, Band);
 	      }
        }
-//        cout << endl << "READ " << endl;
-//        MR2D1D WT1;
-//        WT1.read(Name_Out);
-//        fltarray Dat1;
-//        WT1.recons (Dat1);
-//        fits_write_fltarr (Name_Out, Dat1);
+/*        cout << endl << "READ " << endl;
+        MR2D1D WT1;
+        WT1.read(Name_Out);
+        fltarray Dat1;
+        WT1.recons (Dat1);
+        fits_write_fltarr (Name_Out, Dat1);
+        Dat1 -= Dat;
+        cout << "  Resi Sigma = " << Dat1.sigma() << " Min = " << Dat1.min() << " Max = " << Dat1.max() << endl;*/
     }
     else
     {

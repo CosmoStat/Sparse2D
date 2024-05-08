@@ -66,11 +66,13 @@ class MR2D1D {
   type_undec_filter U_Filter; // Type of filter in case of undecimated WT
   FilterAnaSynt FAS;          // Filter bank object
   FilterAnaSynt FAS1D;          // Filter bank object
-
-  int mr_io_fill_header(fitsfile *fptr);
+    Bool ModifiedATWT;   // It true, use the modified AT WT instead of the
+                            // standard WT
+  
+    int mr_io_fill_header(fitsfile *fptr);
   //public:
        Bool Verbose;
-       MR2D1D (){ NbrBand2D=NbrBand1D=0;Verbose=False;}
+       MR2D1D (){ NbrBand2D=NbrBand1D=0;Verbose=False;ModifiedATWT=False;}
        
        void alloc(int iNx, int iNy, int iNz, type_transform Trans2D, int Ns2D, int Ns1D=0, Bool NoAlloc=False, type_sb_filter Filter1D=F_MALLAT_7_9);
        // Allocate the class for a cube of size (iNx, iNy, iNz) using Ns2D scale in 2D and Ns1D scale in 1D

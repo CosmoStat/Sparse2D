@@ -539,6 +539,7 @@ void MR2D1D::transform (fltarray &Data)
    fltarray Vect(Nz);
    
    // 2D wt transform per frame
+   WT2D.ModifiedATWT = ModifiedATWT;
    for (z=0; z < Nz; z++)
    {
       for (i=0; i < Ny; i++)
@@ -599,6 +600,7 @@ void MR2D1D::recons (fltarray &Data)
    }
    
    // 2D wt 
+   WT2D.ModifiedATWT = ModifiedATWT;
    for (z=0; z < Nz; z++)
    {
       for (b=0; b < NbrBand2D; b++)
