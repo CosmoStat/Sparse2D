@@ -165,7 +165,8 @@ Bool UseKnownColomn = False;
 Bool UseMask = False;
 int NbrKnownColumn = 0;   // Number of column which are known in the mixing matrix (a priori)
 fltarray MatKnownColumn; // Matrix containing the known column
-type_gmca_threshold_decrease TypeThresholdDecrease = GMCA_THRES_MAD; // Select the decreasing threshold strategy 
+// enum type_gmca_threshold_decrease {GMCA_THRES_LINEAR, GMCA_THRES_EXP, GMCA_THRES_MAD, GMCA_THRES_MOM};
+type_gmca_threshold_decrease TypeThresholdDecrease = GMCA_THRES_MAD; // Select the decreasing threshold strategy
 Bool Inpainting = False;            // If true, GMCA consider missing data, and apply an inpainting technique
 fltarray Mask;              // if Inpainting==True, Mask contains the available data Mask(i) = 1 or 0 (0 for no data).
 Bool PositiveMatrix = False;        // if True, the mixing matrice is assume to be positive
@@ -238,6 +239,13 @@ static void usage(char *argv[])
     fprintf(OUTMAN, "         [-K Last K-Mad]\n");
     fprintf(OUTMAN, "             Last value of K for K-Mad Thresholding.  \n");
     fprintf(OUTMAN, "         [-G Global Thresholding]\n");
+    fprintf(OUTMAN, "         [-E ThresholdDecreasingMethod]\n");
+    fprintf(OUTMAN, "             1: Linear Thresholding.  \n");
+    fprintf(OUTMAN, "             2: Exponential Thresholding.  \n");
+    fprintf(OUTMAN, "             3: Residual MAD Thresholding.  \n");
+    fprintf(OUTMAN, "             4: MOM Thresholding.  \n");
+    fprintf(OUTMAN, "             Default is 3. \n");
+
 //    fprintf(OUTMAN, "         [-O]\n");
 //    fprintf(OUTMAN, "                 Orthogonalization of the spectra\n");
     verbose_usage();
@@ -260,7 +268,7 @@ static void transinit(int argc, char *argv[])
 #endif   
 
     /* get options */
-    while ((c = GetOpt(argc,argv,"i:N:t:n:MS:PpI:A:ldm:L:DK:GUOvzZ:")) != -1) 
+    while ((c = GetOpt(argc,argv,"E:i:N:t:n:MS:PpI:A:ldm:L:DK:GUOvzZ:")) != -1)
     {
 	switch (c) 
         {
@@ -338,6 +346,22 @@ static void transinit(int argc, char *argv[])
 	            exit(-1);
  		}                
  		break;
+            case 'E':
+              /* -d <type> type of transform */
+              if (sscanf(OptArg,"%d",&c ) != 1)
+                      {
+                  fprintf(OUTMAN, "bad type of threshold decreasing method: %s\n", OptArg);
+                      exit(-1);
+                          
+              }
+                      if ((c > 0) && (c <= NRB_GMCA_THRES_DEC+1))
+                          TypeThresholdDecrease = (type_gmca_threshold_decrease) (c-1);
+                      else
+                      {
+                  fprintf(OUTMAN, "bad type of threshold decreasing method: %s\n", OptArg);
+                      exit(-1);
+               }
+               break;
        case 'M': Normalize = (Normalize == True) ? False: True; break;
  	   case 'v': Verbose = True; break;
 	   case 'n':
@@ -374,6 +398,7 @@ static void transinit(int argc, char *argv[])
 		    exit(-1);
 		}
  		break;
+                
 #ifdef LARGE_BUFF
 	    case 'z':
 	        if (OptZ == True)

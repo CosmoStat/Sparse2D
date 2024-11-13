@@ -418,13 +418,14 @@ void MCA1D::decomposition (fltarray& Signal)
        
     // if (LambdaTV > 0)   LambdaTV *= sqrt((double) 2.) / Nbr_Iter;
   
-   for (int Iter=0; Iter < Nbr_Iter; Iter++) 
+   for (int Iter=0; Iter < Nbr_Iter; Iter++)
    {
        if (Iter>0) 
        {
-          if (Linear == True) Lambda -= StepL; 
-          else Lambda =  LastSoftThreshold 
-                          + DeltaThreshold  *(1.-erf(2.8*Iter/ Nbr_Iter));
+          if (Linear == True)
+               Lambda =  LastSoftThreshold + (FirstSoftThreshold - LastSoftThreshold ) *  (Nbr_Iter-1-Iter) / (float) (Nbr_Iter-1);
+          else Lambda =  LastSoftThreshold
+                          + DeltaThreshold  *(1.-erf(2.8*(Iter-1)/ (double)(Nbr_Iter-1))) * cos((double)Iter /(double)(Nbr_Iter-1)*PI/2.);
           if (Lambda < LastSoftThreshold) Lambda = LastSoftThreshold;
        }
         
