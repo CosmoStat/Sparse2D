@@ -20,6 +20,9 @@ docker pull ghcr.io/cosmostat/sparse2d:master
 
 No further installation is required.
 
+> Note that you will need to [log in](https://docs.docker.com/reference/cli/docker/login/) to the GitHub Container Registry.  
+> `docker login ghcr.io`
+
 ### Run a Docker container
 
 To run a container on data in your current working directory, simply run:
