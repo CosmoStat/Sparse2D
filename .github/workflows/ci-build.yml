@@ -41,6 +41,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
+          sudo apt-get install -y build-essential
           sudo apt-get install -y libcfitsio-dev
           sudo apt-get install -y libfftw3-dev
           sudo apt-get install -y libarmadillo-dev
