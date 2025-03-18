@@ -10,7 +10,7 @@ ARG CC=gcc-13
 ARG CXX=g++-13
 
 RUN apt-get update && \
-    apt-get install -y autoconf automake libtool pkg-config libgl1-mesa-glx && \
+    apt-get install -y autoconf automake libtool pkg-config libgl1 libglx-mesa0 && \
     apt-get install -y gcc-13 g++-13 && \
     apt-get install -y cmake git wget && \
     apt-get install -y libarmadillo-dev && \
