@@ -6,12 +6,12 @@ SHELL ["/bin/bash", "-c"]
 WORKDIR /workdir
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG CC=gcc-9
-ARG CXX=g++-9
+ARG CC=gcc-13
+ARG CXX=g++-13
 
 RUN apt-get update && \
     apt-get install -y autoconf automake libtool pkg-config libgl1-mesa-glx && \
-    apt-get install -y gcc-9 g++-9 && \
+    apt-get install -y gcc-13 g++-13 && \
     apt-get install -y cmake git wget && \
     apt-get install -y libarmadillo-dev && \
     apt-get install -y libcfitsio-dev && \
@@ -22,9 +22,9 @@ RUN apt-get update && \
     apt-get install -y healpy-data && \
     apt-get clean
 
-RUN wget https://github.com/catchorg/Catch2/archive/refs/tags/v3.1.0.tar.gz && \
-    tar -xvf v3.1.0.tar.gz && \
-    cd Catch2-3.1.0 && \
+RUN wget https://github.com/catchorg/Catch2/archive/refs/tags/v3.8.0.tar.gz && \
+    tar -xvf v3.8.0.tar.gz && \
+    cd Catch2-3.8.0 && \
     cmake -Bbuild -H. -DBUILD_TESTING=OFF && \
     cmake --build build/ --target install
 
