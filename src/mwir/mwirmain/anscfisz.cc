@@ -254,7 +254,7 @@ int scaleOfData (int dim, int nx, int ny, int nz)
 
 // display the content of a data array (useful in debug mode)
 template <typename DATATYPE>
-void display (to_array<DATATYPE, true> &data)
+void display (convert_to_array<DATATYPE, true> &data)
 {
 	int dim = data.naxis();
 	if (VERBOSE)
@@ -347,7 +347,7 @@ void cycleTrans (fltarray &data, int dx, int dy, int dz)
 }
 
 template <typename DATATYPE>
-void setConst (to_array<DATATYPE, true> &dest, to_array<DATATYPE, true> &ref, double cst)
+void setConst (convert_to_array<DATATYPE, true> &dest, convert_to_array<DATATYPE, true> &ref, double cst)
 {
 	int nx = ref.nx(), ny = ref.ny(), nz = ref.nz();
 	int len = ref.n_elem();
@@ -359,7 +359,7 @@ void setConst (to_array<DATATYPE, true> &dest, to_array<DATATYPE, true> &ref, do
 
 // Wavelet denoising - general process
 template <typename SUPTYPE>
-void b3SplineDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup)
+void b3SplineDenoise (fltarray &data, convert_to_array<SUPTYPE, true> *multiSup)
 {
 	int dim = data.naxis();
 	double pr, fdrp; // threshold p-value and FDR-threshold p-value
@@ -424,7 +424,7 @@ void b3SplineDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup)
 
 // for different modes of iteration
 template <typename SUPTYPE>
-void procArr (fltarray &origdata, fltarray &data, to_array<SUPTYPE, true> &coef, double lambda)
+void procArr (fltarray &origdata, fltarray &data, convert_to_array<SUPTYPE, true> &coef, double lambda)
 {
   int n = data.n_elem();
 
@@ -510,7 +510,7 @@ void multiSupIter (fltarray &origdata, fltarray &solution, fltarray *multiSup, i
 
 // Anscombe denoising
 template <typename SUPTYPE>
-void anscombeDenoise (fltarray &data, to_array<SUPTYPE, true> *multiSup=NULL)
+void anscombeDenoise (fltarray &data, convert_to_array<SUPTYPE, true> *multiSup=NULL)
 {
   // Anscombe transform
   if (VERBOSE)

@@ -346,7 +346,7 @@ int scaleOfData (int dim, int nx, int ny, int nz)
 
 // display the content of a data array (useful in debug mode)
 template <typename DATATYPE>
-void display (to_array<DATATYPE, true> &data)
+void display (convert_to_array<DATATYPE, true> &data)
 {
   if (VERBOSE)
     {
@@ -367,7 +367,7 @@ void display (to_array<DATATYPE, true> &data)
 }
 
 template <typename DATATYPE>
-void setConst (to_array<DATATYPE, true> &dest, to_array<DATATYPE, true> &ref, double cst)
+void setConst (convert_to_array<DATATYPE, true> &dest, convert_to_array<DATATYPE, true> &ref, double cst)
 {
 	int nx = ref.nx(), ny = ref.ny(), nz = ref.nz();
 	dest.resize(nx, ny, nz);
@@ -382,7 +382,7 @@ void setConst (to_array<DATATYPE, true> &dest, to_array<DATATYPE, true> &ref, do
 // maxlen is the max. length of the filters
 // this function garantees the even number of samples along each direction when decimated transform is used.
 template <typename DATATYPE>
-void extData(to_array<DATATYPE, true> &data, int maxlen[], type_border BORDERTYPE, int scale, bool dec[], int ext[6])
+void extData(convert_to_array<DATATYPE, true> &data, int maxlen[], type_border BORDERTYPE, int scale, bool dec[], int ext[6])
 {
   int nx = data.nx(), ny = data.ny(), nz = data.nz();
   int dim = 3;
@@ -418,7 +418,7 @@ void extData(to_array<DATATYPE, true> &data, int maxlen[], type_border BORDERTYP
   if ((newlen2 % 2 != 0) && dec[1]) { newlen2++; ext[3]++; dext++; }
   if ((newlen3 % 2 != 0) && dec[2]) { newlen3++; ext[5]++; fext++; }
       
-  to_array<DATATYPE, true> *temp = new to_array<DATATYPE, true>(newlen1, newlen2, newlen3);
+  convert_to_array<DATATYPE, true> *temp = new convert_to_array<DATATYPE, true>(newlen1, newlen2, newlen3);
   for (int z=0; z<newlen3; z++)
     for (int y=0; y<newlen2; y++)
       for (int x=0; x<newlen1; x++)
@@ -429,7 +429,7 @@ void extData(to_array<DATATYPE, true> &data, int maxlen[], type_border BORDERTYP
 
 // extract the data from the extension version
 template <typename DATATYPE>
-void extractData (to_array<DATATYPE, true> &data, int ext[6])
+void extractData (convert_to_array<DATATYPE, true> &data, int ext[6])
 {
   int lext = ext[0], rext = ext[1], uext = ext[2];
   int dext = ext[3], bext = ext[4], fext = ext[5];
@@ -439,7 +439,7 @@ void extractData (to_array<DATATYPE, true> &data, int ext[6])
       int finallen1 = data.nx() - lext - rext;
       int finallen2 = data.ny() - uext - dext;
       int finallen3 = data.nz() - bext - fext;
-      to_array<DATATYPE,true> *tdata = new to_array<DATATYPE, true>(finallen1, finallen2, finallen3);
+      convert_to_array<DATATYPE,true> *tdata = new convert_to_array<DATATYPE, true>(finallen1, finallen2, finallen3);
       for (int x=0; x<finallen1; x++) 
 	for (int y=0; y<finallen2; y++)
 	  for (int z=0; z<finallen3; z++)	
@@ -477,7 +477,7 @@ void cycleTrans (fltarray &data, int dx, int dy, int dz)
 // Wavelet denoising - general process
 template <typename SUPTYPE>
 void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
-                     to_array<SUPTYPE, true> *multiSup = NULL, fltarray *model = NULL)
+                     convert_to_array<SUPTYPE, true> *multiSup = NULL, fltarray *model = NULL)
 {
 	int extxy[NSCALEXY][6];
 	int extz[NSCALEZ][6];
@@ -1030,7 +1030,7 @@ void waveletDenoise (fltarray &data, SubBandFilter sbf[], bool dec[], \
 
 // for different modes of iteration in BHAAR case
 template <typename SUPTYPE>
-void procArr (fltarray &origdata, fltarray &data, to_array<SUPTYPE, true> &coef, double lambda)
+void procArr (fltarray &origdata, fltarray &data, convert_to_array<SUPTYPE, true> &coef, double lambda)
 {
   int nx = data.nx(), ny = data.ny(), nz = data.nz();
 

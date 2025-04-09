@@ -1,7 +1,6 @@
 #ifndef _TEMPARRAY_H
 #define _TEMPARRAY_H
 
-
 #include <iostream>
 #include <string>
 #include <cmath>
@@ -40,18 +39,18 @@ public:
 
 typedef unsigned char cbyte;
 
-#define fltarray to_array<float,true>
-#define dblarray to_array<double,true>
-#define intarray to_array<int,true>
-#define bytearray to_array<cbyte,true>
-#define cfarray to_array<complex_f,true>
-#define cdarray to_array<complex_d,true>
+#define fltarray convert_to_array<float,true>
+#define dblarray convert_to_array<double,true>
+#define intarray convert_to_array<int,true>
+#define bytearray convert_to_array<cbyte,true>
+#define cfarray convert_to_array<complex_f,true>
+#define cdarray convert_to_array<complex_d,true>
 
-#define Ifloat to_array<float,false>
-#define Idouble to_array<double,false>
-#define Iint to_array<int,false>
-#define Icomplex_f to_array<complex_f,false>
-#define Icomplex_d to_array<complex_d,false>
+#define Ifloat convert_to_array<float,false>
+#define Idouble convert_to_array<double,false>
+#define Iint convert_to_array<int,false>
+#define Icomplex_f convert_to_array<complex_f,false>
+#define Icomplex_d convert_to_array<complex_d,false>
 
 using namespace std;
 
@@ -61,7 +60,7 @@ using namespace std;
 //*****************************************************************************/
 
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-class to_array {
+class convert_to_array {
 
 public:
   typedef int (*TestIndexFunction)(int, int);
@@ -83,16 +82,16 @@ public:
   void set2ima() {if  (i_NbAxis == 2) is_ima=true;}
   void set2tab() {if  (i_NbAxis == 2) is_ima=false;}
 
-  to_array();
-  to_array (int pi_Nx, const char *Name);
-  to_array (int pi_Nx, int pi_Ny, const char *Name);
-  to_array (int pi_Nx, int pi_Ny, int pi_Nz, const char *Name);
-  to_array (int pi_Nx, int pi_Ny=0, int pi_Nz=0);
-  ~to_array ();
+  convert_to_array();
+  convert_to_array (int pi_Nx, const char *Name);
+  convert_to_array (int pi_Nx, int pi_Ny, const char *Name);
+  convert_to_array (int pi_Nx, int pi_Ny, int pi_Nz, const char *Name);
+  convert_to_array (int pi_Nx, int pi_Ny=0, int pi_Nz=0);
+  ~convert_to_array ();
   void free();
   PARAM_TYPE* buffer();
   PARAM_TYPE* const buffer() const;
-  void init (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat);
+  void init (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat);
   void init ();
   void init (PARAM_TYPE Val);
   void alloc (int pi_Nx, const char* Name=0);
@@ -122,13 +121,13 @@ public:
   inline PARAM_TYPE& operator[]  (int x, int y, int z) const;
   inline PARAM_TYPE & operator[]  (int x, int y, int z, type_border bord) const;
 */
-  const to_array<PARAM_TYPE,ARRAY_TYPE>& operator = (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat);
-  const to_array<PARAM_TYPE,ARRAY_TYPE>& operator += (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat);
-  const to_array<PARAM_TYPE,ARRAY_TYPE>& operator *= (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat);
-  const to_array<PARAM_TYPE,ARRAY_TYPE>& operator *= (const double coef);
-  const to_array<PARAM_TYPE,ARRAY_TYPE>& operator -= (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat);
-  const to_array<PARAM_TYPE,ARRAY_TYPE>& operator /= (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat);
-  const to_array<PARAM_TYPE,ARRAY_TYPE>& operator ^ (const double pf_coef);
+  const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& operator = (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat);
+  const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& operator += (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat);
+  const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& operator *= (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat);
+  const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& operator *= (const double coef);
+  const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& operator -= (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat);
+  const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& operator /= (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat);
+  const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& operator ^ (const double pf_coef);
 
   void info(string Name="");
   void display (int pi_NbElem=0);
@@ -165,7 +164,7 @@ public:
   void sigma_clip (float& pf_Mean, float& pf_Sigma, int pi_Nit=3) const;
   float sigma_clip (int pi_Nit=3) const;
 
-  to_array<PARAM_TYPE,ARRAY_TYPE> (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Obj);
+  convert_to_array<PARAM_TYPE,ARRAY_TYPE> (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Obj);
 
   inline void setBorder( type_border border )
   {
@@ -188,60 +187,60 @@ private:
 
 
 //------------------------------------------------------------------------------
-// to_array ()
+// convert_to_array ()
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE>::to_array () {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>::convert_to_array () {
   set_attrib();
 }
 
 //------------------------------------------------------------------------------
-// to_array (int pi_Nx, const char* Name)
+// convert_to_array (int pi_Nx, const char* Name)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE>::to_array (int pi_Nx, const char* Name) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>::convert_to_array (int pi_Nx, const char* Name) {
   set_attrib();
   alloc(pi_Nx, 0, 0, Name);
 }
 
 //------------------------------------------------------------------------------
-// to_array (int pi_Nx, int pi_Ny, const char* Name)
+// convert_to_array (int pi_Nx, int pi_Ny, const char* Name)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE>::to_array (int pi_Nx, int pi_Ny, const char* Name) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>::convert_to_array (int pi_Nx, int pi_Ny, const char* Name) {
   set_attrib();
   alloc(pi_Nx, pi_Ny, 0, Name);
 }
 
 //------------------------------------------------------------------------------
-// to_array (int pi_Nx, int pi_Ny, int pi_Nz, const char* Name)
+// convert_to_array (int pi_Nx, int pi_Ny, int pi_Nz, const char* Name)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE>::to_array (int pi_Nx, int pi_Ny, int pi_Nz, const char* Name) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>::convert_to_array (int pi_Nx, int pi_Ny, int pi_Nz, const char* Name) {
   set_attrib();
   alloc(pi_Nx, pi_Ny, pi_Nz, Name);
 }
 
 //------------------------------------------------------------------------------
-// to_array (int pi_Nx, int pi_Ny, int pi_Nz)
+// convert_to_array (int pi_Nx, int pi_Ny, int pi_Nz)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE>::to_array (int pi_Nx, int pi_Ny, int pi_Nz) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>::convert_to_array (int pi_Nx, int pi_Ny, int pi_Nz) {
   set_attrib();
   alloc(pi_Nx, pi_Ny, pi_Nz);
 }
 
 //------------------------------------------------------------------------------
-// ~to_array ()
+// ~convert_to_array ()
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE>::~to_array () {free();}
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>::~convert_to_array () {free();}
 
 //------------------------------------------------------------------------------
 // free ()
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-void to_array<PARAM_TYPE,ARRAY_TYPE>::free() {
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::free() {
   if (e_UseClassMemAlloc == true){
 #ifdef _USEMEM
     MemMg_free (po_Buffer);
@@ -258,7 +257,7 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::free() {
 // buffer ()
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-PARAM_TYPE* to_array<PARAM_TYPE,ARRAY_TYPE>::buffer() {
+PARAM_TYPE* convert_to_array<PARAM_TYPE,ARRAY_TYPE>::buffer() {
    return po_Buffer;
 }
 
@@ -266,7 +265,7 @@ PARAM_TYPE* to_array<PARAM_TYPE,ARRAY_TYPE>::buffer() {
 // buffer ()
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-PARAM_TYPE* const to_array<PARAM_TYPE,ARRAY_TYPE>::buffer() const {
+PARAM_TYPE* const convert_to_array<PARAM_TYPE,ARRAY_TYPE>::buffer() const {
    return po_Buffer;
 }
 
@@ -274,7 +273,7 @@ PARAM_TYPE* const to_array<PARAM_TYPE,ARRAY_TYPE>::buffer() const {
 // init ()
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-void to_array<PARAM_TYPE,ARRAY_TYPE>::init (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat) {
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::init (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat) {
    if (n_elem() != 0) free();
    if (ARRAY_TYPE==true) {
       alloc(pro_Mat.nx(), pro_Mat.ny(), pro_Mat.nz());
@@ -288,13 +287,13 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::init (const to_array<PARAM_TYPE,ARRAY_TYPE
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
 // !!!!! convert function from int to PARAM_TYPE must exist
-void to_array<PARAM_TYPE,ARRAY_TYPE>::init (PARAM_TYPE Val) {
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::init (PARAM_TYPE Val) {
    for (int i=0;i<n_elem();i++) po_Buffer[i] = Val;
 }
 
 template <class PARAM_TYPE, bool ARRAY_TYPE>
 // !!!!! convert function from int to PARAM_TYPE must exist
-void to_array<PARAM_TYPE,ARRAY_TYPE>::init ()
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::init ()
 {
    PARAM_TYPE Val=0;
    for (int i=0;i<n_elem();i++) po_Buffer[i] = Val;
@@ -303,7 +302,7 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::init ()
 // alloc (int pi_Nx, const char* Name)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-void to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (int pi_Nx, const char* Name) {
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (int pi_Nx, const char* Name) {
   alloc (pi_Nx, 0, 0, Name);
 }
 
@@ -311,7 +310,7 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (int pi_Nx, const char* Name) {
 // alloc (int pi_Nx, int pi_Ny, const char* Name)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-void to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (int pi_Nx, int pi_Ny, const char* Name) {
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (int pi_Nx, int pi_Ny, const char* Name) {
   alloc (pi_Nx, pi_Ny, 0, Name);
 }
 
@@ -319,7 +318,7 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (int pi_Nx, int pi_Ny, const char* N
 // alloc (int pi_Nx, int pi_Ny, int pi_Nz, const char* Name)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-void to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (int pi_Nx, int pi_Ny, int pi_Nz, const char* Name) {
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (int pi_Nx, int pi_Ny, int pi_Nz, const char* Name) {
 
   if (i_NbElem != 0) free();
 
@@ -376,7 +375,7 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (int pi_Nx, int pi_Ny, int pi_Nz, co
 // alloc (PARAM_TYPE *BuffData, int Nbr_Line, int Nbr_Col, const char *Name, bool MemManag)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-void to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (PARAM_TYPE *BuffData, int Nbr_Line, int Nbr_Col,
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (PARAM_TYPE *BuffData, int Nbr_Line, int Nbr_Col,
                                   const char *Name, bool MemManag) {
   if (i_NbElem != 0) {
     if (e_UseClassMemAlloc == true) {
@@ -405,7 +404,7 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (PARAM_TYPE *BuffData, int Nbr_Line,
 // alloc (PARAM_TYPE *BuffData, int Nx, int Ny, int Nz, const char *Name, bool MemManag)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-void to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (PARAM_TYPE *BuffData, int _Nx, int _Ny, int _Nz, const char *Name, bool MemManag)
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (PARAM_TYPE *BuffData, int _Nx, int _Ny, int _Nz, const char *Name, bool MemManag)
 {// doesnt work well, treated as an image
 	if (i_NbElem != 0)
 	{
@@ -433,7 +432,7 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::alloc (PARAM_TYPE *BuffData, int _Nx, int 
 // reform (const int pi_Nx, const int pi_Ny, const int pi_Nz)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-void to_array<PARAM_TYPE,ARRAY_TYPE>::reform (const int pi_Nx, const int pi_Ny,
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::reform (const int pi_Nx, const int pi_Ny,
                              const int pi_Nz) {
 
   if (i_NbElem == 0) alloc(pi_Nx,pi_Ny,pi_Nz,"alloc resize");
@@ -495,7 +494,7 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::reform (const int pi_Nx, const int pi_Ny,
 // resize (const int pi_Nx, const int pi_Ny=0, const int pi_Nz=0)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-void to_array<PARAM_TYPE,ARRAY_TYPE>::resize (const int pi_Nx, const int pi_Ny,
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::resize (const int pi_Nx, const int pi_Ny,
                              const int pi_Nz) {
    reform (pi_Nx,pi_Ny, pi_Nz);
 }
@@ -505,14 +504,14 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::resize (const int pi_Nx, const int pi_Ny,
 //------------------------------------------------------------------------------
 // could be used with 2d or 3d tab, on all the element.... => no border test...
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-inline PARAM_TYPE& to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x)  const {
+inline PARAM_TYPE& convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x)  const {
    // if (naxis() != 1) {cout << "One dim array" << endl; exit(-1);}
 //!!!!!!!!!   assert (test_indice_i (tc_NameArray, x, nx()));
    return po_Buffer[x];
 }
 /*
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-inline PARAM_TYPE& to_array<PARAM_TYPE,ARRAY_TYPE>::operator[] (int x)  const {
+inline PARAM_TYPE& convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator[] (int x)  const {
    // if (naxis() != 1) {cout << "One dim array" << endl; exit(-1);}
 //!!!!!!!!!   assert (test_indice_i (tc_NameArray, x, nx()));
    return po_Buffer[x];
@@ -524,7 +523,7 @@ inline PARAM_TYPE& to_array<PARAM_TYPE,ARRAY_TYPE>::operator[] (int x)  const {
 //------------------------------------------------------------------------------
 // !!!!! convert function from int to PARAM_TYPE must exist
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-inline PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, type_border bord)  const {
+inline PARAM_TYPE convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, type_border bord)  const {
 
   if (naxis() != 1)
   {
@@ -555,7 +554,7 @@ inline PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, type_borde
 
 
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-inline PARAM_TYPE & to_array<PARAM_TYPE,ARRAY_TYPE>::setx (int x, type_border bord)    {
+inline PARAM_TYPE & convert_to_array<PARAM_TYPE,ARRAY_TYPE>::setx (int x, type_border bord)    {
 
   if (naxis() != 1)
   {
@@ -589,7 +588,7 @@ inline PARAM_TYPE & to_array<PARAM_TYPE,ARRAY_TYPE>::setx (int x, type_border bo
 // operator (int x, int y)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-inline PARAM_TYPE& to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, int y) const {
+inline PARAM_TYPE& convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, int y) const {
 #if CHECK_DIM
    if (i_NbAxis != 2)
    {
@@ -601,7 +600,7 @@ inline PARAM_TYPE& to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, int y) co
 }
 // specialization to the array case
 template <>
-inline float& to_array<float,true>::operator()(int x, int y) const
+inline float& convert_to_array<float,true>::operator()(int x, int y) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -613,7 +612,7 @@ inline float& to_array<float,true>::operator()(int x, int y) const
    return po_Buffer[y*pto_TabNaxis[0]+x];
 }
 template <>
-inline double& to_array<double,true>::operator()(int x, int y) const
+inline double& convert_to_array<double,true>::operator()(int x, int y) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -625,7 +624,7 @@ inline double& to_array<double,true>::operator()(int x, int y) const
    return po_Buffer[y*pto_TabNaxis[0]+x];
 }
 template <>
-inline int& to_array<int,true>::operator()(int x, int y) const
+inline int& convert_to_array<int,true>::operator()(int x, int y) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -637,7 +636,7 @@ inline int& to_array<int,true>::operator()(int x, int y) const
    return po_Buffer[y*pto_TabNaxis[0]+x];
 }
 template <>
-inline cbyte& to_array<cbyte,true>::operator()(int x, int y) const
+inline cbyte& convert_to_array<cbyte,true>::operator()(int x, int y) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -649,7 +648,7 @@ inline cbyte& to_array<cbyte,true>::operator()(int x, int y) const
    return po_Buffer[y*pto_TabNaxis[0]+x];
 }
 template <>
-inline complex_f& to_array<complex_f,true>::operator()(int x, int y) const
+inline complex_f& convert_to_array<complex_f,true>::operator()(int x, int y) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -661,7 +660,7 @@ inline complex_f& to_array<complex_f,true>::operator()(int x, int y) const
    return po_Buffer[y*pto_TabNaxis[0]+x];
 }
 template <>
-inline complex_d& to_array<complex_d,true>::operator()(int x, int y) const
+inline complex_d& convert_to_array<complex_d,true>::operator()(int x, int y) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -678,7 +677,7 @@ inline complex_d& to_array<complex_d,true>::operator()(int x, int y) const
 //------------------------------------------------------------------------------
 
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-inline PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, int y, type_border bord) const
+inline PARAM_TYPE convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, int y, type_border bord) const
 {
 #if CHECK_DIM
   if (i_NbAxis != 2)
@@ -693,7 +692,7 @@ inline PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, int y, typ
 }
 // specialization to the array case
 template <>
-inline float to_array<float,true>::operator()(int x, int y, type_border bord) const
+inline float convert_to_array<float,true>::operator()(int x, int y, type_border bord) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -707,7 +706,7 @@ inline float to_array<float,true>::operator()(int x, int y, type_border bord) co
    return po_Buffer[indy*pto_TabNaxis[0]+indx];
 }
 template <>
-inline double to_array<double,true>::operator()(int x, int y, type_border bord) const
+inline double convert_to_array<double,true>::operator()(int x, int y, type_border bord) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -721,7 +720,7 @@ inline double to_array<double,true>::operator()(int x, int y, type_border bord) 
    return po_Buffer[indy*pto_TabNaxis[0]+indx];
 }
 template <>
-inline int to_array<int,true>::operator()(int x, int y, type_border bord) const
+inline int convert_to_array<int,true>::operator()(int x, int y, type_border bord) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -735,7 +734,7 @@ inline int to_array<int,true>::operator()(int x, int y, type_border bord) const
    return po_Buffer[indy*pto_TabNaxis[0]+indx];
 }
 template <>
-inline cbyte to_array<cbyte,true>::operator()(int x, int y, type_border bord) const
+inline cbyte convert_to_array<cbyte,true>::operator()(int x, int y, type_border bord) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -749,7 +748,7 @@ inline cbyte to_array<cbyte,true>::operator()(int x, int y, type_border bord) co
    return po_Buffer[indy*pto_TabNaxis[0]+indx];
 }
 template <>
-inline complex_f to_array<complex_f,true>::operator()(int x, int y, type_border bord) const
+inline complex_f convert_to_array<complex_f,true>::operator()(int x, int y, type_border bord) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -763,7 +762,7 @@ inline complex_f to_array<complex_f,true>::operator()(int x, int y, type_border 
    return po_Buffer[indy*pto_TabNaxis[0]+indx];
 }
 template <>
-inline complex_d to_array<complex_d,true>::operator()(int x, int y, type_border bord) const
+inline complex_d convert_to_array<complex_d,true>::operator()(int x, int y, type_border bord) const
 {
 #if CHECK_DIM
    if (i_NbAxis != 2)
@@ -779,7 +778,7 @@ inline complex_d to_array<complex_d,true>::operator()(int x, int y, type_border 
 
 
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-inline PARAM_TYPE & to_array<PARAM_TYPE,ARRAY_TYPE>::setxy (int x, int y, type_border bord)    {
+inline PARAM_TYPE & convert_to_array<PARAM_TYPE,ARRAY_TYPE>::setxy (int x, int y, type_border bord)    {
 
  if (naxis() != 2)
   {
@@ -844,7 +843,7 @@ inline PARAM_TYPE & to_array<PARAM_TYPE,ARRAY_TYPE>::setxy (int x, int y, type_b
 // operator (int x, int y, int z)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-inline PARAM_TYPE& to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, int y, int z) const {
+inline PARAM_TYPE& convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, int y, int z) const {
 #if CHECK_DIM
    if (naxis() != 3)
    {
@@ -861,7 +860,7 @@ inline PARAM_TYPE& to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, int y, in
 //------------------------------------------------------------------------------
 
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-inline PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, int y, int z, type_border bord) const {
+inline PARAM_TYPE convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, int y, int z, type_border bord) const {
 #if CHECK_DIM
   if (naxis() != 3)
   {
@@ -898,7 +897,7 @@ inline PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::operator() (int x, int y, int
 
 
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-inline PARAM_TYPE & to_array<PARAM_TYPE,ARRAY_TYPE>::setxyz (int x, int y, int z, type_border bord)    {
+inline PARAM_TYPE & convert_to_array<PARAM_TYPE,ARRAY_TYPE>::setxyz (int x, int y, int z, type_border bord)    {
 #if CHECK_DIM
   if (naxis() != 3)
   {
@@ -942,7 +941,7 @@ inline PARAM_TYPE & to_array<PARAM_TYPE,ARRAY_TYPE>::setxyz (int x, int y, int z
 // operator =
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE> const
-to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator = (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat)
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>& convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator = (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat)
 {
   reform (pro_Mat.n_elem());
 #ifdef _OPENMP
@@ -963,7 +962,7 @@ to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator = (co
 // operator +=
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE> const
-to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator += (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>& convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator += (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat) {
   for (int x=0; x<i_NbElem; x++) po_Buffer[x] += pro_Mat.po_Buffer[x];
   return (*this);
 }
@@ -972,7 +971,7 @@ to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator += (c
 // operator *=
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE> const
-to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator *= (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>& convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator *= (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat) {
   for (int x=0; x<i_NbElem; x++) po_Buffer[x] *= pro_Mat.po_Buffer[x];
   return (*this);
 }
@@ -981,7 +980,7 @@ to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator *= (c
 // operator *=
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE> const
-to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator *= (const double coef) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>& convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator *= (const double coef) {
   for (int i=0; i<i_NbElem; i++)
     po_Buffer[i] = (PARAM_TYPE) ((double)po_Buffer[i] * coef);
   return (*this);
@@ -991,7 +990,7 @@ to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator *= (c
 // operator -=
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE> const
-to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator -= (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat)
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>& convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator -= (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat)
 {
 #ifdef _OPENMP
   #pragma omp parallel for
@@ -1009,7 +1008,7 @@ to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator -= (c
 // operator /=
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE> const
-to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator /= (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>& convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator /= (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Mat) {
   for (int x=0; x<i_NbElem; x++)
      if ((pro_Mat.po_Buffer[x] > 1e-07) || (pro_Mat.po_Buffer[x] < -1e-07))
         po_Buffer[x] /= pro_Mat.po_Buffer[x];
@@ -1022,7 +1021,7 @@ to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator /= (c
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE> const
 // !!!!! convert function from PARAM_TYPE to double must exist
-to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator ^ (const double pf_coef) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>& convert_to_array<PARAM_TYPE,ARRAY_TYPE>::operator ^ (const double pf_coef) {
   for (int i=0; i<i_NbElem; i++)
     po_Buffer[i] = (PARAM_TYPE) pow ((double)po_Buffer[i], pf_coef);
   return (*this);
@@ -1033,7 +1032,7 @@ to_array<PARAM_TYPE,ARRAY_TYPE>& to_array<PARAM_TYPE,ARRAY_TYPE>::operator ^ (co
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
 // !!!!! PARAM_TYPE must accept operator << !!!!!!!!!!!
-void to_array<PARAM_TYPE,ARRAY_TYPE>::info(string Name) {
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::info(string Name) {
   if (Name=="") cout << "   :" ;
   else cout << "  " << Name;
   cout << ", mean = " << mean() << ", sigma = " << sigma();
@@ -1045,7 +1044,7 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::info(string Name) {
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
 // !!!!! PARAM_TYPE must accept operator << !!!!!!!!!!!
-void to_array<PARAM_TYPE,ARRAY_TYPE>::display (int pi_NbElem) {
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::display (int pi_NbElem) {
   if (pi_NbElem == 0) {
        cout <<"  nx="<<pto_TabNaxis[0]<<", ny="<<pto_TabNaxis[1]<<
               ", nz="<<pto_TabNaxis[2]<<", naxis="<<i_NbAxis<<endl;
@@ -1064,7 +1063,7 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::display (int pi_NbElem) {
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
 // !!!!! convert function from int to PARAM_TYPE must exist
-void to_array<PARAM_TYPE,ARRAY_TYPE>::rampgen() {
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::rampgen() {
   for (int i=0;i<i_NbElem;i++) po_Buffer[i]=(PARAM_TYPE)i;
 }
 
@@ -1072,21 +1071,21 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::rampgen() {
 // line()
 //------------------------------------------------------------------------------
 //template <class PARAM_TYPE, bool ARRAY_TYPE>
-//to_array<PARAM_TYPE,ARRAY_TYPE> to_array<PARAM_TYPE,ARRAY_TYPE>::line (int i) {
+//convert_to_array<PARAM_TYPE,ARRAY_TYPE> convert_to_array<PARAM_TYPE,ARRAY_TYPE>::line (int i) {
 //}
 
 //------------------------------------------------------------------------------
 // column()
 //------------------------------------------------------------------------------
 //template <class PARAM_TYPE, bool ARRAY_TYPE>
-//to_array<PARAM_TYPE,ARRAY_TYPE> to_array<PARAM_TYPE,ARRAY_TYPE>::column (int j) {
+//convert_to_array<PARAM_TYPE,ARRAY_TYPE> convert_to_array<PARAM_TYPE,ARRAY_TYPE>::column (int j) {
 //}
 
 //------------------------------------------------------------------------------
 // sup_threshold (float ThresholLevel)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-void to_array<PARAM_TYPE,ARRAY_TYPE>::sup_threshold (float ThresholLevel) {
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::sup_threshold (float ThresholLevel) {
   for (int x=0;x<i_NbElem;x++)
     if ((PARAM_TYPE)po_Buffer[x] > ThresholLevel)
       po_Buffer[x] = (PARAM_TYPE)ThresholLevel;
@@ -1097,7 +1096,7 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::sup_threshold (float ThresholLevel) {
 // inf_threshold (float ThresholLevel)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-void to_array<PARAM_TYPE,ARRAY_TYPE>::inf_threshold (float ThresholLevel) {
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::inf_threshold (float ThresholLevel) {
   for (int x=0;x<i_NbElem;x++)
     if ((PARAM_TYPE)po_Buffer[x] < ThresholLevel)
       po_Buffer[x] = (PARAM_TYPE)ThresholLevel;
@@ -1107,7 +1106,7 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::inf_threshold (float ThresholLevel) {
 // min ()
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::min () {
+PARAM_TYPE convert_to_array<PARAM_TYPE,ARRAY_TYPE>::min () {
   int ai_temp=0;
   return (min (ai_temp));
 }
@@ -1116,7 +1115,7 @@ PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::min () {
 // min (int& pri_ind)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::min (int& pri_ind) {
+PARAM_TYPE convert_to_array<PARAM_TYPE,ARRAY_TYPE>::min (int& pri_ind) {
   PARAM_TYPE ao_prov=po_Buffer[0];
   pri_ind=0;
   for (int i=1; i<i_NbElem; i++)
@@ -1131,7 +1130,7 @@ PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::min (int& pri_ind) {
 // max ()
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::max () {
+PARAM_TYPE convert_to_array<PARAM_TYPE,ARRAY_TYPE>::max () {
   int ai_temp=0;
   return (max (ai_temp));
 }
@@ -1141,7 +1140,7 @@ PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::max () {
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
 //!!!!!!!!!! PARAM_TYPE must define operator <...
-PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::max (int& pri_ind) {
+PARAM_TYPE convert_to_array<PARAM_TYPE,ARRAY_TYPE>::max (int& pri_ind) {
   PARAM_TYPE ao_prov=po_Buffer[0];
   pri_ind=0;
   for (int i=1; i<i_NbElem; i++)
@@ -1156,7 +1155,7 @@ PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::max (int& pri_ind) {
 // maxfabs ()
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::maxfabs () {
+PARAM_TYPE convert_to_array<PARAM_TYPE,ARRAY_TYPE>::maxfabs () {
   int ai_temp=0;
   return (maxfabs (ai_temp));
 }
@@ -1166,7 +1165,7 @@ PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::maxfabs () {
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
 //!!!!!!!!!! PARAM_TYPE must define operator <...
-PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::maxfabs (int& pri_ind) {
+PARAM_TYPE convert_to_array<PARAM_TYPE,ARRAY_TYPE>::maxfabs (int& pri_ind) {
   PARAM_TYPE ao_prov=0;
   pri_ind=0;
   for (int i=0; i<i_NbElem; i++)
@@ -1182,7 +1181,7 @@ PARAM_TYPE to_array<PARAM_TYPE,ARRAY_TYPE>::maxfabs (int& pri_ind) {
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
 // !!!!! convert function from PARAM_TYPE to double must exist
-double to_array<PARAM_TYPE,ARRAY_TYPE>::total () const {
+double convert_to_array<PARAM_TYPE,ARRAY_TYPE>::total () const {
   double ao_prov= 0.;
   for (int i=0; i<i_NbElem; i++) ao_prov += po_Buffer[i];
   return ao_prov;
@@ -1193,7 +1192,7 @@ double to_array<PARAM_TYPE,ARRAY_TYPE>::total () const {
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
 // !!!!! convert function from PARAM_TYPE to double must exist
-double to_array<PARAM_TYPE,ARRAY_TYPE>::energy () const {
+double convert_to_array<PARAM_TYPE,ARRAY_TYPE>::energy () const {
   PARAM_TYPE ao_prov=(PARAM_TYPE)0;
   for (int i=0; i<i_NbElem; i++) ao_prov += po_Buffer[i]*po_Buffer[i];
   return ao_prov;
@@ -1204,7 +1203,7 @@ double to_array<PARAM_TYPE,ARRAY_TYPE>::energy () const {
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
 // !!!!! convert function from PARAM_TYPE to double must exist
-double to_array<PARAM_TYPE,ARRAY_TYPE>::sigma () const {
+double convert_to_array<PARAM_TYPE,ARRAY_TYPE>::sigma () const {
   double ao_moy = mean();
   double ad_sigma=0., ad_val=0;
   for (int i=0; i<i_NbElem; i++) {
@@ -1221,7 +1220,7 @@ double to_array<PARAM_TYPE,ARRAY_TYPE>::sigma () const {
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
 // !!!!! convert function from PARAM_TYPE to double must exist
-double to_array<PARAM_TYPE,ARRAY_TYPE>::mean () const {
+double convert_to_array<PARAM_TYPE,ARRAY_TYPE>::mean () const {
   return (double(total())/i_NbElem);
 }
 
@@ -1230,7 +1229,7 @@ double to_array<PARAM_TYPE,ARRAY_TYPE>::mean () const {
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
 // !!!!! convert function from PARAM_TYPE to double must exist
-void to_array<PARAM_TYPE,ARRAY_TYPE>::sigma_clip (float& pf_Mean, float &pf_Sigma,
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::sigma_clip (float& pf_Mean, float &pf_Sigma,
                                        int pi_Nit) const {
 
   double ad_s0, ad_s1, ad_s2, ad_sm=0., ad_inter;
@@ -1256,18 +1255,18 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::sigma_clip (float& pf_Mean, float &pf_Sigm
 // sigma_clip (int pi_Nit)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-float to_array<PARAM_TYPE,ARRAY_TYPE>::sigma_clip (int pi_Nit) const {
+float convert_to_array<PARAM_TYPE,ARRAY_TYPE>::sigma_clip (int pi_Nit) const {
   float af_Mean=0., af_Sigma=0.;
   sigma_clip (af_Mean, af_Sigma, pi_Nit);
   return (af_Sigma);
 }
 
 //------------------------------------------------------------------------------
-// to_array (to_array&)
+// convert_to_array (convert_to_array&)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE>::to_array
-  (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Obj) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE>::convert_to_array
+  (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Obj) {
   i_NbElem=0;
   if (ARRAY_TYPE==true) {
      alloc (pro_Obj.nx(), pro_Obj.ny(), pro_Obj.nz());
@@ -1281,7 +1280,7 @@ to_array<PARAM_TYPE,ARRAY_TYPE>::to_array
 // set_attrib (int pi_Nit)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-void to_array<PARAM_TYPE,ARRAY_TYPE>::set_attrib () {
+void convert_to_array<PARAM_TYPE,ARRAY_TYPE>::set_attrib () {
   po_Buffer = (PARAM_TYPE*)NULL;
   i_NbElem = 0;
   i_NbAxis = 0;
@@ -1298,129 +1297,129 @@ void to_array<PARAM_TYPE,ARRAY_TYPE>::set_attrib () {
 }
 
 //------------------------------------------------------------------------------
-// operator + (to_array, to_array)
+// operator + (convert_to_array, convert_to_array)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> operator + (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj1,
-                           const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj2) {
-  //to_array<PARAM_TYPE,ARRAY_TYPE>* apo_array = new to_array<PARAM_TYPE,ARRAY_TYPE>;
-  to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> operator + (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj1,
+                           const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj2) {
+  //convert_to_array<PARAM_TYPE,ARRAY_TYPE>* apo_array = new convert_to_array<PARAM_TYPE,ARRAY_TYPE>;
+  convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
   //apo_array->init(pro_obj1);
   ao_array.init(pro_obj1);
   for (int i=0; i<pro_obj1.n_elem(); i++)
     ao_array(i) = pro_obj1(i) + pro_obj2(i);
     //(*apo_array)(i) = pro_obj1(i) + pro_obj2(i);
-  return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+  return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 
 //------------------------------------------------------------------------------
-// operator - (to_array, to_array)
+// operator - (convert_to_array, convert_to_array)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> operator - (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj1,
-                           const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj2) {
-  to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> operator - (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj1,
+                           const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj2) {
+  convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
   ao_array.init(pro_obj1);
   for (int i=0; i<pro_obj1.n_elem(); i++)
     ao_array(i)  = pro_obj1(i) - pro_obj2(i);
-  return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+  return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 
 //------------------------------------------------------------------------------
-// operator * (to_array, to_array)
+// operator * (convert_to_array, convert_to_array)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> operator * (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj1,
-                           const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj2) {
-  to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> operator * (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj1,
+                           const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj2) {
+  convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
   ao_array.init(pro_obj1);
   for (int i=0; i<pro_obj1.n_elem(); i++)
     ao_array(i) = pro_obj1(i) * pro_obj2(i);
-  return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+  return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 
 //------------------------------------------------------------------------------
-// operator / (to_array, to_array)
+// operator / (convert_to_array, convert_to_array)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> operator / (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj1,
-                           const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj2) {
-  to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> operator / (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj1,
+                           const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj2) {
+  convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
   ao_array.init(pro_obj1);
   for (int i=0; i<pro_obj1.n_elem(); i++)
     if ((pro_obj2(i) > 1e-07) || (pro_obj2(i) < -1e-07))
       ao_array(i) = pro_obj1(i) / pro_obj2(i);
     else ao_array(i) = 0;
-  return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+  return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 
 
 //------------------------------------------------------------------------------
-// operator * (double , to_array)
+// operator * (double , convert_to_array)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> operator * (const double mult_coeff,
-											const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj) {
-	to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> operator * (const double mult_coeff,
+											const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj) {
+	convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
 	ao_array.init(pro_obj);
 	for (int i=0; i<pro_obj.nx(); i++)
 		ao_array(i)=mult_coeff*pro_obj(i);
-	return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+	return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 //------------------------------------------------------------------------------
-// operator / (to_array,double)
+// operator / (convert_to_array,double)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> operator / (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj,
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> operator / (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj,
 											const double div_coeff)
 {
-	to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+	convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
 	ao_array.init(pro_obj);
 	for (int i=0; i<pro_obj.nx(); i++)
 		ao_array(i)=pro_obj(i)/div_coeff;
-	return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+	return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 
 //------------------------------------------------------------------------------
-// operator > (to_array,double)
+// operator > (convert_to_array,double)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> operator > (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj,
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> operator > (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj,
 											const double bound_coeff) {
-	to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+	convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
 	ao_array.init(pro_obj);
 	for (long int i=0; i<pro_obj.nx(); i++)
 		if(pro_obj(i) > bound_coeff) ao_array(i)=1.0;
 		else ao_array(i)=0.0;
-	return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+	return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 
 //------------------------------------------------------------------------------
-// operator < (to_array,double)
+// operator < (convert_to_array,double)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> operator < (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj,
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> operator < (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj,
 											const double bound_coeff) {
-	to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+	convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
 	ao_array.init(pro_obj);
 	for (long int i=0; i<pro_obj.nx(); i++)
 		if(pro_obj(i) < bound_coeff) ao_array(i)=1.0;
 		else ao_array(i)=0.0;
-	return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+	return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 
 //------------------------------------------------------------------------------
-// mult (to_array,to_array)
+// mult (convert_to_array,convert_to_array)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> mult (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj1,
-											const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj2) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> mult (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj1,
+											const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj2) {
 	if(pro_obj1.ny() != pro_obj2.nx())
 	{
 		printf("Can't multiply: 1st matrix number of columns different from 2nd matrix number of rows. \n");
 		exit(-1);
 	}
-	to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+	convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
 	if(pro_obj2.ny()>0)
 	{
 		ao_array.alloc(pro_obj1.nx(),pro_obj2.ny());
@@ -1444,16 +1443,16 @@ to_array<PARAM_TYPE,ARRAY_TYPE> mult (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro
 				ao_array(i) += pro_obj1(i,k) * pro_obj2(k);
 		}
 	}
-    return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+    return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 
 //------------------------------------------------------------------------------
-// transpose (to_array)
+// transpose (convert_to_array)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> transpose (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> transpose (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj) {
 
-	to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+	convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
 	ao_array.alloc(pro_obj.ny(),pro_obj.nx());
 	for(int i=0;i<pro_obj.nx();i++)
 	{
@@ -1462,43 +1461,43 @@ to_array<PARAM_TYPE,ARRAY_TYPE> transpose (const to_array<PARAM_TYPE,ARRAY_TYPE>
 			ao_array(j,i)=pro_obj(i,j);
 		}
 	}
-	return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+	return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 
 
 //------------------------------------------------------------------------------
-// invert (to_array)
+// invert (convert_to_array)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> invert (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> invert (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj) {
 	if(pro_obj.nx() !=2 || pro_obj.ny()!=2)
 	{
 		printf("Matrix must be 2x2 to be inverted. \n");
 		exit(-1);
 	}
-	to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+	convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
 	ao_array.alloc(2,2);
 	double det=pro_obj(0,0)*pro_obj(1,1)-pro_obj(0,1)*pro_obj(1,0);
 	ao_array(0,0)=1/det*pro_obj(1,1);
 	ao_array(1,1)=1/det*pro_obj(0,0);
 	ao_array(0,1)=-1/det*pro_obj(0,1);
 	ao_array(1,0)=-1/det*pro_obj(1,0);
-    return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+    return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 
 //------------------------------------------------------------------------------
-// mult (to_array,to_array, int)
+// mult (convert_to_array,convert_to_array, int)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> mult (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj1,
-									  const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj2, int index_z) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> mult (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj1,
+									  const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj2, int index_z) {
 	if(index_z >= pro_obj1.nz()) printf("Wrong z index. \n");
 	if(pro_obj1.ny() != pro_obj2.nx())
 	{
 		printf("Can't multiply: 1st matrix number of columns different from 2nd matrix number of rows. \n");
 		exit(-1);
 	}
-	to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+	convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
 	if(pro_obj2.ny()>0)
 	{
 		ao_array.alloc(pro_obj1.nx(),pro_obj2.ny());
@@ -1522,23 +1521,23 @@ to_array<PARAM_TYPE,ARRAY_TYPE> mult (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro
 				ao_array(i) += pro_obj1(i,k,index_z) * pro_obj2(k);
 		}
 	}
-    return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+    return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 
 //------------------------------------------------------------------------------
-// log (to_array)
+// log (convert_to_array)
 //------------------------------------------------------------------------------
 template <class PARAM_TYPE, bool ARRAY_TYPE>
-to_array<PARAM_TYPE,ARRAY_TYPE> log (const to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj) {
+convert_to_array<PARAM_TYPE,ARRAY_TYPE> log (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_obj) {
 
-	to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
+	convert_to_array<PARAM_TYPE,ARRAY_TYPE> ao_array;
 	ao_array.alloc(pro_obj.nx(),pro_obj.ny(),pro_obj.nz());
 	for(int i=0;i<pro_obj.nx();i++)
 		for(int j=0;j<pro_obj.ny();j++)
 			for(int k=0;k<pro_obj.nz();k++)
 				ao_array(i,j,k)=log(pro_obj(i,j,k));
 
-    return (to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
+    return (convert_to_array<PARAM_TYPE,ARRAY_TYPE>(ao_array));
 }
 
 

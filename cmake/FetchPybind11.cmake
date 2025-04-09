@@ -3,8 +3,8 @@
 # -------------- #
 
 # Set Pybind11 Version
-set(Pybind11Version 2.10.3)
-set(Pybind11SHA256 5d8c4c5dda428d3a944ba3d2a5212cb988c2fae4670d58075a5a49075a6ca315)
+set(Pybind11Version 2.13.6)
+set(Pybind11SHA256 e08cb87f4773da97fa7b5f035de8763abc656d87d5773e62f6da0587d1f0ec20)
 
 # Set Pybdin11 fetch location
 FetchContent_Declare(
@@ -16,6 +16,5 @@ FetchContent_Declare(
 # Fetch and source Pybind11
 FetchContent_GetProperties(pybind11)
 if(NOT pybind11_POPULATED)
-    FetchContent_Populate(pybind11)
-    add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
+    FetchContent_MakeAvailable(pybind11)
 endif()
