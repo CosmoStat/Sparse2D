@@ -20,42 +20,42 @@ class WaveletShrinkage
 		// Hard threshold = k * sigma; sup use -1 / 1 to indicate the insignificant/significant coef. region 
 		// alpha is the preset two-sided p-value of the significance level
 		// alpha as the significance level is returned 
-		double gaussHardThreshold (to_array<DATATYPE, true> &waveletData, \
-			double alpha, double sigma, to_array<SUPTYPE, true> *sup = NULL);
+		double gaussHardThreshold (convert_to_array<DATATYPE, true> &waveletData, \
+			double alpha, double sigma, convert_to_array<SUPTYPE, true> *sup = NULL);
 
 		// Denoise gaussian noise 
 		// Soft threshold = k * sigma; sup use -1 / 1 to indicate the insignificant/significant coef. region 
 		// alpha is the preset two-sided p-value of the significance level
 		// alpha as the significance level is returned 
-		double gaussSoftThreshold (to_array<DATATYPE, true> &waveletData, \
-			double alpha, double sigma, to_array<SUPTYPE, true> *sup = NULL);
+		double gaussSoftThreshold (convert_to_array<DATATYPE, true> &waveletData, \
+			double alpha, double sigma, convert_to_array<SUPTYPE, true> *sup = NULL);
 
 		// Denoise gaussian noise 
 		// FDR threshold; sup use -1 / 1 to indicate the insignificant/significant coef. region
 		// alpha is the preset FDR
       	// the thresholding two-sided p-value is returned 
-		double gaussFDRThreshold (to_array<DATATYPE, true> &waveletData, \
-			double sigma, double alpha, bool indep = true, to_array<SUPTYPE, true> *sup = NULL);            
+		double gaussFDRThreshold (convert_to_array<DATATYPE, true> &waveletData, \
+			double sigma, double alpha, bool indep = true, convert_to_array<SUPTYPE, true> *sup = NULL);            
 
 		// hard threshold in Corrected Coupled MSVST 
-		double ccHardThreshold (to_array<DATATYPE, true> &waveletData, to_array<DATATYPE, true> &appData, int scale, \
-			double alpha, to_array<SUPTYPE, true> *sup = NULL);
+		double ccHardThreshold (convert_to_array<DATATYPE, true> &waveletData, convert_to_array<DATATYPE, true> &appData, int scale, \
+			double alpha, convert_to_array<SUPTYPE, true> *sup = NULL);
 
 		// FDR threshold in Corrected Coupled MSVST
-		double ccFDRThreshold (to_array<DATATYPE, true> &waveletData, to_array<DATATYPE, true> &appData, int scale, \
-			double alpha, bool indep = true, to_array<SUPTYPE, true> *sup = NULL);            
+		double ccFDRThreshold (convert_to_array<DATATYPE, true> &waveletData, convert_to_array<DATATYPE, true> &appData, int scale, \
+			double alpha, bool indep = true, convert_to_array<SUPTYPE, true> *sup = NULL);            
 
 		// hard threshold in direct estimation
-		double dirHardThreshold (to_array<DATATYPE, true> &waveletData, to_array<DATATYPE, true> &appData, int scale, \
-			double alpha, to_array<SUPTYPE, true> *sup = NULL);
+		double dirHardThreshold (convert_to_array<DATATYPE, true> &waveletData, convert_to_array<DATATYPE, true> &appData, int scale, \
+			double alpha, convert_to_array<SUPTYPE, true> *sup = NULL);
 
 		// FDR threshold direct estimation
-		double dirFDRThreshold (to_array<DATATYPE, true> &waveletData, to_array<DATATYPE, true> &appData, int scale, \
-			double alpha, bool indep = true, to_array<SUPTYPE, true> *sup = NULL);            
+		double dirFDRThreshold (convert_to_array<DATATYPE, true> &waveletData, convert_to_array<DATATYPE, true> &appData, int scale, \
+			double alpha, bool indep = true, convert_to_array<SUPTYPE, true> *sup = NULL);            
 };
 
 template <class DATATYPE, class SUPTYPE> 
-double WaveletShrinkage<DATATYPE, SUPTYPE>::gaussHardThreshold (to_array<DATATYPE, true> &waveletData, double alpha, double sigma, to_array<SUPTYPE, true> *sup)
+double WaveletShrinkage<DATATYPE, SUPTYPE>::gaussHardThreshold (convert_to_array<DATATYPE, true> &waveletData, double alpha, double sigma, convert_to_array<SUPTYPE, true> *sup)
 {
     int dim = waveletData.naxis();
 	int nx = waveletData.nx(), ny = waveletData.ny(), nz = waveletData.nz();
@@ -115,7 +115,7 @@ double WaveletShrinkage<DATATYPE, SUPTYPE>::gaussHardThreshold (to_array<DATATYP
 }
 
 template <class DATATYPE, class SUPTYPE> 
-double WaveletShrinkage<DATATYPE, SUPTYPE>::gaussSoftThreshold (to_array<DATATYPE, true> &waveletData, double alpha, double sigma, to_array<SUPTYPE, true> *sup)
+double WaveletShrinkage<DATATYPE, SUPTYPE>::gaussSoftThreshold (convert_to_array<DATATYPE, true> &waveletData, double alpha, double sigma, convert_to_array<SUPTYPE, true> *sup)
 {
     int dim = waveletData.naxis();
 	int nx = waveletData.nx(), ny = waveletData.ny(), nz = waveletData.nz();
@@ -188,8 +188,8 @@ double WaveletShrinkage<DATATYPE, SUPTYPE>::gaussSoftThreshold (to_array<DATATYP
 	return alpha;
 }
 template <class DATATYPE, class SUPTYPE> 
-double WaveletShrinkage<DATATYPE, SUPTYPE>::gaussFDRThreshold (to_array<DATATYPE, true> &waveletData, \
-					  double sigma, double alpha, bool indep, to_array<SUPTYPE, true> *sup)
+double WaveletShrinkage<DATATYPE, SUPTYPE>::gaussFDRThreshold (convert_to_array<DATATYPE, true> &waveletData, \
+					  double sigma, double alpha, bool indep, convert_to_array<SUPTYPE, true> *sup)
 {
   int dim = waveletData.naxis();
   int nx = waveletData.nx(), ny = waveletData.ny(), nz = waveletData.nz();
@@ -198,7 +198,7 @@ double WaveletShrinkage<DATATYPE, SUPTYPE>::gaussFDRThreshold (to_array<DATATYPE
   if (dim == 1)
     {
       if (sup != NULL) sup->resize(nx);
-      to_array<DATATYPE, true> *pvals = new to_array<DATATYPE, true>(nx);
+      convert_to_array<DATATYPE, true> *pvals = new convert_to_array<DATATYPE, true>(nx);
       for (int x=0; x<nx; x++)
 	  {
 	  if (sigma < 1e-20) (*pvals)(x) = 0;
@@ -228,7 +228,7 @@ double WaveletShrinkage<DATATYPE, SUPTYPE>::gaussFDRThreshold (to_array<DATATYPE
   else if (dim == 2)
     {
       if (sup != NULL) sup->resize(nx, ny);
-      to_array<DATATYPE, true> *pvals = new to_array<DATATYPE, true>(nx, ny);
+      convert_to_array<DATATYPE, true> *pvals = new convert_to_array<DATATYPE, true>(nx, ny);
       for (int x=0; x<nx; x++)
       for (int y=0; y<ny; y++)
 	  {
@@ -260,7 +260,7 @@ double WaveletShrinkage<DATATYPE, SUPTYPE>::gaussFDRThreshold (to_array<DATATYPE
   else if (dim == 3)
     {
       if (sup != NULL) sup->resize(nx, ny, nz);
-      to_array<DATATYPE, true> *pvals = new to_array<DATATYPE, true>(nx, ny, nz);
+      convert_to_array<DATATYPE, true> *pvals = new convert_to_array<DATATYPE, true>(nx, ny, nz);
       for (int x=0; x<nx; x++)
       for (int y=0; y<ny; y++)
       for (int z=0; z<nz; z++)
@@ -297,8 +297,8 @@ double WaveletShrinkage<DATATYPE, SUPTYPE>::gaussFDRThreshold (to_array<DATATYPE
 }
 
 template <class DATATYPE, class SUPTYPE> 
-double WaveletShrinkage<DATATYPE, SUPTYPE>::ccHardThreshold (to_array<DATATYPE, true> &waveletData, to_array<DATATYPE, true> &appData, int scale, \
-			double alpha, to_array<SUPTYPE, true> *sup)
+double WaveletShrinkage<DATATYPE, SUPTYPE>::ccHardThreshold (convert_to_array<DATATYPE, true> &waveletData, convert_to_array<DATATYPE, true> &appData, int scale, \
+			double alpha, convert_to_array<SUPTYPE, true> *sup)
 {
     int dim = waveletData.naxis();
 	int nx = waveletData.nx(), ny = waveletData.ny(), nz = waveletData.nz();
@@ -329,8 +329,8 @@ double WaveletShrinkage<DATATYPE, SUPTYPE>::ccHardThreshold (to_array<DATATYPE, 
 }
 
 template <class DATATYPE, class SUPTYPE> 
-double WaveletShrinkage<DATATYPE, SUPTYPE>::ccFDRThreshold (to_array<DATATYPE, true> &waveletData, to_array<DATATYPE, true> &appData, int scale, \
-                       double alpha, bool indep, to_array<SUPTYPE, true> *sup)
+double WaveletShrinkage<DATATYPE, SUPTYPE>::ccFDRThreshold (convert_to_array<DATATYPE, true> &waveletData, convert_to_array<DATATYPE, true> &appData, int scale, \
+                       double alpha, bool indep, convert_to_array<SUPTYPE, true> *sup)
 {
   int dim = waveletData.naxis();
   int nx = waveletData.nx(), ny = waveletData.ny(), nz = waveletData.nz();
@@ -339,7 +339,7 @@ double WaveletShrinkage<DATATYPE, SUPTYPE>::ccFDRThreshold (to_array<DATATYPE, t
 
 
   if (sup != NULL) sup->resize(nx, ny, nz);
-  to_array<DATATYPE, true> *pvals = new to_array<DATATYPE, true>(nx, ny, nz);
+  convert_to_array<DATATYPE, true> *pvals = new convert_to_array<DATATYPE, true>(nx, ny, nz);
   for (int x=0; x<len; x++)
   {
     coefa = MAX(appData(x), 0.);
@@ -375,8 +375,8 @@ double WaveletShrinkage<DATATYPE, SUPTYPE>::ccFDRThreshold (to_array<DATATYPE, t
 }
 
 template <class DATATYPE, class SUPTYPE> 
-double WaveletShrinkage<DATATYPE, SUPTYPE>::dirHardThreshold (to_array<DATATYPE, true> &waveletData, to_array<DATATYPE, true> &appData, int scale, \
-			double alpha, to_array<SUPTYPE, true> *sup)
+double WaveletShrinkage<DATATYPE, SUPTYPE>::dirHardThreshold (convert_to_array<DATATYPE, true> &waveletData, convert_to_array<DATATYPE, true> &appData, int scale, \
+			double alpha, convert_to_array<SUPTYPE, true> *sup)
 {
     int dim = waveletData.naxis();
 	int nx = waveletData.nx(), ny = waveletData.ny(), nz = waveletData.nz();
@@ -405,8 +405,8 @@ double WaveletShrinkage<DATATYPE, SUPTYPE>::dirHardThreshold (to_array<DATATYPE,
 }
 
 template <class DATATYPE, class SUPTYPE> 
-double WaveletShrinkage<DATATYPE, SUPTYPE>::dirFDRThreshold (to_array<DATATYPE, true> &waveletData, to_array<DATATYPE, true> &appData, int scale, \
-                       double alpha, bool indep, to_array<SUPTYPE, true> *sup)
+double WaveletShrinkage<DATATYPE, SUPTYPE>::dirFDRThreshold (convert_to_array<DATATYPE, true> &waveletData, convert_to_array<DATATYPE, true> &appData, int scale, \
+                       double alpha, bool indep, convert_to_array<SUPTYPE, true> *sup)
 {
   int dim = waveletData.naxis();
   int nx = waveletData.nx(), ny = waveletData.ny(), nz = waveletData.nz();
@@ -415,7 +415,7 @@ double WaveletShrinkage<DATATYPE, SUPTYPE>::dirFDRThreshold (to_array<DATATYPE, 
 
 
   if (sup != NULL) sup->resize(nx, ny, nz);
-  to_array<DATATYPE, true> *pvals = new to_array<DATATYPE, true>(nx, ny, nz);
+  convert_to_array<DATATYPE, true> *pvals = new convert_to_array<DATATYPE, true>(nx, ny, nz);
   for (int x=0; x<len; x++)
   {
     coefa = MAX(appData(x), 0.);
@@ -496,17 +496,17 @@ class OrthogonalWaveletTransform
 		// (I)DWT 1D along a certain axis
 		// only used by (I)DWT3D
 		// axis = 0, 1, 2 : X, Y, Z
-		static void transformXYZ (to_array<DATATYPE, true> &data, dblarray &dfilterh, dblarray &dfilterg, to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &cd, int axis, type_border BORDERTYPE);
-		static void reconstructionXYZ (to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &cd, dblarray &rfilterh, dblarray &rfilterg, to_array<DATATYPE, true> &data, int axis);
+		static void transformXYZ (convert_to_array<DATATYPE, true> &data, dblarray &dfilterh, dblarray &dfilterg, convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &cd, int axis, type_border BORDERTYPE);
+		static void reconstructionXYZ (convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &cd, dblarray &rfilterh, dblarray &rfilterg, convert_to_array<DATATYPE, true> &data, int axis);
 		
 	public:
 		// orthogonal wavelet types
 		static const int HAAR=0, DAUB4=4, SYML4=16;
 		
 		// resize the data to the same size of the reference
-		static void resizeData (to_array<DATATYPE, true> &data, to_array<DATATYPE, true> &ref, type_border BORDERTYPE=I_ZERO);
+		static void resizeData (convert_to_array<DATATYPE, true> &data, convert_to_array<DATATYPE, true> &ref, type_border BORDERTYPE=I_ZERO);
 		// resize the data to [nx], [nx, ny] or [nx, ny, nz] according to the dimension of the data
-		static void resizeData (to_array<DATATYPE, true> &data, int nx, int ny, int nz, type_border BORDERTYPE=I_ZERO);
+		static void resizeData (convert_to_array<DATATYPE, true> &data, int nx, int ny, int nz, type_border BORDERTYPE=I_ZERO);
 		
 		// get the decomposition filters, i.e. \bar{h}, \bar{g}
 		// where h is considered to start from the origin
@@ -515,88 +515,88 @@ class OrthogonalWaveletTransform
 		static void getWaveletReconsFilter (int filterName, dblarray &rfilterh, dblarray &rfilterg);
 		
 		// DWT 1D
-		static void dwt1D (to_array<DATATYPE, true> &data, \
+		static void dwt1D (convert_to_array<DATATYPE, true> &data, \
 			dblarray &dfilterh, dblarray &dfilterg, \
-			to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &cd, \
+			convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &cd, \
 			type_border BORDERTYPE=I_MIRROR);
-		static void dwt1D (to_array<DATATYPE, true> &data, \
+		static void dwt1D (convert_to_array<DATATYPE, true> &data, \
 			int filterName, \
-			to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &cd, \
+			convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &cd, \
 			type_border BORDERTYPE=I_MIRROR);
 		
 		// IDWT 1D 
-		static void idwt1D (to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &cd, \
+		static void idwt1D (convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &cd, \
 			dblarray &rfilterh, dblarray &rfilterg, \
-			to_array<DATATYPE, true> &data);
-		static void idwt1D (to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &cd, \
+			convert_to_array<DATATYPE, true> &data);
+		static void idwt1D (convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &cd, \
 			int filterName, \
-			to_array<DATATYPE, true> &data);			
+			convert_to_array<DATATYPE, true> &data);			
 
 		// DWT 2D
-		static void dwt2D (to_array<DATATYPE, true> &data, \
+		static void dwt2D (convert_to_array<DATATYPE, true> &data, \
 			dblarray &dfilterh, dblarray &dfilterg, \
-			to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &ch, to_array<DATATYPE, true> &cv, to_array<DATATYPE, true> &cd, \
+			convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &ch, convert_to_array<DATATYPE, true> &cv, convert_to_array<DATATYPE, true> &cd, \
 			type_border BORDERTYPE=I_MIRROR);
-		static void dwt2D (to_array<DATATYPE, true> &data, \
+		static void dwt2D (convert_to_array<DATATYPE, true> &data, \
 			int filterName, \
-			to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &ch, to_array<DATATYPE, true> &cv, to_array<DATATYPE, true> &cd, \
+			convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &ch, convert_to_array<DATATYPE, true> &cv, convert_to_array<DATATYPE, true> &cd, \
 			type_border BORDERTYPE=I_MIRROR);
 					
 		// IDWT 2D 
-		static void idwt2D (to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &ch, to_array<DATATYPE, true> &cv, to_array<DATATYPE, true> &cd, \
+		static void idwt2D (convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &ch, convert_to_array<DATATYPE, true> &cv, convert_to_array<DATATYPE, true> &cd, \
 			dblarray &rfilterh, dblarray &rfilterg, \
-			to_array<DATATYPE, true> &data);
-		static void idwt2D (to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &ch, to_array<DATATYPE, true> &cv, to_array<DATATYPE, true> &cd, \
+			convert_to_array<DATATYPE, true> &data);
+		static void idwt2D (convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &ch, convert_to_array<DATATYPE, true> &cv, convert_to_array<DATATYPE, true> &cd, \
 			int filterName, \
-			to_array<DATATYPE, true> &data);
+			convert_to_array<DATATYPE, true> &data);
 
 		// DWT 3D
-		static void dwt3D (to_array<DATATYPE, true> &data, \
+		static void dwt3D (convert_to_array<DATATYPE, true> &data, \
 			dblarray &dfilterh, dblarray &dfilterg, \
-			to_array<DATATYPE, true> &ca, \
-			to_array<DATATYPE, true> &chhg, \
-			to_array<DATATYPE, true> &chgh, \
-			to_array<DATATYPE, true> &chgg, \
-			to_array<DATATYPE, true> &cghh, \
-			to_array<DATATYPE, true> &cghg, \
-			to_array<DATATYPE, true> &cggh, \
-			to_array<DATATYPE, true> &cggg, \
+			convert_to_array<DATATYPE, true> &ca, \
+			convert_to_array<DATATYPE, true> &chhg, \
+			convert_to_array<DATATYPE, true> &chgh, \
+			convert_to_array<DATATYPE, true> &chgg, \
+			convert_to_array<DATATYPE, true> &cghh, \
+			convert_to_array<DATATYPE, true> &cghg, \
+			convert_to_array<DATATYPE, true> &cggh, \
+			convert_to_array<DATATYPE, true> &cggg, \
 			type_border BORDERTYPE=I_MIRROR);
-		static void dwt3D (to_array<DATATYPE, true> &data, \
+		static void dwt3D (convert_to_array<DATATYPE, true> &data, \
 			int filterName, \
-			to_array<DATATYPE, true> &ca, \
-			to_array<DATATYPE, true> &chhg, \
-			to_array<DATATYPE, true> &chgh, \
-			to_array<DATATYPE, true> &chgg, \
-			to_array<DATATYPE, true> &cghh, \
-			to_array<DATATYPE, true> &cghg, \
-			to_array<DATATYPE, true> &cggh, \
-			to_array<DATATYPE, true> &cggg, \
+			convert_to_array<DATATYPE, true> &ca, \
+			convert_to_array<DATATYPE, true> &chhg, \
+			convert_to_array<DATATYPE, true> &chgh, \
+			convert_to_array<DATATYPE, true> &chgg, \
+			convert_to_array<DATATYPE, true> &cghh, \
+			convert_to_array<DATATYPE, true> &cghg, \
+			convert_to_array<DATATYPE, true> &cggh, \
+			convert_to_array<DATATYPE, true> &cggg, \
 			type_border BORDERTYPE=I_MIRROR);
 					
 		// IDWT 3D 
 		static void idwt3D ( \
-			to_array<DATATYPE, true> &ca, \
-			to_array<DATATYPE, true> &chhg, \
-			to_array<DATATYPE, true> &chgh, \
-			to_array<DATATYPE, true> &chgg, \
-			to_array<DATATYPE, true> &cghh, \
-			to_array<DATATYPE, true> &cghg, \
-			to_array<DATATYPE, true> &cggh, \
-			to_array<DATATYPE, true> &cggg, \
+			convert_to_array<DATATYPE, true> &ca, \
+			convert_to_array<DATATYPE, true> &chhg, \
+			convert_to_array<DATATYPE, true> &chgh, \
+			convert_to_array<DATATYPE, true> &chgg, \
+			convert_to_array<DATATYPE, true> &cghh, \
+			convert_to_array<DATATYPE, true> &cghg, \
+			convert_to_array<DATATYPE, true> &cggh, \
+			convert_to_array<DATATYPE, true> &cggg, \
 			dblarray &rfilterh, dblarray &rfilterg, \
-			to_array<DATATYPE, true> &data);
+			convert_to_array<DATATYPE, true> &data);
 		static void idwt3D ( \
-			to_array<DATATYPE, true> &ca, \
-			to_array<DATATYPE, true> &chhg, \
-			to_array<DATATYPE, true> &chgh, \
-			to_array<DATATYPE, true> &chgg, \
-			to_array<DATATYPE, true> &cghh, \
-			to_array<DATATYPE, true> &cghg, \
-			to_array<DATATYPE, true> &cggh, \
-			to_array<DATATYPE, true> &cggg, \
+			convert_to_array<DATATYPE, true> &ca, \
+			convert_to_array<DATATYPE, true> &chhg, \
+			convert_to_array<DATATYPE, true> &chgh, \
+			convert_to_array<DATATYPE, true> &chgg, \
+			convert_to_array<DATATYPE, true> &cghh, \
+			convert_to_array<DATATYPE, true> &cghg, \
+			convert_to_array<DATATYPE, true> &cggh, \
+			convert_to_array<DATATYPE, true> &cggg, \
 			int filterName, \
-			to_array<DATATYPE, true> &data);
+			convert_to_array<DATATYPE, true> &data);
 };
 
 template <class DATATYPE>
@@ -609,19 +609,19 @@ template <class DATATYPE>
 const int OrthogonalWaveletTransform<DATATYPE>::SYML4;
 
 template <class DATATYPE> 
-void OrthogonalWaveletTransform<DATATYPE>::resizeData(to_array<DATATYPE, true> &data, to_array<DATATYPE, true> &ref, type_border BORDERTYPE)
+void OrthogonalWaveletTransform<DATATYPE>::resizeData(convert_to_array<DATATYPE, true> &data, convert_to_array<DATATYPE, true> &ref, type_border BORDERTYPE)
 {
 	resizeData(data, ref.nx(), ref.ny(), ref.nz(), BORDERTYPE);
 }
 
 template <class DATATYPE> 
-void OrthogonalWaveletTransform<DATATYPE>::resizeData(to_array<DATATYPE, true> &data, int nx, int ny, int nz, type_border BORDERTYPE)
+void OrthogonalWaveletTransform<DATATYPE>::resizeData(convert_to_array<DATATYPE, true> &data, int nx, int ny, int nz, type_border BORDERTYPE)
 {
 	int dnx = data.nx(), dny = data.ny(), dnz = data.nz();
 	if ((nx == dnx) && (ny == dny) && (nz == dnz)) return;
 	int dim = data.naxis();
 
-	to_array<DATATYPE, true> *temp = new to_array<DATATYPE, true>(dnx, dny, dnz);
+	convert_to_array<DATATYPE, true> *temp = new convert_to_array<DATATYPE, true>(dnx, dny, dnz);
 	*temp = data;
 	if (dim == 1)
 	{
@@ -704,9 +704,9 @@ void OrthogonalWaveletTransform<DATATYPE>::getWaveletReconsFilter (int filterNam
 }
 
 template <class DATATYPE>
-void OrthogonalWaveletTransform<DATATYPE>::transformXYZ (to_array<DATATYPE, true> &data, dblarray &dfilterh, dblarray &dfilterg, to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &cd, int axis, type_border BORDERTYPE)
+void OrthogonalWaveletTransform<DATATYPE>::transformXYZ (convert_to_array<DATATYPE, true> &data, dblarray &dfilterh, dblarray &dfilterg, convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &cd, int axis, type_border BORDERTYPE)
 {
-	to_array<DATATYPE, true> *line = NULL, *linea = NULL, *lined = NULL;
+	convert_to_array<DATATYPE, true> *line = NULL, *linea = NULL, *lined = NULL;
 	int lenx, leny, lenz, dlenx, dleny, dlenz;
 	
 	if (axis == 0)
@@ -715,9 +715,9 @@ void OrthogonalWaveletTransform<DATATYPE>::transformXYZ (to_array<DATATYPE, true
 		dlenx = getDecompResultLength(lenx, dfilterh.n_elem());
 		ca.resize(dlenx, leny, lenz);
 		cd.resize(dlenx, leny, lenz);
-		line = new to_array<DATATYPE, true>(lenx);
-		linea = new to_array<DATATYPE, true>(dlenx);
-		lined = new to_array<DATATYPE, true>(dlenx);
+		line = new convert_to_array<DATATYPE, true>(lenx);
+		linea = new convert_to_array<DATATYPE, true>(dlenx);
+		lined = new convert_to_array<DATATYPE, true>(dlenx);
 		
 		for (int z=0; z<lenz; z++)
 		for (int y=0; y<leny; y++)
@@ -738,9 +738,9 @@ void OrthogonalWaveletTransform<DATATYPE>::transformXYZ (to_array<DATATYPE, true
 		dleny = getDecompResultLength(leny, dfilterh.n_elem());
 		ca.resize(lenx, dleny, lenz);
 		cd.resize(lenx, dleny, lenz);
-		line = new to_array<DATATYPE, true>(leny);
-		linea = new to_array<DATATYPE, true>(dleny);
-		lined = new to_array<DATATYPE, true>(dleny);
+		line = new convert_to_array<DATATYPE, true>(leny);
+		linea = new convert_to_array<DATATYPE, true>(dleny);
+		lined = new convert_to_array<DATATYPE, true>(dleny);
 
 		for (int z=0; z<lenz; z++)
 		for (int x=0; x<lenx; x++)
@@ -761,9 +761,9 @@ void OrthogonalWaveletTransform<DATATYPE>::transformXYZ (to_array<DATATYPE, true
 		dlenz = getDecompResultLength(lenz, dfilterh.n_elem());	
 		ca.resize(lenx, leny, dlenz);
 		cd.resize(lenx, leny, dlenz);
-		line = new to_array<DATATYPE, true>(lenz);
-		linea = new to_array<DATATYPE, true>(dlenz);
-		lined = new to_array<DATATYPE, true>(dlenz);
+		line = new convert_to_array<DATATYPE, true>(lenz);
+		linea = new convert_to_array<DATATYPE, true>(dlenz);
+		lined = new convert_to_array<DATATYPE, true>(dlenz);
 
 		for (int y=0; y<leny; y++)
 		for (int x=0; x<lenx; x++)
@@ -786,18 +786,18 @@ void OrthogonalWaveletTransform<DATATYPE>::transformXYZ (to_array<DATATYPE, true
 }
 
 template <class DATATYPE>
-void OrthogonalWaveletTransform<DATATYPE>::reconstructionXYZ (to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &cd, dblarray &rfilterh, dblarray &rfilterg, to_array<DATATYPE, true> &data, int axis)
+void OrthogonalWaveletTransform<DATATYPE>::reconstructionXYZ (convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &cd, dblarray &rfilterh, dblarray &rfilterg, convert_to_array<DATATYPE, true> &data, int axis)
 {
-	to_array<DATATYPE, true> *line = NULL, *linea = NULL, *lined = NULL;
+	convert_to_array<DATATYPE, true> *line = NULL, *linea = NULL, *lined = NULL;
 	int lenx, leny, lenz, rlenx, rleny, rlenz;
 	
 	if (axis == 0)
 	{
 		lenx = ca.nx(); leny = ca.ny(); lenz = ca.nz();
 		rlenx = getReconsResultLength(lenx, rfilterh.n_elem());
-		line = new to_array<DATATYPE, true>(rlenx);
-		linea = new to_array<DATATYPE, true>(lenx);
-		lined = new to_array<DATATYPE, true>(lenx);
+		line = new convert_to_array<DATATYPE, true>(rlenx);
+		linea = new convert_to_array<DATATYPE, true>(lenx);
+		lined = new convert_to_array<DATATYPE, true>(lenx);
 		data.resize(rlenx, leny, lenz);
 		
 		for (int z=0; z<lenz; z++)
@@ -817,9 +817,9 @@ void OrthogonalWaveletTransform<DATATYPE>::reconstructionXYZ (to_array<DATATYPE,
 	{
 		lenx = ca.nx(); leny = ca.ny(); lenz = ca.nz();
 		rleny = getReconsResultLength(leny, rfilterh.n_elem());
-		line = new to_array<DATATYPE, true>(rleny);
-		linea = new to_array<DATATYPE, true>(leny);
-		lined = new to_array<DATATYPE, true>(leny);
+		line = new convert_to_array<DATATYPE, true>(rleny);
+		linea = new convert_to_array<DATATYPE, true>(leny);
+		lined = new convert_to_array<DATATYPE, true>(leny);
 		data.resize(lenx, rleny, lenz);
 		
 		for (int z=0; z<lenz; z++)
@@ -839,9 +839,9 @@ void OrthogonalWaveletTransform<DATATYPE>::reconstructionXYZ (to_array<DATATYPE,
 	{
 		lenx = ca.nx(); leny = ca.ny(); lenz = ca.nz();
 		rlenz = getReconsResultLength(lenz, rfilterh.n_elem());
-		line = new to_array<DATATYPE, true>(rlenz);
-		linea = new to_array<DATATYPE, true>(lenz);
-		lined = new to_array<DATATYPE, true>(lenz);
+		line = new convert_to_array<DATATYPE, true>(rlenz);
+		linea = new convert_to_array<DATATYPE, true>(lenz);
+		lined = new convert_to_array<DATATYPE, true>(lenz);
 		data.resize(lenx, leny, rlenz);
 		
 		for (int y=0; y<leny; y++)
@@ -865,9 +865,9 @@ void OrthogonalWaveletTransform<DATATYPE>::reconstructionXYZ (to_array<DATATYPE,
 }
 
 template <class DATATYPE> 
-void OrthogonalWaveletTransform<DATATYPE>::dwt1D (to_array<DATATYPE, true> &data, \
+void OrthogonalWaveletTransform<DATATYPE>::dwt1D (convert_to_array<DATATYPE, true> &data, \
 			dblarray &dfilterh, dblarray &dfilterg, \
-			to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &cd, \
+			convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &cd, \
 			type_border BORDERTYPE)
 {
 	int datalen = data.nx();
@@ -897,9 +897,9 @@ void OrthogonalWaveletTransform<DATATYPE>::dwt1D (to_array<DATATYPE, true> &data
 }
 
 template <class DATATYPE> 
-void OrthogonalWaveletTransform<DATATYPE>::dwt1D (to_array<DATATYPE, true> &data, \
+void OrthogonalWaveletTransform<DATATYPE>::dwt1D (convert_to_array<DATATYPE, true> &data, \
 			int filterName, \
-			to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &cd, \
+			convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &cd, \
 			type_border BORDERTYPE)
 {
 	dblarray filterh, filterg;
@@ -908,9 +908,9 @@ void OrthogonalWaveletTransform<DATATYPE>::dwt1D (to_array<DATATYPE, true> &data
 }
 
 template <class DATATYPE> 
-void OrthogonalWaveletTransform<DATATYPE>::idwt1D (to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &cd, \
+void OrthogonalWaveletTransform<DATATYPE>::idwt1D (convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &cd, \
 			dblarray &rfilterh, dblarray &rfilterg, \
-			to_array<DATATYPE, true> &data)
+			convert_to_array<DATATYPE, true> &data)
 {
 	int calen = ca.nx(), cdlen = cd.nx();
 	if (calen != cdlen)
@@ -943,9 +943,9 @@ void OrthogonalWaveletTransform<DATATYPE>::idwt1D (to_array<DATATYPE, true> &ca,
 }
 
 template <class DATATYPE> 
-void OrthogonalWaveletTransform<DATATYPE>::idwt1D (to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &cd, \
+void OrthogonalWaveletTransform<DATATYPE>::idwt1D (convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &cd, \
 			int filterName, \
-			to_array<DATATYPE, true> &data)
+			convert_to_array<DATATYPE, true> &data)
 {
 	dblarray filterh, filterg;
 	getWaveletReconsFilter(filterName, filterh, filterg);
@@ -953,9 +953,9 @@ void OrthogonalWaveletTransform<DATATYPE>::idwt1D (to_array<DATATYPE, true> &ca,
 }
 
 template <class DATATYPE> 
-void OrthogonalWaveletTransform<DATATYPE>::dwt2D (to_array<DATATYPE, true> &data, \
+void OrthogonalWaveletTransform<DATATYPE>::dwt2D (convert_to_array<DATATYPE, true> &data, \
 			dblarray &dfilterh, dblarray &dfilterg, \
-			to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &ch, to_array<DATATYPE, true> &cv, to_array<DATATYPE, true> &cd, \
+			convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &ch, convert_to_array<DATATYPE, true> &cv, convert_to_array<DATATYPE, true> &cd, \
 			type_border BORDERTYPE)
 {
 	int datalenx = data.nx(), dataleny = data.ny();
@@ -967,11 +967,11 @@ void OrthogonalWaveletTransform<DATATYPE>::dwt2D (to_array<DATATYPE, true> &data
 	ca.resize(reslenx, resleny); 	ch.resize(reslenx, resleny);
 	cv.resize(reslenx, resleny); 	cd.resize(reslenx, resleny);
 
-	to_array<DATATYPE, true> *temph = new to_array<DATATYPE, true>(reslenx, dataleny);
-	to_array<DATATYPE, true> *tempg = new to_array<DATATYPE, true>(reslenx, dataleny);
-	to_array<DATATYPE, true> *line = new to_array<DATATYPE, true>(datalenx);
-	to_array<DATATYPE, true> *atempline = new to_array<DATATYPE, true>(reslenx);
-	to_array<DATATYPE, true> *dtempline = new to_array<DATATYPE, true>(reslenx);
+	convert_to_array<DATATYPE, true> *temph = new convert_to_array<DATATYPE, true>(reslenx, dataleny);
+	convert_to_array<DATATYPE, true> *tempg = new convert_to_array<DATATYPE, true>(reslenx, dataleny);
+	convert_to_array<DATATYPE, true> *line = new convert_to_array<DATATYPE, true>(datalenx);
+	convert_to_array<DATATYPE, true> *atempline = new convert_to_array<DATATYPE, true>(reslenx);
+	convert_to_array<DATATYPE, true> *dtempline = new convert_to_array<DATATYPE, true>(reslenx);
 	for (int y=0; y<dataleny; y++)
 	{
 		for (int x=0; x<datalenx; x++) (*line)(x) = data(x,y);
@@ -986,10 +986,10 @@ void OrthogonalWaveletTransform<DATATYPE>::dwt2D (to_array<DATATYPE, true> &data
 	if (atempline != NULL) { delete atempline; atempline = NULL; }
 	if (dtempline != NULL) { delete dtempline; dtempline = NULL; }
 	
-	to_array<DATATYPE, true> *col1 = new to_array<DATATYPE, true>(dataleny);
-	to_array<DATATYPE, true> *col2 = new to_array<DATATYPE, true>(dataleny);
-	to_array<DATATYPE, true> *atempcol = new to_array<DATATYPE, true>(resleny);
-	to_array<DATATYPE, true> *dtempcol = new to_array<DATATYPE, true>(resleny);
+	convert_to_array<DATATYPE, true> *col1 = new convert_to_array<DATATYPE, true>(dataleny);
+	convert_to_array<DATATYPE, true> *col2 = new convert_to_array<DATATYPE, true>(dataleny);
+	convert_to_array<DATATYPE, true> *atempcol = new convert_to_array<DATATYPE, true>(resleny);
+	convert_to_array<DATATYPE, true> *dtempcol = new convert_to_array<DATATYPE, true>(resleny);
 	for (int x=0; x<reslenx; x++)
 	{
 		for (int y=0; y<dataleny; y++)
@@ -1019,9 +1019,9 @@ void OrthogonalWaveletTransform<DATATYPE>::dwt2D (to_array<DATATYPE, true> &data
 }
 
 template <class DATATYPE> 
-void OrthogonalWaveletTransform<DATATYPE>::dwt2D (to_array<DATATYPE, true> &data, \
+void OrthogonalWaveletTransform<DATATYPE>::dwt2D (convert_to_array<DATATYPE, true> &data, \
 			int filterName, \
-			to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &ch, to_array<DATATYPE, true> &cv, to_array<DATATYPE, true> &cd, \
+			convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &ch, convert_to_array<DATATYPE, true> &cv, convert_to_array<DATATYPE, true> &cd, \
 			type_border BORDERTYPE)
 {
 	dblarray filterh, filterg;
@@ -1030,9 +1030,9 @@ void OrthogonalWaveletTransform<DATATYPE>::dwt2D (to_array<DATATYPE, true> &data
 }
 
 template <class DATATYPE> 
-void OrthogonalWaveletTransform<DATATYPE>::idwt2D (to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &ch, to_array<DATATYPE, true> &cv, to_array<DATATYPE, true> &cd, \
+void OrthogonalWaveletTransform<DATATYPE>::idwt2D (convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &ch, convert_to_array<DATATYPE, true> &cv, convert_to_array<DATATYPE, true> &cd, \
 			dblarray &rfilterh, dblarray &rfilterg, \
-			to_array<DATATYPE, true> &data)
+			convert_to_array<DATATYPE, true> &data)
 {
 	int calenx = ca.nx(), caleny = ca.ny();
 	int chlenx = ch.nx(), chleny = ch.ny();
@@ -1049,14 +1049,14 @@ void OrthogonalWaveletTransform<DATATYPE>::idwt2D (to_array<DATATYPE, true> &ca,
 	int resleny = getReconsResultLength(caleny, hlen);
 	data.resize(reslenx, resleny);
 
-	to_array<DATATYPE, true> *temph = new to_array<DATATYPE, true>(calenx, resleny);
-	to_array<DATATYPE, true> *tempg = new to_array<DATATYPE, true>(calenx, resleny);
-	to_array<DATATYPE, true> *cola = new to_array<DATATYPE, true>(caleny);
-	to_array<DATATYPE, true> *colh = new to_array<DATATYPE, true>(chleny);
-	to_array<DATATYPE, true> *colv = new to_array<DATATYPE, true>(cvleny);
-	to_array<DATATYPE, true> *cold = new to_array<DATATYPE, true>(cdleny);
-	to_array<DATATYPE, true> *coltemph = new to_array<DATATYPE, true>(resleny);	
-	to_array<DATATYPE, true> *coltempg = new to_array<DATATYPE, true>(resleny);	
+	convert_to_array<DATATYPE, true> *temph = new convert_to_array<DATATYPE, true>(calenx, resleny);
+	convert_to_array<DATATYPE, true> *tempg = new convert_to_array<DATATYPE, true>(calenx, resleny);
+	convert_to_array<DATATYPE, true> *cola = new convert_to_array<DATATYPE, true>(caleny);
+	convert_to_array<DATATYPE, true> *colh = new convert_to_array<DATATYPE, true>(chleny);
+	convert_to_array<DATATYPE, true> *colv = new convert_to_array<DATATYPE, true>(cvleny);
+	convert_to_array<DATATYPE, true> *cold = new convert_to_array<DATATYPE, true>(cdleny);
+	convert_to_array<DATATYPE, true> *coltemph = new convert_to_array<DATATYPE, true>(resleny);	
+	convert_to_array<DATATYPE, true> *coltempg = new convert_to_array<DATATYPE, true>(resleny);	
 	for (int x=0; x<calenx; x++)
 	{
 		for (int y=0; y<caleny; y++)
@@ -1081,9 +1081,9 @@ void OrthogonalWaveletTransform<DATATYPE>::idwt2D (to_array<DATATYPE, true> &ca,
 	if (coltemph != NULL) { delete coltemph; coltemph = NULL; }
 	if (coltempg != NULL) { delete coltempg; coltempg = NULL; }
 	
-	to_array<DATATYPE, true> *lineh = new to_array<DATATYPE, true>(calenx);	
-	to_array<DATATYPE, true> *lineg = new to_array<DATATYPE, true>(calenx);	
-	to_array<DATATYPE, true> *line = new to_array<DATATYPE, true>(reslenx);	
+	convert_to_array<DATATYPE, true> *lineh = new convert_to_array<DATATYPE, true>(calenx);	
+	convert_to_array<DATATYPE, true> *lineg = new convert_to_array<DATATYPE, true>(calenx);	
+	convert_to_array<DATATYPE, true> *line = new convert_to_array<DATATYPE, true>(reslenx);	
 	for (int y=0; y<resleny; y++)
 	{
 		for (int x=0; x<calenx; x++)
@@ -1103,9 +1103,9 @@ void OrthogonalWaveletTransform<DATATYPE>::idwt2D (to_array<DATATYPE, true> &ca,
 }
 
 template <class DATATYPE> 
-void OrthogonalWaveletTransform<DATATYPE>::idwt2D (to_array<DATATYPE, true> &ca, to_array<DATATYPE, true> &ch, to_array<DATATYPE, true> &cv, to_array<DATATYPE, true> &cd, \
+void OrthogonalWaveletTransform<DATATYPE>::idwt2D (convert_to_array<DATATYPE, true> &ca, convert_to_array<DATATYPE, true> &ch, convert_to_array<DATATYPE, true> &cv, convert_to_array<DATATYPE, true> &cd, \
 			int filterName, \
-			to_array<DATATYPE, true> &data)
+			convert_to_array<DATATYPE, true> &data)
 {
 	dblarray filterh, filterg;
 	getWaveletReconsFilter(filterName, filterh, filterg);
@@ -1114,16 +1114,16 @@ void OrthogonalWaveletTransform<DATATYPE>::idwt2D (to_array<DATATYPE, true> &ca,
 
 template <class DATATYPE>
 void OrthogonalWaveletTransform<DATATYPE>::dwt3D ( \
-			to_array<DATATYPE, true> &data, \
+			convert_to_array<DATATYPE, true> &data, \
 			dblarray &dfilterh, dblarray &dfilterg, \
-			to_array<DATATYPE, true> &ca, \
-			to_array<DATATYPE, true> &chhg, \
-			to_array<DATATYPE, true> &chgh, \
-			to_array<DATATYPE, true> &chgg, \
-			to_array<DATATYPE, true> &cghh, \
-			to_array<DATATYPE, true> &cghg, \
-			to_array<DATATYPE, true> &cggh, \
-			to_array<DATATYPE, true> &cggg, \
+			convert_to_array<DATATYPE, true> &ca, \
+			convert_to_array<DATATYPE, true> &chhg, \
+			convert_to_array<DATATYPE, true> &chgh, \
+			convert_to_array<DATATYPE, true> &chgg, \
+			convert_to_array<DATATYPE, true> &cghh, \
+			convert_to_array<DATATYPE, true> &cghg, \
+			convert_to_array<DATATYPE, true> &cggh, \
+			convert_to_array<DATATYPE, true> &cggg, \
 			type_border BORDERTYPE)
 {
 	int hlen = dfilterh.n_elem(), glen = dfilterg.n_elem();
@@ -1139,18 +1139,18 @@ void OrthogonalWaveletTransform<DATATYPE>::dwt3D ( \
 	cggh.resize(reslenx, resleny, reslenz); cggg.resize(reslenx, resleny, reslenz);
 
 	// X
-	to_array<DATATYPE, true> *temph = new to_array<DATATYPE, true>;
-	to_array<DATATYPE, true> *tempg = new to_array<DATATYPE, true>;
+	convert_to_array<DATATYPE, true> *temph = new convert_to_array<DATATYPE, true>;
+	convert_to_array<DATATYPE, true> *tempg = new convert_to_array<DATATYPE, true>;
 	transformXYZ(data, dfilterh, dfilterg, *temph, *tempg, 0, BORDERTYPE);
 	
 	// Y
-	to_array<DATATYPE, true> *temphh = new to_array<DATATYPE, true>;
-	to_array<DATATYPE, true> *temphg = new to_array<DATATYPE, true>;
+	convert_to_array<DATATYPE, true> *temphh = new convert_to_array<DATATYPE, true>;
+	convert_to_array<DATATYPE, true> *temphg = new convert_to_array<DATATYPE, true>;
 	transformXYZ(*temph, dfilterh, dfilterg, *temphh, *temphg, 1, BORDERTYPE);
 	if (temph != NULL) { delete temph; temph = NULL; }
 	
-	to_array<DATATYPE, true> *tempgh = new to_array<DATATYPE, true>;
-	to_array<DATATYPE, true> *tempgg = new to_array<DATATYPE, true>;
+	convert_to_array<DATATYPE, true> *tempgh = new convert_to_array<DATATYPE, true>;
+	convert_to_array<DATATYPE, true> *tempgg = new convert_to_array<DATATYPE, true>;
 	transformXYZ(*tempg, dfilterh, dfilterg, *tempgh, *tempgg, 1, BORDERTYPE);
 	if (tempg != NULL) { delete tempg; tempg = NULL; }
 	
@@ -1168,16 +1168,16 @@ void OrthogonalWaveletTransform<DATATYPE>::dwt3D ( \
 
 template <class DATATYPE>
 void OrthogonalWaveletTransform<DATATYPE>::dwt3D ( \
-			to_array<DATATYPE, true> &data, \
+			convert_to_array<DATATYPE, true> &data, \
 			int filterName, \
-			to_array<DATATYPE, true> &ca, \
-			to_array<DATATYPE, true> &chhg, \
-			to_array<DATATYPE, true> &chgh, \
-			to_array<DATATYPE, true> &chgg, \
-			to_array<DATATYPE, true> &cghh, \
-			to_array<DATATYPE, true> &cghg, \
-			to_array<DATATYPE, true> &cggh, \
-			to_array<DATATYPE, true> &cggg, \
+			convert_to_array<DATATYPE, true> &ca, \
+			convert_to_array<DATATYPE, true> &chhg, \
+			convert_to_array<DATATYPE, true> &chgh, \
+			convert_to_array<DATATYPE, true> &chgg, \
+			convert_to_array<DATATYPE, true> &cghh, \
+			convert_to_array<DATATYPE, true> &cghg, \
+			convert_to_array<DATATYPE, true> &cggh, \
+			convert_to_array<DATATYPE, true> &cggg, \
 			type_border BORDERTYPE)
 {
 	dblarray filterh, filterg;
@@ -1187,16 +1187,16 @@ void OrthogonalWaveletTransform<DATATYPE>::dwt3D ( \
 
 template <class DATATYPE>
 void OrthogonalWaveletTransform<DATATYPE>::idwt3D ( \
-			to_array<DATATYPE, true> &ca, \
-			to_array<DATATYPE, true> &chhg, \
-			to_array<DATATYPE, true> &chgh, \
-			to_array<DATATYPE, true> &chgg, \
-			to_array<DATATYPE, true> &cghh, \
-			to_array<DATATYPE, true> &cghg, \
-			to_array<DATATYPE, true> &cggh, \
-			to_array<DATATYPE, true> &cggg, \
+			convert_to_array<DATATYPE, true> &ca, \
+			convert_to_array<DATATYPE, true> &chhg, \
+			convert_to_array<DATATYPE, true> &chgh, \
+			convert_to_array<DATATYPE, true> &chgg, \
+			convert_to_array<DATATYPE, true> &cghh, \
+			convert_to_array<DATATYPE, true> &cghg, \
+			convert_to_array<DATATYPE, true> &cggh, \
+			convert_to_array<DATATYPE, true> &cggg, \
 			dblarray &rfilterh, dblarray &rfilterg, \
-			to_array<DATATYPE, true> &data)
+			convert_to_array<DATATYPE, true> &data)
 {
 	int hlen = rfilterh.n_elem(), glen = rfilterg.n_elem();
 	if (hlen != glen)
@@ -1223,18 +1223,18 @@ void OrthogonalWaveletTransform<DATATYPE>::idwt3D ( \
 	data.resize(reslenx, resleny, reslenz);
 	
 	// Z
-	to_array<DATATYPE, true> *temphh = new to_array<DATATYPE, true>;
-	to_array<DATATYPE, true> *temphg = new to_array<DATATYPE, true>;
-	to_array<DATATYPE, true> *tempgh = new to_array<DATATYPE, true>;
-	to_array<DATATYPE, true> *tempgg = new to_array<DATATYPE, true>;
+	convert_to_array<DATATYPE, true> *temphh = new convert_to_array<DATATYPE, true>;
+	convert_to_array<DATATYPE, true> *temphg = new convert_to_array<DATATYPE, true>;
+	convert_to_array<DATATYPE, true> *tempgh = new convert_to_array<DATATYPE, true>;
+	convert_to_array<DATATYPE, true> *tempgg = new convert_to_array<DATATYPE, true>;
 	reconstructionXYZ(ca, chhg, rfilterh, rfilterg, *temphh, 2);
 	reconstructionXYZ(chgh, chgg, rfilterh, rfilterg, *temphg, 2);
 	reconstructionXYZ(cghh, cghg, rfilterh, rfilterg, *tempgh, 2);
 	reconstructionXYZ(cggh, cggg, rfilterh, rfilterg, *tempgg, 2);
 	
 	// Y
-	to_array<DATATYPE, true> *temph = new to_array<DATATYPE, true>;
-	to_array<DATATYPE, true> *tempg = new to_array<DATATYPE, true>;
+	convert_to_array<DATATYPE, true> *temph = new convert_to_array<DATATYPE, true>;
+	convert_to_array<DATATYPE, true> *tempg = new convert_to_array<DATATYPE, true>;
 	reconstructionXYZ(*temphh, *temphg, rfilterh, rfilterg, *temph, 1);
 	if (temphh != NULL) { delete temphh; temphh = NULL; }
 	if (temphg != NULL) { delete temphg; temphg = NULL; }
@@ -1251,16 +1251,16 @@ void OrthogonalWaveletTransform<DATATYPE>::idwt3D ( \
 
 template <class DATATYPE>
 void OrthogonalWaveletTransform<DATATYPE>::idwt3D ( \
-			to_array<DATATYPE, true> &ca, \
-			to_array<DATATYPE, true> &chhg, \
-			to_array<DATATYPE, true> &chgh, \
-			to_array<DATATYPE, true> &chgg, \
-			to_array<DATATYPE, true> &cghh, \
-			to_array<DATATYPE, true> &cghg, \
-			to_array<DATATYPE, true> &cggh, \
-			to_array<DATATYPE, true> &cggg, \
+			convert_to_array<DATATYPE, true> &ca, \
+			convert_to_array<DATATYPE, true> &chhg, \
+			convert_to_array<DATATYPE, true> &chgh, \
+			convert_to_array<DATATYPE, true> &chgg, \
+			convert_to_array<DATATYPE, true> &cghh, \
+			convert_to_array<DATATYPE, true> &cghg, \
+			convert_to_array<DATATYPE, true> &cggh, \
+			convert_to_array<DATATYPE, true> &cggg, \
 			int filterName, \
-			to_array<DATATYPE, true> &data)
+			convert_to_array<DATATYPE, true> &data)
 {
 	dblarray filterh, filterg;
 	getWaveletReconsFilter(filterName, filterh, filterg);

@@ -22,27 +22,27 @@ class FiszTransform
 		// dimension of the nearest power of two,
 		// if the data size is not of power two;
 		// ext is an array of 6 elements (extension information of 6 directions)
-		void dataExtension (to_array<DATATYPE, true> &data, int ext[], type_border BORDERTYPE=I_MIRROR);
+		void dataExtension (convert_to_array<DATATYPE, true> &data, int ext[], type_border BORDERTYPE=I_MIRROR);
 		// extract the original data in using the extension information
-		void dataExtraction (to_array<DATATYPE, true> &data, int ext[]);
+		void dataExtraction (convert_to_array<DATATYPE, true> &data, int ext[]);
 		
 		// Fisz transform 1D / 2D / 3D
 		// the data size MUST be power of two, 
 		// otherwise, a DataSizeException will be thrown out
-		void fisz1D (to_array<DATATYPE, true> &data);
-		void fisz2D (to_array<DATATYPE, true> &data);
-		void fisz3D (to_array<DATATYPE, true> &data);
+		void fisz1D (convert_to_array<DATATYPE, true> &data);
+		void fisz2D (convert_to_array<DATATYPE, true> &data);
+		void fisz3D (convert_to_array<DATATYPE, true> &data);
 
 		// Inverse Fisz transform 1D / 2D / 3D
 		// data size MUST be power of two.
 		// otherwise, a DataSizeException will be thrown out
-		void ifisz1D (to_array<DATATYPE, true> &data);
-		void ifisz2D (to_array<DATATYPE, true> &data);
-		void ifisz3D (to_array<DATATYPE, true> &data);
+		void ifisz1D (convert_to_array<DATATYPE, true> &data);
+		void ifisz2D (convert_to_array<DATATYPE, true> &data);
+		void ifisz3D (convert_to_array<DATATYPE, true> &data);
 };
 
 template <class DATATYPE>
-void FiszTransform<DATATYPE>::dataExtension (to_array<DATATYPE, true> &data, int ext[], type_border BORDERTYPE)
+void FiszTransform<DATATYPE>::dataExtension (convert_to_array<DATATYPE, true> &data, int ext[], type_border BORDERTYPE)
 {
 	int lext = 0, rext = 0, uext = 0, dext = 0, bext = 0, fext = 0;
 	int dim = data.naxis();
@@ -54,7 +54,7 @@ void FiszTransform<DATATYPE>::dataExtension (to_array<DATATYPE, true> &data, int
 		lext = (newlen - len1) / 2; 
 		rext = (newlen - len1) - lext;
 		
-		to_array<DATATYPE, true> *temp = new to_array<DATATYPE, true>(newlen);
+		convert_to_array<DATATYPE, true> *temp = new convert_to_array<DATATYPE, true>(newlen);
 		for (int x=0; x<newlen; x++)
 			(*temp)(x) = data(x-lext, BORDERTYPE);
 		data = *temp;
@@ -72,7 +72,7 @@ void FiszTransform<DATATYPE>::dataExtension (to_array<DATATYPE, true> &data, int
 		lext = (newlen1 - len1) / 2; rext = (newlen1 - len1) - lext;
 		uext = (newlen2 - len2) / 2; dext = (newlen2 - len2) - uext;
 		
-		to_array<DATATYPE, true> *temp = new to_array<DATATYPE, true>(newlen1, newlen2);
+		convert_to_array<DATATYPE, true> *temp = new convert_to_array<DATATYPE, true>(newlen1, newlen2);
 		for (int y=0; y<newlen2; y++)
 			for (int x=0; x<newlen1; x++)
 				(*temp)(x, y) = data(x-lext, y-uext, BORDERTYPE);
@@ -92,7 +92,7 @@ void FiszTransform<DATATYPE>::dataExtension (to_array<DATATYPE, true> &data, int
 		uext = (newlen2 - len2) / 2; dext = (newlen2 - len2) - uext;
 		bext = (newlen3 - len3) / 2; fext = (newlen3 - len3) - fext;
 		
-		to_array<DATATYPE, true> *temp = new to_array<DATATYPE, true>(newlen1, newlen2, newlen3);
+		convert_to_array<DATATYPE, true> *temp = new convert_to_array<DATATYPE, true>(newlen1, newlen2, newlen3);
 		for (int z=0; z<newlen3; z++)
 			for (int y=0; y<newlen2; y++)
 				for (int x=0; x<newlen1; x++)
@@ -106,7 +106,7 @@ void FiszTransform<DATATYPE>::dataExtension (to_array<DATATYPE, true> &data, int
 }
 
 template<class DATATYPE>
-void FiszTransform<DATATYPE>::dataExtraction (to_array<DATATYPE, true> &data, int ext[])
+void FiszTransform<DATATYPE>::dataExtraction (convert_to_array<DATATYPE, true> &data, int ext[])
 {
 	int dim = data.naxis();
 	int lext = ext[0], rext = ext[1], uext = ext[2];
@@ -115,7 +115,7 @@ void FiszTransform<DATATYPE>::dataExtraction (to_array<DATATYPE, true> &data, in
 	if ((dim == 1) && ((lext != 0) || (rext != 0)))
 	{
 		int finallen = data.nx() - lext - rext;
-		to_array<DATATYPE,true> *tdata = new to_array<DATATYPE, true>(finallen);
+		convert_to_array<DATATYPE,true> *tdata = new convert_to_array<DATATYPE, true>(finallen);
 		for (int x=0; x<finallen; x++) (*tdata)(x) = data(lext+x);
 		data = (*tdata);
 		if (tdata != NULL) { delete tdata; tdata = NULL; }
@@ -125,7 +125,7 @@ void FiszTransform<DATATYPE>::dataExtraction (to_array<DATATYPE, true> &data, in
 	{
 		int finallen1 = data.nx() - lext - rext;
 		int finallen2 = data.ny() - uext - dext;
-		to_array<DATATYPE,true> *tdata = new to_array<DATATYPE, true>(finallen1, finallen2);
+		convert_to_array<DATATYPE,true> *tdata = new convert_to_array<DATATYPE, true>(finallen1, finallen2);
 		for (int x=0; x<finallen1; x++) 
 			for (int y=0; y<finallen2; y++)
 				(*tdata)(x, y) = data(lext+x, uext+y);
@@ -139,7 +139,7 @@ void FiszTransform<DATATYPE>::dataExtraction (to_array<DATATYPE, true> &data, in
 		int finallen1 = data.nx() - lext - rext;
 		int finallen2 = data.ny() - uext - dext;
 		int finallen3 = data.nz() - bext - fext;
-		to_array<DATATYPE,true> *tdata = new to_array<DATATYPE, true>(finallen1, finallen2, finallen3);
+		convert_to_array<DATATYPE,true> *tdata = new convert_to_array<DATATYPE, true>(finallen1, finallen2, finallen3);
 		for (int x=0; x<finallen1; x++) 
 		for (int y=0; y<finallen2; y++)
 		for (int z=0; z<finallen3; z++)	
@@ -150,14 +150,14 @@ void FiszTransform<DATATYPE>::dataExtraction (to_array<DATATYPE, true> &data, in
 }
 
 template<class DATATYPE>
-void FiszTransform<DATATYPE>::fisz1D (to_array<DATATYPE, true> &data)
+void FiszTransform<DATATYPE>::fisz1D (convert_to_array<DATATYPE, true> &data)
 {
     double ca, cd;
 	int len = data.nx();	
 	if (len <= 1) return;
 	else if (!is_power_of_2(len)) 
 		throw DataSizeException(len, "data size not of power of two");
-	to_array<DATATYPE, true> *temp = new to_array<DATATYPE, true>(len);
+	convert_to_array<DATATYPE, true> *temp = new convert_to_array<DATATYPE, true>(len);
 	
 	// decomposition by Haar transform and modification of detail coefficients
 	while (len > 1)
@@ -193,14 +193,14 @@ void FiszTransform<DATATYPE>::fisz1D (to_array<DATATYPE, true> &data)
 }
 
 template<class DATATYPE>
-void FiszTransform<DATATYPE>::ifisz1D (to_array<DATATYPE, true> &data)
+void FiszTransform<DATATYPE>::ifisz1D (convert_to_array<DATATYPE, true> &data)
 {
     double ca, cd;
 	int len = data.nx();
 	if (len <= 1) return;
 	else if (!is_power_of_2(len)) 
 		throw DataSizeException(len, "data size not of power of two");
-	to_array<DATATYPE, true> *temp = new to_array<DATATYPE, true>(len);
+	convert_to_array<DATATYPE, true> *temp = new convert_to_array<DATATYPE, true>(len);
 	
 	// decomposition by Haar transform
 	while (len > 1)
@@ -232,7 +232,7 @@ void FiszTransform<DATATYPE>::ifisz1D (to_array<DATATYPE, true> &data)
 }
 
 template<class DATATYPE>
-void FiszTransform<DATATYPE>::fisz2D (to_array<DATATYPE, true> &data)
+void FiszTransform<DATATYPE>::fisz2D (convert_to_array<DATATYPE, true> &data)
 {
 	double ca, dh, dv, dd;
 	int s, offsetx, offsety;
@@ -242,7 +242,7 @@ void FiszTransform<DATATYPE>::fisz2D (to_array<DATATYPE, true> &data)
 		throw DataSizeException(len1, "data size not of power of two");
 	else if (!is_power_of_2(len2))
 		throw DataSizeException(len2, "data size not of power of two");	
-	to_array<DATATYPE, true> *temp = new to_array<DATATYPE, true>(len1, len2);
+	convert_to_array<DATATYPE, true> *temp = new convert_to_array<DATATYPE, true>(len1, len2);
 	
 	// decomposition by Haar transform and modification of detail coefficients
 	while ((len1 > 1) && (len2 > 1))
@@ -318,7 +318,7 @@ void FiszTransform<DATATYPE>::fisz2D (to_array<DATATYPE, true> &data)
 }
 
 template<class DATATYPE>
-void FiszTransform<DATATYPE>::ifisz2D (to_array<DATATYPE, true> &data)
+void FiszTransform<DATATYPE>::ifisz2D (convert_to_array<DATATYPE, true> &data)
 {
 	double ca, dh, dv, dd;
 	int s, offsetx, offsety;
@@ -328,7 +328,7 @@ void FiszTransform<DATATYPE>::ifisz2D (to_array<DATATYPE, true> &data)
 		throw DataSizeException(len1, "data size not of power of two");
 	else if (!is_power_of_2(len2))
 		throw DataSizeException(len2, "data size not of power of two");
-	to_array<DATATYPE, true> *temp = new to_array<DATATYPE, true>(len1, len2);
+	convert_to_array<DATATYPE, true> *temp = new convert_to_array<DATATYPE, true>(len1, len2);
 	
 	// decomposition by Haar transform
 	while ((len1 > 1) && (len2 > 1))
@@ -396,7 +396,7 @@ void FiszTransform<DATATYPE>::ifisz2D (to_array<DATATYPE, true> &data)
 }
 
 template<class DATATYPE>
-void FiszTransform<DATATYPE>::fisz3D (to_array<DATATYPE, true> &data)
+void FiszTransform<DATATYPE>::fisz3D (convert_to_array<DATATYPE, true> &data)
 {
 	int len1 = data.nx(), len2 = data.ny(), len3 = data.nz();
 	int len = MIN(MIN(len1, len2), len3);
@@ -409,7 +409,7 @@ void FiszTransform<DATATYPE>::fisz3D (to_array<DATATYPE, true> &data)
 		throw DataSizeException(len3, "data size not of power of two");
 	
 	int s = iilog2(len);
-	to_array<DATATYPE, true> *coef = new to_array<DATATYPE, true>[7*s + 1];
+	convert_to_array<DATATYPE, true> *coef = new convert_to_array<DATATYPE, true>[7*s + 1];
 	
 	dblarray dfilterh(2), dfilterg(2), rfilterh(2), rfilterg(2);
 	dfilterh(0) = .5; dfilterh(1) = .5; dfilterg(0) = -.5; dfilterg(1) = .5;
@@ -449,7 +449,7 @@ void FiszTransform<DATATYPE>::fisz3D (to_array<DATATYPE, true> &data)
 }
 
 template<class DATATYPE>
-void FiszTransform<DATATYPE>::ifisz3D (to_array<DATATYPE, true> &data)
+void FiszTransform<DATATYPE>::ifisz3D (convert_to_array<DATATYPE, true> &data)
 {
 	int len1 = data.nx(), len2 = data.ny(), len3 = data.nz();
 	int len = MIN(MIN(len1, len2), len3);
@@ -462,7 +462,7 @@ void FiszTransform<DATATYPE>::ifisz3D (to_array<DATATYPE, true> &data)
 		throw DataSizeException(len3, "data size not of power of two");
 
 	int s = iilog2(len);
-	to_array<DATATYPE, true> *coef = new to_array<DATATYPE, true>[7*s + 1];
+	convert_to_array<DATATYPE, true> *coef = new convert_to_array<DATATYPE, true>[7*s + 1];
 	
 	dblarray dfilterh(2), dfilterg(2), rfilterh(2), rfilterg(2);
 	dfilterh(0) = .5; dfilterh(1) = .5; dfilterg(0) = -.5; dfilterg(1) = .5;

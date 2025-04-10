@@ -97,27 +97,27 @@ class Utils
 
  public:
   // median value of the absolute value of a given data set
-  static DATATYPE absMedian (to_array<DATATYPE, true> &data);
+  static DATATYPE absMedian (convert_to_array<DATATYPE, true> &data);
   // critical threshold for standard normal distribution, tailProba <= 0.5
   static double criticalThreshGauss (double tailProba);
   // cumulative of the normal distribution
   static double cumNormal (double x);
   // Anscombe transform of a data set
-  static void anscombeTransform (to_array<DATATYPE, true> &data);
+  static void anscombeTransform (convert_to_array<DATATYPE, true> &data);
   // Inverse Anscombe transform of a data set
   // bias correction is recommended while reconstruct the data after estimation
-  static void invAnscombeTransform (to_array<DATATYPE, true> &data, bool cbias);
+  static void invAnscombeTransform (convert_to_array<DATATYPE, true> &data, bool cbias);
 
   // generate Donoho's clipped block 1D signal
-  static void blockSignal (int len, double scaling, to_array<DATATYPE, true> &signal1D);
+  static void blockSignal (int len, double scaling, convert_to_array<DATATYPE, true> &signal1D);
   // generate a 1D signal with a Gaussian form
-  static void regularSignal (int cx, double sigma, double peakIntense, double backIntense, to_array<DATATYPE, true> &signal1D);
+  static void regularSignal (int cx, double sigma, double peakIntense, double backIntense, convert_to_array<DATATYPE, true> &signal1D);
   // generate a 3D signal with a regional evolutionary Gaussian form
   static void regularSignal (int cx, int cy, double sigma0, double sigma1, double k, \
-			     double peakIntense, double backIntense, to_array<DATATYPE, true> &signal3D, double flow[]);
+			     double peakIntense, double backIntense, convert_to_array<DATATYPE, true> &signal3D, double flow[]);
 
   // calculate the source flow of a Gaussian form signal
-  static void gaussianSourceFlow (to_array<DATATYPE, true> &signal3D, double cx, double cy, \
+  static void gaussianSourceFlow (convert_to_array<DATATYPE, true> &signal3D, double cx, double cy, \
 				  double sigma0, double sigma1, double k, double backIntense, double flow[]);
 
   // mean of a vector
@@ -125,9 +125,9 @@ class Utils
   // standard deviation of a vector
   static double std (DATATYPE vec[], int len);
   // Normalized Integrated Square Error where the noise is Poissonian
-  static double NISE (to_array<DATATYPE, true> &orig, to_array<DATATYPE, true> &estim);
+  static double NISE (convert_to_array<DATATYPE, true> &orig, convert_to_array<DATATYPE, true> &estim);
   // Integrated Square Error where the noise has a spatially stable variance
-  static double ISE (to_array<DATATYPE, true> &orig, to_array<DATATYPE, true> &estim);
+  static double ISE (convert_to_array<DATATYPE, true> &orig, convert_to_array<DATATYPE, true> &estim);
 
   // return the combinatorial number C(n, k)
   static double Cnk (int n, int k);
@@ -141,7 +141,7 @@ class Utils
   // ndet  record for each pixel, the number of detection among NExp experiences
   // ndlen is the length of the array ndet
   // NITER is max. number of iteration
-  static void EMMixBinomialParam (double &alpha, double &pa, double &pi, int NExp, to_array<DATATYPE, true> ndet[], int ndlen, int NITER);
+  static void EMMixBinomialParam (double &alpha, double &pa, double &pi, int NExp, convert_to_array<DATATYPE, true> ndet[], int ndlen, int NITER);
   // ROC area where [alpha0, alpha1] is the valid H0 portion interval
   // static double rocArea (int len, double alpha[], double pa[], double pi[], double alpha0, double alpha1);
   // ROC area
@@ -187,7 +187,7 @@ class Utils
 };
 
 template <class DATATYPE> 
-DATATYPE Utils<DATATYPE>::absMedian (to_array<DATATYPE, true> &data)
+DATATYPE Utils<DATATYPE>::absMedian (convert_to_array<DATATYPE, true> &data)
 {
 	DATATYPE medv;
 	int less, greater, equal;
@@ -257,7 +257,7 @@ double Utils<DATATYPE>::cumNormal (double x)
 }
 
 template <class DATATYPE> 
-void Utils<DATATYPE>::anscombeTransform (to_array<DATATYPE, true> &data)
+void Utils<DATATYPE>::anscombeTransform (convert_to_array<DATATYPE, true> &data)
 {
   int nlen = data.n_elem();
   for (int i=0; i<nlen; i++)
@@ -265,7 +265,7 @@ void Utils<DATATYPE>::anscombeTransform (to_array<DATATYPE, true> &data)
 }
 
 template <class DATATYPE> 
-void Utils<DATATYPE>::invAnscombeTransform (to_array<DATATYPE, true> &data, bool cbias)
+void Utils<DATATYPE>::invAnscombeTransform (convert_to_array<DATATYPE, true> &data, bool cbias)
 {
   double cb = cbias ? 1. : 0.;  
   int nlen = data.n_elem();
@@ -274,7 +274,7 @@ void Utils<DATATYPE>::invAnscombeTransform (to_array<DATATYPE, true> &data, bool
 }
 
 template <class DATATYPE> 
-void Utils<DATATYPE>::blockSignal (int len, double scaling, to_array<DATATYPE, true> &signal1D)
+void Utils<DATATYPE>::blockSignal (int len, double scaling, convert_to_array<DATATYPE, true> &signal1D)
 {
   signal1D.resize(len);
 
@@ -292,7 +292,7 @@ void Utils<DATATYPE>::blockSignal (int len, double scaling, to_array<DATATYPE, t
 }
 
 template <class DATATYPE>
-void Utils<DATATYPE>::regularSignal (int cx, double sigma, double peakIntense, double backIntense, to_array<DATATYPE, true> &signal1D)
+void Utils<DATATYPE>::regularSignal (int cx, double sigma, double peakIntense, double backIntense, convert_to_array<DATATYPE, true> &signal1D)
 {
   int nx = signal1D.nx();
   double sig = 2. * sigma * sigma;
@@ -303,7 +303,7 @@ void Utils<DATATYPE>::regularSignal (int cx, double sigma, double peakIntense, d
 
 template <class DATATYPE> 
 void Utils<DATATYPE>::regularSignal (int cx, int cy, double sigma0, double sigma1, double k, \
-				     double peakIntense, double backIntense, to_array<DATATYPE, true> &signal3D, double flow[])
+				     double peakIntense, double backIntense, convert_to_array<DATATYPE, true> &signal3D, double flow[])
 {
   int nx = signal3D.nx(), ny = signal3D.ny(), nz = signal3D.nz();
   double dsig = (sigma1 - sigma0) / (nz - 1), sig = sigma0;
@@ -333,7 +333,7 @@ void Utils<DATATYPE>::regularSignal (int cx, int cy, double sigma0, double sigma
 }
 
 template <class DATATYPE>
-void Utils<DATATYPE>::gaussianSourceFlow (to_array<DATATYPE, true> &signal3D, double cx, double cy, \
+void Utils<DATATYPE>::gaussianSourceFlow (convert_to_array<DATATYPE, true> &signal3D, double cx, double cy, \
 					  double sigma0, double sigma1, double k, double backIntense, double flow[])
 {
   int nx = signal3D.nx(), ny = signal3D.ny(), nz = signal3D.nz();
@@ -376,7 +376,7 @@ double Utils<DATATYPE>::std (DATATYPE vec[], int len)
 }
 
 template <class DATATYPE> 
-double Utils<DATATYPE>::NISE (to_array<DATATYPE, true> &orig, to_array<DATATYPE, true> &estim)
+double Utils<DATATYPE>::NISE (convert_to_array<DATATYPE, true> &orig, convert_to_array<DATATYPE, true> &estim)
 {
   int dlen = orig.n_elem();
   double sum = 0., lambda, temp;
@@ -392,7 +392,7 @@ double Utils<DATATYPE>::NISE (to_array<DATATYPE, true> &orig, to_array<DATATYPE,
 }
 
 template <class DATATYPE> 
-double Utils<DATATYPE>::ISE (to_array<DATATYPE, true> &orig, to_array<DATATYPE, true> &estim)
+double Utils<DATATYPE>::ISE (convert_to_array<DATATYPE, true> &orig, convert_to_array<DATATYPE, true> &estim)
 {
   int dlen = orig.n_elem();
   double sum = 0., temp;
@@ -439,7 +439,7 @@ double Utils<DATATYPE>::binomial (int n, int k, double p)
 }
 
 template <class DATATYPE> 
-void Utils<DATATYPE>::EMMixBinomialParam (double &alpha, double &pa, double &pi, int NExp, to_array<DATATYPE, true> ndet[], int ndlen, int NITER)
+void Utils<DATATYPE>::EMMixBinomialParam (double &alpha, double &pa, double &pi, int NExp, convert_to_array<DATATYPE, true> ndet[], int ndlen, int NITER)
 {
   long N = 0;
   int k;

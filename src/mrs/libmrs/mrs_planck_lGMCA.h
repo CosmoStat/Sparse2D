@@ -106,9 +106,9 @@ public:
 
 	C_UWT2D_ATROUS WT_Trans; //will contain the wavelet transform routines for the Nchannels 
 	
- 	to_array<unsigned long,true> FaceIndices;//Index of each pixel in a face in Healpix Ring format
- 	to_array<unsigned long,true> Nest2Ring_indices;//Index of each pixel in a face in Healpix Ring format
- 	to_array<unsigned long,true> Ring2Nest_indices;//Index of each pixel in a face in Healpix Ring format
+ 	convert_to_array<unsigned long,true> FaceIndices;//Index of each pixel in a face in Healpix Ring format
+ 	convert_to_array<unsigned long,true> Nest2Ring_indices;//Index of each pixel in a face in Healpix Ring format
+ 	convert_to_array<unsigned long,true> Ring2Nest_indices;//Index of each pixel in a face in Healpix Ring format
  	
 	bool Verbose;
 	bool Debug;

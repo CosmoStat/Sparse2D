@@ -197,7 +197,7 @@ void ShearInversions::kappa2gamma(double* pt_kappa, double* pt_gamma1, double* p
 
 }
 
-void ShearInversions::kappa2gamma(to_array< double, true >& kappa, to_array< double, true >& gamma1, to_array< double, true >& gamma2)
+void ShearInversions::kappa2gamma(convert_to_array< double, true >& kappa, convert_to_array< double, true >& gamma1, convert_to_array< double, true >& gamma2)
 {
     double *pt_gamma1 = gamma1.buffer();
     double *pt_gamma2 = gamma2.buffer();
@@ -210,7 +210,7 @@ void ShearInversions::kappa2gamma(to_array< double, true >& kappa, to_array< dou
     kappa2gamma(pt_kappa,pt_gamma1,pt_gamma2,Nx,Ny,Nz+1);
 }
 
-void ShearInversions::kappa2flexion(double pixel_size, to_array< double, true >& kappa, to_array< double, true >& F1, to_array< double, true >& F2)
+void ShearInversions::kappa2flexion(double pixel_size, convert_to_array< double, true >& kappa, convert_to_array< double, true >& F1, convert_to_array< double, true >& F2)
 {
     double *pt_F1 = F1.buffer();
     double *pt_F2 = F2.buffer();
@@ -280,7 +280,7 @@ void ShearInversions::kappa2flexion(double pixel_size, double* pt_kappa, double*
 }
 
 
-void ShearInversions::flexion2kappa(double pixel_size,to_array< double, true >& F1, to_array< double, true >& F2, to_array< double, true >& kappa)
+void ShearInversions::flexion2kappa(double pixel_size,convert_to_array< double, true >& F1, convert_to_array< double, true >& F2, convert_to_array< double, true >& kappa)
 {
     double *pt_F1 = F1.buffer();
     double *pt_F2 = F2.buffer();
@@ -342,7 +342,7 @@ void ShearInversions::flexion2kappa(double pixel_size, double* pt_F1, double* pt
 
 }
 
-void ShearInversions::gamma_flexion2kappa(double pixel_size, to_array< double, true >& gamma1, to_array< double, true >& gamma2, to_array< double, true >& F1, to_array< double, true >& F2, to_array< double, true >& kappa)
+void ShearInversions::gamma_flexion2kappa(double pixel_size, convert_to_array< double, true >& gamma1, convert_to_array< double, true >& gamma2, convert_to_array< double, true >& F1, convert_to_array< double, true >& F2, convert_to_array< double, true >& kappa)
 {
     double *pt_gamma1 = gamma1.buffer();
     double *pt_gamma2 = gamma2.buffer();
