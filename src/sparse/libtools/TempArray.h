@@ -87,6 +87,7 @@ public:
   convert_to_array (int pi_Nx, int pi_Ny, const char *Name);
   convert_to_array (int pi_Nx, int pi_Ny, int pi_Nz, const char *Name);
   convert_to_array (int pi_Nx, int pi_Ny=0, int pi_Nz=0);
+  convert_to_array(const convert_to_array<PARAM_TYPE, ARRAY_TYPE>& pro_Obj);
   ~convert_to_array ();
   void free();
   PARAM_TYPE* buffer();
@@ -163,8 +164,6 @@ public:
   double mean () const;
   void sigma_clip (float& pf_Mean, float& pf_Sigma, int pi_Nit=3) const;
   float sigma_clip (int pi_Nit=3) const;
-
-  convert_to_array<PARAM_TYPE,ARRAY_TYPE> (const convert_to_array<PARAM_TYPE,ARRAY_TYPE>& pro_Obj);
 
   inline void setBorder( type_border border )
   {
