@@ -1236,7 +1236,7 @@ void FCUR::get_wedges(Icomplex_f * &TabWT)
 
 void FCUR::cur_trans(Ifloat &Data)
 {
-	Verbose = True;
+	// Verbose = True;
 	if (Verbose == True) cout << "Transform WT ... " << endl;
 	if (ModifSize == False) transform(Data);
 	else
