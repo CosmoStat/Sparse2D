@@ -250,13 +250,12 @@ if(BUILD_PYBIND)
   # Build bindings
   build_pybind("${core_libs}" FALSE)
   # Note: Uncomment the following line when pymrs issues have been resolved
-  # if(ONLY_SPARSE)
-  #   build_pybind("${core_libs}" FALSE)
-  # else()
-  #   set(pybind_deps ${mrs_libs} ${HEALPIX_LIBRARIES} ${core_libs})
-  #   build_pybind("${pybind_deps}" TRUE)
-  # endif()
-
+  if(ONLY_SPARSE)
+     build_pybind("${core_libs}" FALSE)
+  else()
+    set(pybind_deps ${mrs_libs} ${HEALPIX_LIBRARIES} ${core_libs})
+    build_pybind("${pybind_deps}" TRUE)
+  endif()
 endif()
 
 # ----------#

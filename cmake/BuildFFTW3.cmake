@@ -21,6 +21,7 @@ set(FFTW_CONFIG_FLAGS
   --enable-threads
   --enable-sse2
   --enable-openmp
+  LDFLAGS="-L/path/to/libomp -lomp"
 )
 
 # Download and build FFTW3
@@ -39,4 +40,22 @@ ExternalProject_Add(fftw3_build
 # Set FFTW3 variables
 set(FFTW3_LIBRARY_DIRS ${CMAKE_BINARY_DIR}/lib/ CACHE INTERNAL "")
 set(FFTW3_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/include/ CACHE INTERNAL "")
-set(FFTW3_LIBRARIES -lfftw3 -lfftw3f CACHE INTERNAL "")
+# set(FFTW3_LIBRARIES -lfftw3 -lfftw3f CACHE INTERNAL "")
+
+# Define FFTW3::Float
+add_library(FFTW3::Float SHARED IMPORTED GLOBAL)
+set_target_properties(FFTW3::Float PROPERTIES
+  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/lib/libfftw3f.dylib"
+  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/include"
+  INTERFACE_LINK_LIBRARIES OpenMP::OpenMP_CXX
+)
+
+# Define FFTW3::Double
+add_library(FFTW3::Double SHARED IMPORTED GLOBAL)
+set_target_properties(FFTW3::Double PROPERTIES
+  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/lib/libfftw3.dylib"
+  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/include"
+  INTERFACE_LINK_LIBRARIES OpenMP::OpenMP_CXX
+)
+
+

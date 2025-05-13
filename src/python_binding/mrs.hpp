@@ -95,9 +95,9 @@ MRS::MRS(bool verbose)
 
 // Destructor
 MRS::~MRS(){
-    mr_initialized=False;
-    nb_procs=0;
-    Verbose=False;
+     mr_initialized=False;
+     nb_procs=0;
+     Verbose=False;
 }
 
 // int MRS::get_lmax(int  & Lmax, int Nside, float ZeroPadding)
@@ -122,7 +122,7 @@ void  MRS::alloc(int Nside, int Nscale, int LmaxIn, int ALM_iter, bool Verb)
     float ZeroPadding=0.;
     int LM=LmaxIn;
     int Lmax = mrs_get_lmax (LM,  Nside, ZeroPadding);
-    cout << "ALLOC: " << Nside << " " << Nscale << " " << LmaxIn << " " << ALM_iter << endl;
+    // cout << "ALLOC: " << Nside << " " << Nscale << " " << LmaxIn << " " << ALM_iter << endl;
     WT.wt_alloc(Nside, Nscale, Lmax, nested);  //  DEF_MRS_ORDERING);
     WT.ALM_iter = ALM_iter;
     if (Verb) Verbose=Verb;
@@ -133,14 +133,11 @@ void  MRS::alloc(int Nside, int Nscale, int LmaxIn, int ALM_iter, bool Verb)
 py::array_t<float>  MRS::uwt(py::array_t<float>& arr, int Ns)
 {
     Verbose=True;
-    cout << "Input arr.ndim() = " << arr.ndim() << " " << arr.shape(0) << endl;
+    // cout << "Input arr.ndim() = " << arr.ndim() << " " << arr.shape(0) << endl;
     if (arr.ndim() != 1)
         throw std::runtime_error("Input should be 1-D NumPy array");
 
-
-    cout << "OK" << endl;
-    exit(-1);
-
+    // cout << "OK" << endl;
 
     auto buffer = arr.request();
     float *pointer = (float *) buffer.ptr;
@@ -156,7 +153,7 @@ py::array_t<float>  MRS::uwt(py::array_t<float>& arr, int Ns)
         throw std::runtime_error("Input map has not expected nside.");
     }
 
-    cout << "alloc ok. Nside = " << Nside << " " << Ns << ", Npix = " << Npix << endl;
+    // cout << "alloc ok. Nside = " << Nside << " " << Ns << ", Npix = " << Npix << endl;
 
     // Copy the numpy array into a healpix map
     Hdmap Map;
@@ -168,27 +165,32 @@ py::array_t<float>  MRS::uwt(py::array_t<float>& arr, int Ns)
 
     // Wavelet transform
     WT.transform(Map);
-    cout << "transform ok. " << endl;
+    // cout << "transform ok. " << endl;
 
     // Recopy to numpy array
-    auto arr1 = py::array_t<float>(Npix*WT.nscale());
+    auto arr1 = py::array_t<float>({WT.nscale(), Npix});
     auto buf1 = arr1.request();
-    pointer = (float *) buf1.ptr;
+    pointer = static_cast<float*>(buf1.ptr);
+    // auto arr1 = py::array_t<float>(Npix*WT.nscale());
+    // auto buf1 = arr1.request();
+    // pointer = (float *) buf1.ptr;
     for(int s=0; s < WT.nscale(); s++)
     for (int i=0; i<Npix; i++)
     {
         pointer[i + s * Npix] = WT.WTTrans(i,s);
     }
-    cout << "copy ok. Npix =" << Npix << endl;
+    // cout << "copy ok. Npix =" << Npix << endl;
 
-    arr1.resize({WT.nscale(), Npix});
-    cout << "resize dim = " << arr1.ndim() << " " << arr1.shape(1)<< " " <<   arr1.shape(0) << endl;
+    // arr1.resize({WT.nscale(), Npix});
+    // cout << "resize dim = " << arr1.ndim() << " " << arr1.shape(1)<< " " <<   arr1.shape(0) << endl;
     return arr1;
 
 }
 
 py::array_t<float> MRS::get_tabnorm()
 {
+    int n = WT.TabNorm.nx();
+    if (n <= 0) throw std::runtime_error("TabNorm has invalid size");
     auto arr1 = py::array_t<float>(WT.TabNorm.nx());
     auto buf1 = arr1.request();
     float *pointer = (float *) buf1.ptr;

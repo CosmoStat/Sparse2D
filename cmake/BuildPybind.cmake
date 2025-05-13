@@ -35,24 +35,27 @@ function(build_pybind_target target libs)
   # Extract the target name
   get_filename_component(tarname ${target} NAME_WLE)
 
-  # Add the target library
-  add_library(${tarname} SHARED ${target})
+  if(NOT TARGET ${tarname})
 
-  # Link libraries to target
-  target_link_libraries(${tarname} "${libs}" OpenMP::OpenMP_CXX pybind11::headers)
+     # Add the target library
+     add_library(${tarname} SHARED ${target})
 
-  # Set system dependend properties
-  if(APPLE)
-    set_target_properties(${tarname} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-  else(APPLE)
-    target_link_libraries(${tarname} ${Python_LIBRARIES})
-  endif(APPLE)
+     # Link libraries to target
+     target_link_libraries(${tarname} "${libs}" OpenMP::OpenMP_CXX pybind11::headers)
 
-  # Set target prefix and suffix properties
-  pybind11_extension(${tarname})
-  pybind11_strip(${tarname})
+     # Set system dependend properties
+     if(APPLE)
+       set_target_properties(${tarname} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+     else(APPLE)
+       target_link_libraries(${tarname} ${Python_LIBRARIES})
+     endif(APPLE)
 
-  # Set the install path for bindings
-  install(TARGETS ${tarname} DESTINATION ${PYBIND_INSTALL_PATH})
+     # Set target prefix and suffix properties
+     pybind11_extension(${tarname})
+    pybind11_strip(${tarname})
+
+     # Set the install path for bindings
+     install(TARGETS ${tarname} DESTINATION ${PYBIND_INSTALL_PATH})
+    endif()
 
 endfunction()
