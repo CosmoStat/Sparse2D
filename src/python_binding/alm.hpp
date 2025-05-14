@@ -78,10 +78,6 @@ C_ALM::C_ALM(bool verbose)
     #ifdef _OPENMP
         int np = omp_get_num_procs();
         this->nb_procs = (np > 1) ? np - 1 : 1;
-//        if (nb_procs <= 0)
-//            this->nb_procs = omp_get_num_procs() - 1;
-//        else
-//            this->nb_procs = nb_procs;
         omp_set_num_threads(this->nb_procs);
     #endif
 }
@@ -139,14 +135,12 @@ py::array_t<xcomplex<REAL>> C_ALM::get_tabalm()
     int Nl=alm.Lmax()+1;
     int nelem= Nl*Nl;
     auto arr = py::array_t<xcomplex<REAL>>({Nl, Nl});
-    // auto arr = py::array_t<xcomplex<REAL>>(nelem);
     auto buffer = arr.request();
     xcomplex<REAL> *pointer = (xcomplex<REAL> *) buffer.ptr;
 
     for (int l=0; l <= alm.Lmax(); l++)
     for (int m=0; m <= l; m++)
         pointer[l + m * Nl] = alm(l,m);
-    // arr.resize({Nl, Nl});
     return arr;
 }
 
@@ -184,17 +178,13 @@ py::array_t<float> C_ALM::alm2spec()
     PowSpec ps_data;
     alm.alm2powspec(ps_data);
     int Nl = alm.Lmax()+1;
-    // auto arr = py::array_t<xcomplex<REAL>>(Nl);
     py::array_t<REAL> arr(Nl);
     auto buffer = arr.request();
     REAL* pointer = (REAL*) buffer.ptr;
-    // xcomplex<REAL> *pointer = (xcomplex<REAL> *) buffer.ptr;
     for (int l=0; l < Nl; l++)
         pointer[l] = ps_data.tt(l);
     return arr;
 }
-
-// py::array_t<float> alm2powspec();
 
 
 /*

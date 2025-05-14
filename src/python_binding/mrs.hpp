@@ -171,9 +171,7 @@ py::array_t<float>  MRS::uwt(py::array_t<float>& arr, int Ns)
     auto arr1 = py::array_t<float>({WT.nscale(), Npix});
     auto buf1 = arr1.request();
     pointer = static_cast<float*>(buf1.ptr);
-    // auto arr1 = py::array_t<float>(Npix*WT.nscale());
-    // auto buf1 = arr1.request();
-    // pointer = (float *) buf1.ptr;
+
     for(int s=0; s < WT.nscale(); s++)
     for (int i=0; i<Npix; i++)
     {
@@ -181,8 +179,6 @@ py::array_t<float>  MRS::uwt(py::array_t<float>& arr, int Ns)
     }
     // cout << "copy ok. Npix =" << Npix << endl;
 
-    // arr1.resize({WT.nscale(), Npix});
-    // cout << "resize dim = " << arr1.ndim() << " " << arr1.shape(1)<< " " <<   arr1.shape(0) << endl;
     return arr1;
 
 }

@@ -40,7 +40,6 @@ ExternalProject_Add(fftw3_build
 # Set FFTW3 variables
 set(FFTW3_LIBRARY_DIRS ${CMAKE_BINARY_DIR}/lib/ CACHE INTERNAL "")
 set(FFTW3_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/include/ CACHE INTERNAL "")
-# set(FFTW3_LIBRARIES -lfftw3 -lfftw3f CACHE INTERNAL "")
 
 # Define FFTW3::Float
 add_library(FFTW3::Float SHARED IMPORTED GLOBAL)

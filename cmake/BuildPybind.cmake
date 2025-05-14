@@ -52,7 +52,7 @@ function(build_pybind_target target libs)
 
      # Set target prefix and suffix properties
      pybind11_extension(${tarname})
-    pybind11_strip(${tarname})
+     pybind11_strip(${tarname})
 
      # Set the install path for bindings
      install(TARGETS ${tarname} DESTINATION ${PYBIND_INSTALL_PATH})

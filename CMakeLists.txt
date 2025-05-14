@@ -48,7 +48,6 @@ endif()
 message(STATUS "CMake Build Type: ${CMAKE_BUILD_TYPE}")
 
 # Set RPATH options
-# set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_BUILD_RPATH "@loader_path/../lib")
 set(CMAKE_INSTALL_RPATH "@loader_path/../lib")
 
