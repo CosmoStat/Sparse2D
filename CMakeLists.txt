@@ -48,8 +48,8 @@ endif()
 message(STATUS "CMake Build Type: ${CMAKE_BUILD_TYPE}")
 
 # Set RPATH options
-set(CMAKE_BUILD_RPATH "@loader_path/../lib")
-set(CMAKE_INSTALL_RPATH "@loader_path/../lib")
+set(CMAKE_BUILD_RPATH "@loader_path/../lib:/usr/lib::/usr/local/lib")
+set(CMAKE_INSTALL_RPATH "@loader_path/../lib:/usr/lib::/usr/local/lib")
 
 # ----------------- #
 # Find Dependencies #
